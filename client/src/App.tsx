@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 
 function App() {
 
-  const [data, setData] = useState<Object>({});
+  interface apiObj {
+    send: string;
+  }
+
+  const [data, setData] = useState<apiObj>({ send: "" });
   const [error, setError] = useState<any>("")
+
 
   useEffect(() => {
     async function fetchData() {
