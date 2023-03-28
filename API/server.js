@@ -26,16 +26,12 @@ app.post("/query", (req, res) => {
   return res.json(query)
 })
 
-try {
-  client.connect(err => {
-    if (err) { console.error(err); return false; }
-    // connection to mongo is successful, listen for requests
-    console.log("Connected to MongoDB");
-    app.listen(3000, () => {
-      console.log(`listening for requests on port ${PORT}`);
-    })
-  });
-} catch (err) {
-  console.error(err)
-}
+client.connect(err => {
+  if (err) { console.error(err); return false; }
+  console.log("Connected to MongoDB");
+  // start server once connected to db
+  app.listen(3000, () => {
+    console.log(`listening for requests on port ${PORT}`);
+  })
+});
 
