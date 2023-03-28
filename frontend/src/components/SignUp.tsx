@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+//import "../styles/tailwind.css";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({

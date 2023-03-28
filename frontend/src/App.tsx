@@ -1,4 +1,5 @@
 import "./App.css";
+//import "./styles/tailwind.css";
 import { useEffect, useState } from "react";
 //import Registration from "./components/SignUpPage";
 //import SignUpContainer from "./src/components/SignUpContainer"
@@ -41,23 +42,11 @@ function App() {
   const [data, setData] = useState<apiObj>({ send: "" });
   const [error, setError] = useState<any>("");
 
-  // const DisplayObject: React.FC<apiObj> = ({ send }) => {
-  //   return (
-  //     <div>
-  //       {Object.entries(send).map(([key, value]) => (
-  //         <div key={key}>
-  //           {key}: {value}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
-  // };
-
   useEffect(() => {
     async function fetchData() {
       try {
-        //const response = await fetch("http://localhost:3000/");
-        //const json = await response.json();
+        const response = await fetch("http://localhost:3000/");
+        const json = await response.json();
         setData({ send: "hello!" });
       } catch (error) {
         setError(error);
@@ -71,13 +60,6 @@ function App() {
     <div className="App">
       <div>{data ? data.send : "No api call unfortunately "}</div>
       <RegistrationForm />
-      {/* <div>
-        {Object.entries(data).map(([key, value]) => (
-          <div key={key}>
-            {key}: {value}
-          </div>
-        ))} */}
-      {/* </div> */}
     </div>
   );
 }
