@@ -13,6 +13,10 @@ const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGO_CONN;
 const client = new MongoClient(uri);
 
+app.get("/", (req, res) => {
+  res.send("Hello World")
+})
+
 app.post("/query", async (req, res) => {
   try {
     let query = await client.db("itc-website")
