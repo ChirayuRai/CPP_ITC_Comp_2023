@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 //import "../styles/tailwind.css";
+import axios from "axios";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -13,10 +14,21 @@ const RegistrationForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     // Perform validation logic here
     // Send data to the backend/API for registration
+    try {
+      const response = await axios.post(
+        "https://localhost:3000/register",
+        formData
+      );
+      console.log("API response:", response.data);
+      // You can handle the response data here, e.g., show success message, redirect, etc.
+    } catch (error) {
+      console.error("API error:", error);
+      // Handle the error, e.g., show error message, etc.
+    }
     console.log("Form submitted:", formData);
   };
 
