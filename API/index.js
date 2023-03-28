@@ -1,16 +1,31 @@
+const { MongoClient } = require('mongodb');
 const express = require('express');
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000
 const cors = require('cors');
+require("dotenv").config({ path: "./.env" });
 
 app.use(cors({
   origin: '*'
 }));
 
-app.get('/', (req, res) => {
-  res.json({ send: 'The api is working' });
+const uri = process.env.MONGO_CONNECTION_STRING;
+const client = new MongoClient(uri);
+
+app.post("/query", async (req, res) => {
+  let my_query = req.body
+  let query = await client.db("Users")
+    .collection("Data")
+    .find(my_query)
+
+  return res.json(query)
+})
+
+client.connect(err => {
+  if (err) { console.error(err); return false; }
+  // connection to mongo is successful, listen for requests
+  app.listen(PORT, () => {
+    console.log("listening for requests");
+  })
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
