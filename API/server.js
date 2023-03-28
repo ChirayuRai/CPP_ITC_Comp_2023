@@ -13,25 +13,30 @@ const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGO_CONN;
 const client = new MongoClient(uri);
 
+app.post("/query", async (req, res) => {
+  try {
+    let query = await client.db("itc-website")
+      .collection("users")
+      .find(req.body)
+      .toArray();
 
-app.get("/", (req, res) => {
-  return res.json({ "Hello": "World" })
+    return res.json(query)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: "Internal Server Error" })
+  }
 })
 
-app.post("/query", (req, res) => {
-  let query = client.db("itc-website")
-    .collection("users")
-    .find(req.body)
+const startServer = async () => {
+  try {
+    await client.connect();
+    console.log("Connected to MongoDB");
+    app.listen(PORT, () => {
+      console.log(`listening for requests on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  return res.json(query)
-})
-
-client.connect(err => {
-  if (err) { console.error(err); return false; }
-  console.log("Connected to MongoDB");
-  // start server once connected to db
-  app.listen(3000, () => {
-    console.log(`listening for requests on port ${PORT}`);
-  })
-});
-
+startServer();
