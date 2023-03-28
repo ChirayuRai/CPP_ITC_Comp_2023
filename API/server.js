@@ -31,9 +31,9 @@ app.post("/query", async (req, res) => {
   }
 })
 
-const startServer = async () => {
+const startServer = () => {
   try {
-    await client.connect();
+    client.connect();
     console.log("Connected to MongoDB");
     app.listen(PORT, () => {
       console.log(`listening for requests on port ${PORT}`);
