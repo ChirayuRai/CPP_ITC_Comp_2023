@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGO_CONN;
 const client = new MongoClient(uri);
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   res.send("Hello World")
 })
 
