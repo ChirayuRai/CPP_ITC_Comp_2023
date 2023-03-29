@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGO_CONN;
 const client = new MongoClient(uri);
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello World")
 })
 
@@ -31,9 +31,9 @@ app.post("/query", async (req, res) => {
   }
 })
 
-const startServer = () => {
+const startServer = async () => {
   try {
-    client.connect();
+    await client.connect();
     console.log("Connected to MongoDB");
     app.listen(PORT, () => {
       console.log(`listening for requests on port ${PORT}`);
