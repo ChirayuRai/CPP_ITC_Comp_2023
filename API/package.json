@@ -2,7 +2,7 @@
   "name": "cpp_itc_2023",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node index.js"
@@ -27,6 +27,7 @@
     "apollo-server": "^2.9.6",
     "babel-plugin-emotion": "^10.0.21",
     "cors": "^2.8.5",
+    "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "flexboxgrid": "^6.3.1",
