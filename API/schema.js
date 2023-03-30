@@ -66,18 +66,28 @@ const typeDefs = gql`
     createdAt: Int!
   }
 
-  input UserInput {
-    lastName: String!
+  input UserInputUniversity {
+    university: String!
+  }
+
+  input UserProfile {
+    profile: String!
+  }
+
+  input UserInputUsername {
+    username: String!
   }
 
   type Query {
-    user(input: UserInput!): User!
-    usertest(username: String!): User! #a query which can be used to get user details based on username
+    #user(input: UserInputUniversity!): User!
+    usersByUniversity(input: UserInputUniversity!): [User]!
+    userByUsername(username: String!): User! #a query which can be used to get user details based on username
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
   }
 
   type Mutation {
     addUser(input: NewUserInput!): User!
+    addUserProfile(input: UserProfile): User!
   }
 `;
 
