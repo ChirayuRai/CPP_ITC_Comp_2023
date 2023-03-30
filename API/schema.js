@@ -42,6 +42,21 @@ const typeDefs = gql`
   #   recommendedUser: User!
   # }
 
+  #enforces the structure and contents of clientside json req payload
+  #example query from postman body (json data type):
+  #   {
+  #   "query": "mutation AddNewUser($input: NewUserInput!) { addUser(input: $input) { id, firstName, lastName, email } }",
+  #   "variables": {
+  #     "input":{
+  #       "id": "123345",
+  #       "lastName": "Prakash",
+  #       "firstName" : "Amogh",
+  #       "email" : "amog@amoghus.com",
+  #       "username" : "zog",
+  #       "createdAt": 12
+  #     }
+  #   }
+  # }
   input NewUserInput {
     id: String!
     firstName: String!
