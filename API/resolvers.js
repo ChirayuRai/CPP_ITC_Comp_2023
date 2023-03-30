@@ -5,11 +5,14 @@
 //query fields defined in the query type (schema.js)
 module.exports = {
   Query: {
-    async user(_, { input }, { models }) {
+    async usersByUniversity(_, { input }, { models }) {
       console.log("Input:", input);
       try {
         const user = await models.User.findOne({
-          lastName: input.lastName,
+          profile: {
+            university: input.profile.university,
+          },
+          //lastName: input.lastName,
         }).exec();
         console.log("User:", user);
         return user;
@@ -18,7 +21,7 @@ module.exports = {
         throw error;
       }
     },
-    async usertest(_, { username }, { models }) {
+    async userByUsername(_, { username }, { models }) {
       console.log("Input:", username);
       try {
         const user = await models.User.findOne({
@@ -47,6 +50,27 @@ module.exports = {
   },
   Mutation: {
     addUser: async (_, { input }, { models }) => {
+      const newUser = new models.User({
+        //the field names here have to correspond with the field names in the mongoose
+        //schema defined in user.js
+        _id: input.id,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        username: input.username,
+        email: input.email,
+        createdAt: input.createdAt,
+      });
+
+      try {
+        await newUser.save();
+        return newUser;
+      } catch (err) {
+        console.error("Error creating user:", err);
+        throw new Error("Failed to create user");
+      }
+    },
+    addUserProfile: async (_, { input }, { models }) => {
+      //convert the following to find
       const newUser = new models.User({
         //the field names here have to correspond with the field names in the mongoose
         //schema defined in user.js
