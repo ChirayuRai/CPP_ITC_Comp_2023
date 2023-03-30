@@ -1,44 +1,69 @@
-const { gql } = require('apollo-server')
+const { gql } = require("apollo-server");
 
 const typeDefs = gql`
-  enum PetType {
-    CAT
-    DOG
+  enum Frequency {
+    OFTEN
+    SOMETIMES
+    NEVER
   }
 
-type User {
-  id: ID!
-  username: String!
-  pets: [Pet]!
-}
+  type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    username: String!
+    profile: Profile! #if profile value queried, response from the server cannot be null
+  }
 
-type Pet {
-  id: ID!
-  type: PetType!
-  name: String!
-  owner: User!
-  img: String!
-  createdAt: Int!
-}
+  #select primary and secondary and tertiary weighting of attributes
+  #example primary: university, major, hygiene, smoke, pets
+  type Profile {
+    id: ID!
+    user: User!
+    bio: String!
+    imgUrl: String!
+    university: String!
+    major: String!
+    sleepTime: Int!
+    wakeTime: Int!
+    hygiene: Frequency!
+    hobbies: [String!]!
+    smoke: Boolean!
+    pets: Boolean!
+    so: Frequency!
+    cook: Frequency!
+    createdAt: Int!
+  }
 
-input NewPetInput {
-  name: String!
-  type: PetType!
-}
+  # type Recommendation {
+  #   id: ID!
+  #   user: User!
+  #   recommendedUser: User!
+  # }
 
-input PetsInput {
-  type: PetType
-}
+  input NewUserInput {
+    id: String!
+    firstName: String!
+    lastName: String!
+    email: String!
+    username: String!
+    createdAt: Int!
+  }
 
-type Query {
-  user: User!
-  pets(input: PetsInput): [Pet]!
-  pet(id: ID!): Pet!
-}
+  input UserInput {
+    lastName: String!
+  }
 
-type Mutation {
-  addPet(input: NewPetInput!): Pet!
-}
+  type Query {
+    user(input: UserInput!): User!
+    usertest(username: String!): User! #a query which can be used to get user details based on username
+    usertestID(userID: String!): User! #a query which can be used to get user details based on user id
+  }
+
+  type Mutation {
+    addUser(input: NewUserInput!): User!
+  }
 `;
 
-module.exports = typeDefs
+module.exports = typeDefs;

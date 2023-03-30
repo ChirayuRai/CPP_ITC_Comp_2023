@@ -1,20 +1,24 @@
 const mongoose = require("mongoose");
-const { nanoid } = require("nanoid");
+const nanoid = require("nanoid");
+//import { nanoid } from "nanoid";
 
 const UserSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    default: () => nanoid(),
-  },
+  // _id: {
+  //   type: String,
+  //   //default: nanoid(),
+  // },
+  _id: String,
   username: String,
+  firstName: String,
+  lastName: String,
   email: String,
-  password: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  createdAt: Number,
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
 });
 
-const UserModel = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model("Usero", UserSchema);
 
 module.exports = UserModel;

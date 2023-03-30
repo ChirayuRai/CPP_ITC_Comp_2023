@@ -12,22 +12,6 @@ require("dotenv").config({ path: ".env" });
 
 const PORT = process.env.PORT || 3000;
 
-// const uri = process.env.MONGO_CONN;
-// const client = new MongoClient(uri);
-
-// const connectToMongoDB = async () => {
-//   try {
-//     await client.connect();
-//     console.log("Connected to MongoDB");
-//     return client.db;
-//     // app.listen(PORT, () => {
-//     //   console.log(`listening for requests on port ${PORT}`);
-//     // });
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };
-
 const startServer = async () => {
   //const db = await connectToMongoDB();
   const { models, db } = await initializeDatabase();
@@ -42,6 +26,7 @@ const startServer = async () => {
 
   const app = express();
 
+  //using the graphql server as a middleware for the express server accessible via /graphql endpoint
   server.applyMiddleware({ app });
 
   app.use(express.json());
@@ -56,46 +41,14 @@ const startServer = async () => {
     res.status(500).send("Something went wrong!");
   });
 
-  // app.get("/", (req, res) => {
-  //   return res.json({ Hello: "World" });
-  // });
-
-  // app.post("/query", (req, res) => {
-  //   let query = client.db("Users").collection("Data").find(req.body);
-
-  //   return res.json(query);
-  // });
+  //normal endpoints accessible as well
+  app.get("/", (req, res) => {
+    res.send("Hello World");
+  });
 
   app.listen(PORT, () => {
     console.log(`listening for requests on port ${PORT}`);
   });
-  // server.listen().then(({ url }) => {
-  //   console.log(`🚀 Server ready at ${url}`);
-  // });
 };
 
 startServer();
-
-//creating the express app
-
-// client.connect(err => {
-//   if (err) { console.error(err); return false; }
-//   // connection to mongo is successful, listen for requests
-//   console.log("Connected to MongoDB");
-//   app.listen(PORT, () => {
-//     console.log(`listening for requests on port ${PORT}`);
-//   })
-// });
-
-// (async () => {
-//   const db = await connectToMongoDB();
-//   const server = new ApolloServer({
-//     typeDefs,
-//     resolvers,
-//     context: () => ({ db }),
-//   });
-
-//   server.listen().then(({ url }) => {
-//     console.log(`🚀 Server ready at ${url}`);
-//   });
-// })();
