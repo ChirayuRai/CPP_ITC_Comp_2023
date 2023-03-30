@@ -1,15 +1,15 @@
-const { MongoClient } = require("mongodb");
+//const { MongoClient } = require("mongodb");
+// const client = new MongoClient(uri);
 
 require("dotenv").config({ path: ".env" });
 
 const uri = process.env.MONGO_CONN;
-const client = new MongoClient(uri);
 
 const mongoose = require("mongoose");
 const userModel = require("./user");
 const initializeDatabase = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_CONN, {
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

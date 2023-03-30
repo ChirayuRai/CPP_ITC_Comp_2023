@@ -1,3 +1,8 @@
+//the resolvers are used to assign business logic to the graphql schema
+//for example, the user query below corresponds with the user(..) field defined in the query type
+//in schema.js //the { input } is the input from the client which has to conform to the input parameter of input type
+//UserInput defined in the schema. the resolvers get executed whenever a query is made with the query name matching one of the
+//query fields defined in the query type (schema.js)
 module.exports = {
   Query: {
     async user(_, { input }, { models }) {

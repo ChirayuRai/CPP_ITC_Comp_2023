@@ -7,12 +7,14 @@ const UserSchema = new mongoose.Schema({
   //   type: String,
   //   //default: nanoid(),
   // },
-  _id: String,
+
+  _id: String, //look into correct implementation of nanoid() to avoid stale id
   username: String,
   firstName: String,
   lastName: String,
   email: String,
   createdAt: Number,
+
   // createdAt: {
   //   type: Date,
   //   default: Date.now,
