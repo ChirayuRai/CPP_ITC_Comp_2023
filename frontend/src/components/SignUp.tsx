@@ -57,7 +57,7 @@ const RegistrationForm = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 
   const [formData, setFormData] = useState({
-    id: "9", //using hardcoded values to test flow(replace this to be assigned in the backend)
+    id: "10", //using hardcoded values to test flow(replace this to be assigned in the backend)
     // firstName: "",
     // lastName: "",
     password: "",
@@ -96,7 +96,7 @@ const RegistrationForm = () => {
         const { id, password, username, email } = formData; //destructuring the data to be passed as a req in createUser
         //graphql req: input payload
         const input = {
-          id,
+          //id,
           password,
           username,
           email,
@@ -107,7 +107,10 @@ const RegistrationForm = () => {
         });
         console.log("API response:", response.data);
         console.log("API response:", newUser);
-        navigate("/profile-setup");
+        const stateUsername = response.data["addUser"].username;
+        console.log("response data username", stateUsername);
+        //console.log("response data", newUser);
+        navigate("/profile-setup", { state: { stateUsername } }); //passing the username from response as context for the personal info page
         // You can handle the response data here, e.g., show success message, redirect, etc.
       } catch (error) {
         console.error("API error:", error);

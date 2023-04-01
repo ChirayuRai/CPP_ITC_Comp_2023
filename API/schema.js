@@ -29,6 +29,11 @@ const typeDefs = gql`
     username: User
   }
 
+  type AddUserProfileResult {
+    profile: User
+    compatibleUsers: [User]
+  }
+
   #select primary and secondary and tertiary weighting of attributes
   #example primary: university, major, hygiene, smoke, pets
   # type Profile {
@@ -71,7 +76,7 @@ const typeDefs = gql`
   #   }
   # }
   input NewUserInput {
-    id: String!
+    #id: String!
     password: String!
     email: String!
     username: String!
@@ -98,20 +103,23 @@ const typeDefs = gql`
     university: String!
   }
 
-  input UserInputUsername {
+  input UserInputLogin {
     username: String!
+    password: String!
   }
 
-  type Query {
+  type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     #user(input: UserInputUniversity!): User!
-    usersByUniversity(input: UserInputUniversity!): [User]!
-    userByUsername(username: String!): User! #a query which can be used to get user details based on username
+    #usersByUniversity(input: UserInputUniversity!): [User]! #can be used for search
+
+    #userLogin(input: UserInputLogin): User! #a query which can be used to get user details based on username to handle login
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
   }
 
   type Mutation {
     addUser(input: NewUserInput!): User!
     addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
+    userLogin(input: UserInputLogin!): User!
   }
 `;
 

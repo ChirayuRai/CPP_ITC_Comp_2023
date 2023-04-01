@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 //import { createRoot } from "react-dom";
 import App from "./App";
 import ProfileInfo from "./components/ProfileInfo";
+import RegistrationForm from "./components/SignUp";
+import LoginForm from "./components/Login";
 import "./index.css";
 import client from "./apollo-client";
 import { BrowserRouter, Routes } from "react-router-dom";
@@ -31,6 +33,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <Routes>
           <Route path="/" element={<Outlet />}>
             <Route index element={<App />} />
+            {<Route path="/login" element={<LoginForm />} />}
+            {<Route path="/signup" element={<RegistrationForm />} />}
             {<Route path="/profile-setup" element={<ProfileInfo />} />}
           </Route>
         </Routes>

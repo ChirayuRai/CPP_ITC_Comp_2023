@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const nanoid = require("nanoid");
+const { v4: uuidv4 } = require("uuid");
 //import { nanoid } from "nanoid";
 
 const RecommendedSchema = new mongoose.Schema({
@@ -13,11 +14,15 @@ const RecommendedSchema = new mongoose.Schema({
   recommendedUsers: [
     {
       // userId: String,
+      _id: String,
       username: String,
       // Include other relevant fields for a recommended user, if needed
     },
   ],
-  createdAt: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 
   // createdAt: {
   //   type: Date,

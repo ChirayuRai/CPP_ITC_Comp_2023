@@ -1,7 +1,7 @@
 // ProfileSetup.tsx
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import internal from "stream";
 import Select from "react-select";
 import { GroupBase, OptionProps } from "react-select";
@@ -67,9 +67,12 @@ const CREATE_PROFILE = gql`
 const ProfileInfo: React.FC = () => {
   const navigate = useNavigate();
   const [createProfile, newProfile] = useMutation(CREATE_PROFILE);
+  const location = useLocation();
+  const { stateUsername } = location.state;
+  console.log("stateUsername", stateUsername);
 
   const [formData, setFormData] = useState<FormData>({
-    username: "asd",
+    username: stateUsername,
     name: "",
     biography: "",
     image: null,
@@ -82,6 +85,7 @@ const ProfileInfo: React.FC = () => {
     pets: "",
     hobbies: [],
   });
+  console.log("form data Username", formData.username);
 
   const [majorsList, setMajors] = useState([]);
   const [universities, setUniversities] = useState<University[]>([]);
@@ -236,7 +240,7 @@ const ProfileInfo: React.FC = () => {
     console.log("Form submitted:", formData);
     console.log("image", formData.image);
     console.log("Form submitted:", formData);
-    navigate("/");
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -343,6 +347,7 @@ const ProfileInfo: React.FC = () => {
             {/* Add university options here */}
             <option value="">Select a university</option>
             {universities.map((university) => (
+              // <option key={university.country} value={university.name}>
               <option key={university.name} value={university.name}>
                 {university.name}
               </option>
