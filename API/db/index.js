@@ -7,6 +7,7 @@ const uri = process.env.MONGO_CONN;
 
 const mongoose = require("mongoose");
 const userModel = require("./user");
+const recommendationsModel = require("./recommended");
 const initializeDatabase = async () => {
   try {
     await mongoose.connect(uri, {
@@ -18,6 +19,7 @@ const initializeDatabase = async () => {
     return {
       models: {
         User: userModel,
+        Recs: recommendationsModel,
       },
       db: mongoose,
     };

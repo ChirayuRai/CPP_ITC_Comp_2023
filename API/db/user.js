@@ -9,16 +9,31 @@ const UserSchema = new mongoose.Schema({
   // },
 
   _id: String, //look into correct implementation of nanoid() to avoid stale id
-  username: String,
-  firstName: String,
-  lastName: String,
-  email: String,
-  createdAt: Number,
-
-  // createdAt: {
-  //   type: Date,
-  //   default: Date.now,
-  // },
+  //username: String,
+  username: {
+    type: String,
+    unique: true,
+  },
+  name: String,
+  password: String,
+  email: {
+    type: String,
+    unique: true,
+  },
+  bio: String,
+  imgUrl: String,
+  university: String,
+  major: String,
+  sleepTime: String,
+  hygiene: String,
+  hobbies: [String],
+  smoke: String,
+  pets: String,
+  //createdAt: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const UserModel = mongoose.model("Usero", UserSchema);
