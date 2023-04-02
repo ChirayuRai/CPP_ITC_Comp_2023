@@ -9,32 +9,50 @@ const typeDefs = gql`
 
   type User {
     id: ID!
-    firstName: String!
-    lastName: String!
+    name: String!
+    password: String!
     email: String!
     username: String!
-    profile: Profile! #if profile value queried, response from the server cannot be null
-  }
-
-  #select primary and secondary and tertiary weighting of attributes
-  #example primary: university, major, hygiene, smoke, pets
-  type Profile {
-    id: ID!
-    user: User!
     bio: String!
     imgUrl: String!
     university: String!
     major: String!
     sleepTime: Int!
-    wakeTime: Int!
     hygiene: Frequency!
     hobbies: [String!]!
     smoke: Boolean!
     pets: Boolean!
-    so: Frequency!
-    cook: Frequency!
     createdAt: Int!
   }
+
+  type ProfileInfo {
+    username: User
+  }
+
+  type AddUserProfileResult {
+    profile: User
+    compatibleUsers: [User]
+  }
+
+  #select primary and secondary and tertiary weighting of attributes
+  #example primary: university, major, hygiene, smoke, pets
+  # type Profile {
+  #   id: ID!
+  #   user: User!
+  #   bio: String!
+  #   imgUrl: String!
+  #   university: String!
+  #   major: String!
+  #   sleepTime: Int!
+  #   wakeTime: Int!
+  #   hygiene: Frequency!
+  #   hobbies: [String!]!
+  #   smoke: Boolean!
+  #   pets: Boolean!
+  #   so: Frequency!
+  #   cook: Frequency!
+  #   createdAt: Int!
+  # }
 
   # type Recommendation {
   #   id: ID!
@@ -58,36 +76,50 @@ const typeDefs = gql`
   #   }
   # }
   input NewUserInput {
-    id: String!
-    firstName: String!
-    lastName: String!
+    #id: String!
+    password: String!
     email: String!
     username: String!
-    createdAt: Int!
+    #createdAt: Int!
+  }
+
+  input UserProfile {
+    #id: ID!
+    username: String!
+    name: String!
+    biography: String!
+    #image: String!
+    university: String!
+    major: String!
+    sleepTime: String!
+    cleanliness: Frequency!
+    guests: Frequency!
+    hobbies: [String!]!
+    smoking: String!
+    pets: String!
   }
 
   input UserInputUniversity {
     university: String!
   }
 
-  input UserProfile {
-    profile: String!
-  }
-
-  input UserInputUsername {
+  input UserInputLogin {
     username: String!
+    password: String!
   }
 
-  type Query {
+  type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     #user(input: UserInputUniversity!): User!
-    usersByUniversity(input: UserInputUniversity!): [User]!
-    userByUsername(username: String!): User! #a query which can be used to get user details based on username
+    #usersByUniversity(input: UserInputUniversity!): [User]! #can be used for search
+
+    #userLogin(input: UserInputLogin): User! #a query which can be used to get user details based on username to handle login
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
   }
 
   type Mutation {
     addUser(input: NewUserInput!): User!
-    addUserProfile(input: UserProfile): User!
+    addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
+    userLogin(input: UserInputLogin!): User!
   }
 `;
 

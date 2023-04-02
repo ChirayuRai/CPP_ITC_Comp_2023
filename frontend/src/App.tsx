@@ -33,7 +33,10 @@ function App() {
   return (
     <div className="App">
       <div>{data ? data.send : "No api call unfortunately "}</div>
-      <RegistrationForm />
+      {/* RegistrationForm component can be added as a subroute with this acting as the landing home page with login and signup buttons */}
+      {/* Add buttons that navigate to Login and Signup respectively
+          can also add nav bar and about page towards the end*/}
+      {/* <RegistrationForm /> */}/
     </div>
   );
 }
