@@ -8,7 +8,8 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import backgroundPic from "../assets/catskills.jpg";
+import backgroundPic from "../assets/thanatopsis.jpg";
+import "./signup.css";
 
 const USER_DETAILS = gql`
   fragment UserDetails on User {
@@ -41,7 +42,7 @@ const CREATE_USER = gql`
 const RegistrationForm = () => {
   const navigate = useNavigate();
 
-  const [createUser, newUser] = useMutation(CREATE_USER);
+  //const [createUser, newUser] = useMutation(CREATE_USER);
 
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 
@@ -92,22 +93,20 @@ const RegistrationForm = () => {
         const { id, password, username, email } = formData; //destructuring the data to be passed as a req in createUser
         //graphql req: input payload
         const input = {
-          //id,
           password,
           username,
           email,
-          //createdAt,
         };
         try {
-          const response = await createUser({
-            variables: { input },
-          });
-          console.log("API response:", response.data);
-          console.log("API response:", newUser);
-          const stateUsername = response.data["addUser"].username;
-          console.log("response data username", stateUsername);
+          // const response = await createUser({
+          //   variables: { input },
+          // });
+          // console.log("API response:", response.data);
+          // console.log("API response:", newUser);
+          // const stateUsername = response.data["addUser"].username;
+          // console.log("response data username", stateUsername);
           //console.log("response data", newUser);
-          navigate("/profile-setup", { state: { stateUsername } }); //passing the username from response as context for the personal info page
+          navigate("/profile-setup", { state: { input } }); //passing the username from response as context for the personal info page
         } catch (error) {
           console.error("API error:", error);
           // Handle the error, e.g., show error message, etc.
@@ -131,10 +130,10 @@ const RegistrationForm = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className="max-w-md bg-opacity-50 w-full space-y-8 bg-black p-6 rounded-lg shadow-lg">
+      <div className="max-w-md bg-opacity-50 w-full space-y-8 bg-white p-6 rounded-lg shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-orange-500">
-            Set up profile
+          <h2 className="mt-6 text-center text-3xl font-semibold text-blue-800">
+            Create your profile
           </h2>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -208,7 +207,7 @@ const RegistrationForm = () => {
           )}
           <button
             type="submit"
-            className="bg-orange-500 text-gray-900 px-4 py-2 rounded hover:bg-orange-600"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Next
           </button>

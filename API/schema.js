@@ -47,6 +47,8 @@ const typeDefs = gql`
   input UserProfile {
     #id: ID!
     username: String!
+    password: String!
+    email: String!
     name: String!
     biography: String!
     #image: String!

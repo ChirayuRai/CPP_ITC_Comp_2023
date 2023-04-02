@@ -11,7 +11,7 @@ const Home = () => {
   const [searchAttributes, setSearchAttributes] = useState({});
 
   const handleSearchAttributesChange = (attributes: any) => {
-    setSearchAttributes(attributes);
+    setSearchAttributes(attributes); //this will be set from the search filter
   };
 
   const [collapsed, setCollapsed] = useState(true);
@@ -23,11 +23,18 @@ const Home = () => {
   return (
     <div className="container mx-auto px-4 py-6 bg-white min-h-screen">
       <div className="p-4">
-        <div className="text-center">
+        <div
+          className="text-center"
+          style={{
+            marginTop: "6rem", // Adjust this value according to the height of the navbar
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+          }}
+        >
           {/* <h1 className="text-4xl font-bold text-blue-800 mb-6">hæli</h1> */}
-          <div className="inline-block px-6 py-3 bg-white border-4 border-blue-600 rounded-md mb-6">
+          {/* <div className="inline-block px-6 py-3 bg-white border-4 border-blue-600 rounded-md mb-6">
             <h1 className="text-4xl font-bold text-blue-800">hæli</h1>
-          </div>
+          </div> */}
 
           <div className="rounded-full h-24 w-24 bg-gray-300 mx-auto mb-4">
             <img
@@ -37,7 +44,7 @@ const Home = () => {
             />
           </div>
           <h2 className="text-2xl font-semibold mb-4">
-            {signedUser.data["userLogin"].username}
+            hi, {signedUser.data["userLogin"].username}.
           </h2>
         </div>
         <div className="flex justify-center space-x-2 mb-4">

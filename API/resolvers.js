@@ -144,6 +144,7 @@ module.exports = {
           username: input.username,
         }).exec();
         console.log("User:", user);
+        console.log("resolver password:", input.password);
 
         //perform pwd validation
         console.log("password", input.password);
@@ -160,8 +161,35 @@ module.exports = {
     },
     addUserProfile: async (_, { input }, { models }) => {
       try {
-        const filter = { username: input.username };
-        const update = {
+        /*implement below logic for updateUserProfile() mutation*/
+        // const filter = { username: input.username };
+        // const update = {
+        //   name: input.name,
+        //   bio: input.biography,
+        //   university: input.university,
+        //   major: input.major,
+        //   sleepTime: input.sleepTime,
+        //   guests: input.guests,
+        //   hygiene: input.cleanliness,
+        //   hobbies: input.hobbies,
+        //   smoke: input.smoking,
+        //   pets: input.pets,
+        // };
+
+        // const options = { new: true, upsert: true };
+
+        // const updatedProfile = await models.User.findOneAndUpdate(
+        //   filter, //the filter here being the unique username from the frontend
+        //   update,
+        //   options
+        // );
+        const newUser = new models.User({
+          //the field names here have to correspond with the field names in the mongoose
+          //schema defined in user.js
+
+          username: input.username,
+          password: input.password,
+          email: input.email,
           name: input.name,
           bio: input.biography,
           university: input.university,
@@ -172,45 +200,45 @@ module.exports = {
           hobbies: input.hobbies,
           smoke: input.smoking,
           pets: input.pets,
-        };
-
-        const options = { new: true, upsert: true };
-
-        const updatedProfile = await models.User.findOneAndUpdate(
-          filter, //the filter here being the unique username from the frontend
-          update,
-          options
-        );
-
-        if (!updatedProfile) {
-          throw new Error("Failed to update user profile");
-        }
-
-        const compatibleUsers = await findCompatibleUsers(
-          models,
-          updatedProfile
-        );
-
-        console.log("compatible users:", compatibleUsers);
-        //compiling a list of recommendations upon new user sign up
-        const newRecommendation = await new models.Recs({
-          _id: uuidv4(),
-          user: input.username,
-          //recommendedUsers: compatibleUsers,
-          recommendedUsers: compatibleUsers.map((user) => ({
-            _id: user._id,
-            username: user.username, //can also include profile pic to retrieve for later
-          })),
         });
+
         try {
-          await newRecommendation.save();
-          //return newRecommendation;
+          await newUser.save();
+          if (!newUser) {
+            throw new Error("Failed to create user profile");
+          }
+
+          const compatibleUsers = await findCompatibleUsers(
+            models,
+            //updatedProfile
+            newUser
+          );
+
+          console.log("compatible users:", compatibleUsers);
+          //compiling a list of recommendations upon new user sign up
+          const newRecommendation = await new models.Recs({
+            _id: uuidv4(),
+            user: input.username,
+            //recommendedUsers: compatibleUsers,
+            recommendedUsers: compatibleUsers.map((user) => ({
+              _id: user._id,
+              username: user.username, //can also include profile pic to retrieve for later
+            })),
+          });
+          try {
+            await newRecommendation.save();
+            //return newRecommendation;
+          } catch (err) {
+            console.error("Error creating user:", err);
+            throw new Error("Failed to create user");
+          }
+
+          //return newly created user;
+          return newUser;
         } catch (err) {
           console.error("Error creating user:", err);
           throw new Error("Failed to create user");
         }
-
-        return updatedProfile;
       } catch (err) {
         console.error("Error updating user profile:", err);
         throw new Error("Failed to update user profile");
