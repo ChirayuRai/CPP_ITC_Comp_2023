@@ -7,7 +7,7 @@ import Select from "react-select";
 import { GroupBase, OptionProps } from "react-select";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import "./profileinfo.css";
+// import "./profileinfo.css";
 
 type HobbyOption = {
   value: string;
@@ -30,7 +30,7 @@ interface FormData {
   university: string;
   major: string;
   smoking: string;
-  sleepTime: number;
+  sleepTime: string;
   cleanliness: string;
   guests: string;
   pets: string;
@@ -79,7 +79,7 @@ const ProfileInfo: React.FC = () => {
     university: "",
     major: "",
     smoking: "",
-    sleepTime: 0,
+    sleepTime: "",
     cleanliness: "",
     guests: "",
     pets: "",
@@ -91,14 +91,6 @@ const ProfileInfo: React.FC = () => {
   const [universities, setUniversities] = useState<University[]>([]);
   const [selectedHobbies, setSelectedHobbies] = useState([]);
 
-  // const hobbiesOptions = [
-  //   { value: "reading", label: "Reading" },
-  //   { value: "sports", label: "Sports" },
-  //   { value: "music", label: "Music" },
-  //   { value: "traveling", label: "Traveling" },
-  //   { value: "cooking", label: "Cooking" },
-  //   // Add more hobbies options here
-  // ];
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -124,15 +116,6 @@ const ProfileInfo: React.FC = () => {
     // Add more hobbies options here
   ];
 
-  // const majorsOptions: MajorOption[] = [
-  //   { value: "electrical engineering", label: "ee" },
-  //   { value: "computer science", label: "cs" },
-  //   { value: "physics", label: "physics" },
-  //   { value: "math", label: "math" },
-  //   { value: "statistics", label: "stats" },
-  //   { value: "statistics", label: "stats" },
-  //   // Add more hobbies options here
-  // ];
   const majorsOptions: MajorOption[] = [
     { name: "Computer Science", id: 1 },
     { name: "Mechanical Engineering", id: 2 },
@@ -151,14 +134,7 @@ const ProfileInfo: React.FC = () => {
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    //handling boolean input
-    // if (name === "pets" || name === "smoking") {
-    //   const isTrue = value === "true";
-    //   setFormData((prevData) => ({
-    //     ...prevData,
-    //     [name]: value === isTrue,
-    //   }));
-    // }
+
     console.log("name:", name, " ", "and value", value);
     console.log("form data", formData);
     setFormData({ ...formData, [name]: value });
@@ -187,15 +163,7 @@ const ProfileInfo: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
-    // university: "",
-    // major: "",
-    // smoking: "",
-    // sleepTime: 0,
-    // cleanliness: "",
-    // guests: "",
-    // pets: "",
-    // hobbies: [],
+
     try {
       const {
         username,
@@ -271,214 +239,245 @@ const ProfileInfo: React.FC = () => {
   }, [0]);
 
   return (
-    <form onSubmit={handleSubmit} className="bg-blue-100 p-6 rounded-lg">
-      <div>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </label>
-      </div>
-      <br />
-      <div className="mb-4">
-        <label className="block mb-1">
-          Short Biography:
-          <div>
-            <textarea
-              name="biography"
-              value={formData.biography}
+    <div className="bg-cover bg-black bg-center text-black-800 bg-fixed min-h-screen flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
+      >
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">
+            Name:
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="mt-1 p-2 w-full border border-gray-300 rounded"
+            />
+          </label>
+        </div>
+        <br />
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">
+            Short Biography:
+            <div>
+              <textarea
+                name="biography"
+                value={formData.biography}
+                onChange={handleChange}
+                className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
+              />
+            </div>
+          </label>
+        </div>
+
+        <br />
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">
+            Profile Image:
+            <input
+              type="file"
+              onChange={handleImageUpload}
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+            />
+          </label>
+        </div>
+        <br />
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">Hobbies:</label>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Select<HobbyOption, true>
+              options={hobbiesOptions}
+              isMulti
+              onChange={handleHobbiesChange}
+              placeholder="select upto 3 hobbies"
+              maxMenuHeight={formData.hobbies.length < 3 ? 300 : 0} // Set maxMenuHeight to 0 to disable scrolling when 3 hobbies are selected
+              value={hobbiesOptions.filter((option) =>
+                formData.hobbies.includes(option.value)
+              )}
+              styles={customStyles}
             />
           </div>
-        </label>
-      </div>
-      {/* <label>
-        Short Biography:
-        <textarea
-          name="biography"
-          value={formData.biography}
-          onChange={handleChange}
-        />
-      </label> */}
-      <br />
-      <div>
-        <label>
-          Profile Image:
-          <input type="file" onChange={handleImageUpload} />
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>Hobbies:</label>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Select<HobbyOption, true>
-            options={hobbiesOptions}
-            isMulti
-            onChange={handleHobbiesChange}
-            placeholder="select upto 3 hobbies"
-            maxMenuHeight={formData.hobbies.length < 3 ? 300 : 0} // Set maxMenuHeight to 0 to disable scrolling when 3 hobbies are selected
-            value={hobbiesOptions.filter((option) =>
-              formData.hobbies.includes(option.value)
-            )}
-            styles={customStyles}
-          />
         </div>
-      </div>
-      <br />
-      <div className="select-container">
-        <label>University:</label>
-        <div>
-          <select
-            name="university"
-            value={formData.university}
-            onChange={handleChange}
+        <br />
+        <div className="select-container mb-4">
+          <label className="block font-semibold mb-1">University:</label>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            {/* Add university options here */}
-            <option value="">Select a university</option>
-            {universities.map((university) => (
-              // <option key={university.country} value={university.name}>
-              <option key={university.name} value={university.name}>
-                {university.name}
-              </option>
-            ))}
-            {/* <option value="university1">University 1</option>
-          <option value="university2">University 2</option> */}
-          </select>
-        </div>
-      </div>
-      <br />
-      <div>
-        <label>
-          Major:
-          <div>
-            <select name="major" value={formData.major} onChange={handleChange}>
-              <option value="">Select a major</option>
-              {majorsOptions.map((major) => (
-                <option key={major.id} value={major.name}>
-                  {major.name}
+            <select
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+              name="university"
+              value={formData.university}
+              onChange={handleChange}
+            >
+              {/* Add university options here */}
+              <option value="">Select a university</option>
+              {universities.map((university) => (
+                // <option key={university.country} value={university.name}>
+                <option key={university.name} value={university.name}>
+                  {university.name}
                 </option>
               ))}
+              {/* <option value="university1">University 1</option>
+          <option value="university2">University 2</option> */}
             </select>
           </div>
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          Sleep Time:
-          <select
-            name="sleepTime"
-            value={formData.sleepTime}
-            onChange={handleChange}
+        </div>
+        <br />
+        <div className=" mb-4">
+          <label className="block font-semibold mb-1">
+            Major:
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <select
+                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                name="major"
+                value={formData.major}
+                onChange={handleChange}
+              >
+                <option value="">Select a major</option>
+                {majorsOptions.map((major) => (
+                  <option key={major.id} value={major.name}>
+                    {major.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </label>
+        </div>
+        <br />
+        <div className=" mb-4">
+          <label className="block font-semibold mb-1">
+            Sleep Time:
+            <select
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+              name="sleepTime"
+              value={formData.sleepTime}
+              onChange={handleChange}
+            >
+              <option value="">What's your sleep time?</option>
+              <option value="1">Before 9pm</option>
+              <option value="2">9pm - 11pm</option>
+              <option value="3">11pm - 1am</option>
+              <option value="4">1am - 3am</option>
+              <option value="5">1am - 3am</option>
+            </select>
+          </label>
+        </div>
+        <br />
+        <div className=" mb-4">
+          <label className="block font-semibold mb-1">
+            How often do you clean?:
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="cleanliness"
+              value={formData.cleanliness}
+              onChange={handleChange}
+            >
+              <option value="">select</option>
+              <option value="OFTEN">often</option>
+              <option value="SOMETIMES">sometimes</option>
+              <option value="NEVER">never</option>
+            </select>
+          </label>
+        </div>
+        <br />
+        <div className=" mb-4">
+          <label className="block font-semibold mb-1">
+            How often do you have guests over?:
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="guests"
+              value={formData.guests}
+              onChange={handleChange}
+            >
+              <option value="">select</option>
+              <option value="OFTEN">often</option>
+              <option value="SOMETIMES">sometimes</option>
+              <option value="NEVER">never</option>
+            </select>
+          </label>
+        </div>
+        <br />
+
+        <div className="space-y-4 text-gray-800">
+          <div className="flex items-center">
+            <label className="font-semibold mr-4">Do you smoke?:</label>
+            <label className="inline-flex items-center mr-4">
+              <input
+                type="radio"
+                name="smoking"
+                value="yes"
+                checked={formData.smoking === "yes"}
+                onChange={handleChange}
+                className="text-gray-800"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="smoking"
+                value="no"
+                checked={formData.smoking === "no"}
+                onChange={handleChange}
+                className="text-gray-800"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+
+          <div className="flex items-center">
+            <label className="font-semibold mr-4">Do you have pets?:</label>
+            <label className="inline-flex items-center mr-4">
+              <input
+                type="radio"
+                name="pets"
+                value="yes"
+                checked={formData.pets === "yes"}
+                onChange={handleChange}
+                className="text-gray-800"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="pets"
+                value="no"
+                checked={formData.pets === "no"}
+                onChange={handleChange}
+                className="text-gray-800"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
           >
-            <option value="">What's your sleep time?</option>
-            <option value="1">Before 9pm</option>
-            <option value="2">9pm - 11pm</option>
-            <option value="3">11pm - 1am</option>
-            <option value="4">1am - 3am</option>
-            <option value="5">1am - 3am</option>
-          </select>
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          How often do you clean?:
-          <select
-            name="cleanliness"
-            value={formData.cleanliness}
-            onChange={handleChange}
-          >
-            <option value="">select</option>
-            <option value="OFTEN">often</option>
-            <option value="SOMETIMES">sometimes</option>
-            <option value="NEVER">never</option>
-          </select>
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          How often do you have guests over?:
-          <select name="guests" value={formData.guests} onChange={handleChange}>
-            <option value="">select</option>
-            <option value="OFTEN">often</option>
-            <option value="SOMETIMES">sometimes</option>
-            <option value="NEVER">never</option>
-          </select>
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          Do you smoke?:
-          <label>
-            <input
-              type="radio"
-              name="smoking"
-              value="yes"
-              checked={formData.smoking === "yes"}
-              onChange={handleChange}
-            />
-            Yes
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="smoking"
-              value="no"
-              checked={formData.smoking === "no"}
-              onChange={handleChange}
-            />
-            No
-          </label>
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          Do you have pets?:
-          <label>
-            <input
-              type="radio"
-              name="pets"
-              value="yes"
-              checked={formData.pets === "yes"}
-              onChange={handleChange}
-            />
-            Yes
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="pets"
-              value="no"
-              checked={formData.pets === "no"}
-              onChange={handleChange}
-            />
-            No
-          </label>
-        </label>
-      </div>
-      <br />
-      <button
-        type="submit"
-        className="bg-blue-500 text-orange-500 px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Submit
-      </button>
-    </form>
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

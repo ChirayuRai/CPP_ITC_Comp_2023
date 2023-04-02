@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-//import "../styles/tailwind.css";
+import "../styles/tailwind.css";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import backgroundPic from "../assets/catskills.jpg";
 
 const USER_DETAILS = gql`
   fragment UserDetails on User {
@@ -36,20 +39,6 @@ const CREATE_USER = gql`
 `;
 
 const RegistrationForm = () => {
-  //implement for recommendations and userprofile page
-  //const [modal, setModal] = useState(false);
-  //const users = useQuery(GET_USERS);
-
-  // const [createUser, newUser] = useMutation(CREATE_USER, {
-  //   update(cache, { data: { addUser } }) {
-  //     const { users }: any = cache.readQuery({ query: GET_USERS });
-
-  //     cache.writeQuery({
-  //       query: GET_USERS,
-  //       data: { pets: [addUser, ...users] },
-  //     });
-  //   },
-  // });
   const navigate = useNavigate();
 
   const [createUser, newUser] = useMutation(CREATE_USER);
@@ -82,6 +71,13 @@ const RegistrationForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleError = (error: any) => {
+    console.error("API error:", error);
+    toast.error("invalid signup request", {
+      position: toast.POSITION.TOP_CENTER,
+    });
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     // Perform validation logic here
@@ -102,15 +98,22 @@ const RegistrationForm = () => {
           email,
           //createdAt,
         };
-        const response = await createUser({
-          variables: { input },
-        });
-        console.log("API response:", response.data);
-        console.log("API response:", newUser);
-        const stateUsername = response.data["addUser"].username;
-        console.log("response data username", stateUsername);
-        //console.log("response data", newUser);
-        navigate("/profile-setup", { state: { stateUsername } }); //passing the username from response as context for the personal info page
+        try {
+          const response = await createUser({
+            variables: { input },
+          });
+          console.log("API response:", response.data);
+          console.log("API response:", newUser);
+          const stateUsername = response.data["addUser"].username;
+          console.log("response data username", stateUsername);
+          //console.log("response data", newUser);
+          navigate("/profile-setup", { state: { stateUsername } }); //passing the username from response as context for the personal info page
+        } catch (error) {
+          console.error("API error:", error);
+          // Handle the error, e.g., show error message, etc.
+          handleError(error);
+        }
+
         // You can handle the response data here, e.g., show success message, redirect, etc.
       } catch (error) {
         console.error("API error:", error);
@@ -121,79 +124,98 @@ const RegistrationForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Username:
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-        </label>
-      </div>
+    // <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen flex items-center justify-center bg-center bg-cover"
+      style={{
+        backgroundImage: `url(${backgroundPic})`,
+      }}
+    >
+      <div className="max-w-md bg-opacity-50 w-full space-y-8 bg-black p-6 rounded-lg shadow-lg">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-orange-500">
+            Set up profile
+          </h2>
+        </div>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="username" className="sr-only">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                value={formData.username}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                placeholder="Username"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                placeholder="Email"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+              />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="sr-only">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-b-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                placeholder="Confirm Password"
+              />
+            </div>
+          </div>
 
-      <br />
-      <div>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </label>
+          {confirmPasswordError && (
+            <div className="mt-3 text-sm text-red-600">
+              {confirmPasswordError}
+            </div>
+          )}
+          <button
+            type="submit"
+            className="bg-orange-500 text-gray-900 px-4 py-2 rounded hover:bg-orange-600"
+          >
+            Next
+          </button>
+          <ToastContainer />
+        </form>
       </div>
-      <br />
-      <div>
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </label>
-      </div>
-      <br />
-      <div>
-        <label>
-          Confirm Password:
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-        </label>
-        {confirmPasswordError && <div>{confirmPasswordError}</div>}
-      </div>
-      <br />
-      {/* <label>
-        Password:
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-      </label> */}
-      {/* <br />
-      <label>
-        Confirm Password:
-        <input
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-        />
-      </label>
-      <br /> */}
-      <button type="submit">Register</button>
-    </form>
+    </div>
   );
 };
 

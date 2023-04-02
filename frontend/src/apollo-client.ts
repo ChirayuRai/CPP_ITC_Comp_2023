@@ -17,6 +17,7 @@ const typeDefs = gql`
 
 const resolvers = {
   User: {
+    //setting the vaccinated field to true
     vaccinated: () => true,
   },
 };

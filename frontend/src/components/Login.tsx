@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 //import "../styles/tailwind.css";
+import "./login.css";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import backgroundPic from "../assets/main-image.jpg";
 
 const USER_DETAILS = gql`
   fragment SignedInUserDetails on User {
@@ -43,12 +45,6 @@ const LoginForm = () => {
     username: "",
   });
 
-  // const validatedUser = useQuery(VERIFY_USER, {
-  //   variables: {
-  //     input: formData,
-  //   },
-  // });
-
   //updates the formData above whenever a change is detected in the text field via user interaction
   const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,63 +63,81 @@ const LoginForm = () => {
         //createdAt,
       };
       try {
-        const response = await validateUser({
+        const signedUser = await validateUser({
           variables: { input }, //the input has to match the input schema type defined in backend
         });
-        console.log("API response:", response.data);
-        navigate("/");
+        // signedUserData = signedUser["userLogin"]
+        console.log("API response:", signedUser.data);
+        navigate("/home", { state: { signedUser } });
       } catch (error) {
         console.error("API error:", error);
         alert("incorrect credentials");
         // Handle the error, e.g., show error message, etc.
       }
-
-      // if (response == null) {
-      //   alert("incorrect credentials");
-      //   return;
-      // }
-
-      //console.log("API response:", newProfile);
-
-      //navigate("/profile-setup"); navigate to either login page or home page
-      // You can handle the response data here, e.g., show success message, redirect, etc.
     } catch (error) {
       console.error("API error:", error);
       // Handle the error, e.g., show error message, etc.
+      //implement toastify
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Username:
+    // <div className="min-h-screen flex items-center justify-center bg-white-100 py-12 px-4 sm:px-6 lg:px-8 rounded-lg shadow-lg">
+    <div
+      className="min-h-screen flex items-center justify-center bg-center bg-cover"
+      style={{
+        backgroundImage: `url(${backgroundPic})`,
+      }}
+    >
+      {/* <div className="max-w-md w-full space-y-8 bg-white-900 p-6 rounded-lg shadow-lg"> */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 bg-opacity-50 rounded-lg shadow-md w-full max-w-md mx-auto"
+      >
+        <div className="mb-4">
+          {/* <label
+            htmlFor="username"
+            className="block mb-2 font-semibold text-black-700"
+          >
+            Username:
+          </label> */}
           <input
             type="text"
             name="username"
+            id="username"
             value={formData.username}
             onChange={handleChange}
+            className="border-2 border-blue-500 p-2 rounded w-full focus:outline-none focus:border-blue-700"
+            placeholder="username"
           />
-        </label>
-      </div>
+        </div>
 
-      <br />
-
-      <div>
-        <label>
-          Password:
+        <div className="mb-4">
+          {/* <label
+            htmlFor="password"
+            className="block mb-2 font-semibold text-black-700"
+          >
+            Password:
+          </label> */}
           <input
             type="password"
             name="password"
+            id="password"
             value={formData.password}
             onChange={handleChange}
+            className="border-2 border-blue-500 p-2 rounded w-full focus:outline-none focus:border-blue-700"
+            placeholder="password"
           />
-        </label>
-      </div>
-      <br />
+        </div>
 
-      <button type="submit">Login</button>
-    </form>
+        <button
+          type="submit"
+          className="bg-blue-500 px-4 py-2 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
+        >
+          Login
+        </button>
+      </form>
+    </div>
   );
 };
 
