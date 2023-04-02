@@ -3,12 +3,6 @@ const { v4: uuidv4 } = require("uuid");
 //import { nanoid } from "nanoid";
 
 const UserSchema = new mongoose.Schema({
-  // _id: {
-  //   type: String,
-  //   //default: nanoid(),
-  // },
-
-  //_id: String, //look into correct implementation of nanoid() to avoid stale id
   _id: {
     type: String,
     default: uuidv4, // Use UUID v4 as the default value for the _id field
@@ -30,6 +24,7 @@ const UserSchema = new mongoose.Schema({
   major: String,
   sleepTime: String,
   hygiene: String,
+  guests: String,
   hobbies: [String],
   smoke: String,
   pets: String,

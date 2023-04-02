@@ -5,7 +5,11 @@ import App from "./App";
 import ProfileInfo from "./components/ProfileInfo";
 import RegistrationForm from "./components/SignUp";
 import LoginForm from "./components/Login";
-import "./index.css";
+import Home from "./components/Home";
+
+//import "./index.css";
+//import "../dist/index.css";
+
 import client from "./apollo-client";
 import { BrowserRouter, Routes } from "react-router-dom";
 import { ApolloProvider } from "@apollo/react-hooks";
@@ -16,14 +20,6 @@ import {
   Outlet,
   useNavigate,
 } from "react-router-dom";
-
-//import { Switch, Route } from "react-router-dom";
-//import "./styles/tailwind.css";
-
-// const client = new ApolloClient({
-//   cache: new InMemoryCache(),
-//   link: new HttpLink({ uri: "http://localhost:4000/" }),
-// });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   //createRoot(document.getElementById("root") as HTMLElement).render(
@@ -37,8 +33,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             {<Route path="/signup" element={<RegistrationForm />} />}
             {<Route path="/profile-setup" element={<ProfileInfo />} />}
           </Route>
+          <Route path="/home" element={<Outlet />}>
+            <Route index element={<Home />} />
+          </Route>
         </Routes>
-        {/* <App /> */}
+        {/* for the home page after login, define a separate route and have the recommended
+        and search results components  */}
       </React.StrictMode>
     </ApolloProvider>
   </BrowserRouter>
