@@ -7,7 +7,7 @@ import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
-import backgroundPic from "../assets/main-image.jpg";
+import backgroundPic from "../assets/thanatopsis.jpg";
 
 const USER_DETAILS = gql`
   fragment SignedInUserDetails on User {

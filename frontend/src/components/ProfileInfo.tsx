@@ -7,6 +7,8 @@ import Select from "react-select";
 import { GroupBase, OptionProps } from "react-select";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import backgroundPic from "../assets/thanatopsis.jpg";
+
 // import "./profileinfo.css";
 
 type HobbyOption = {
@@ -24,6 +26,8 @@ type MajorOption = {
 
 interface FormData {
   username: string;
+  email: string;
+  password: string;
   name: string;
   biography: string;
   image: File | null;
@@ -67,12 +71,16 @@ const CREATE_PROFILE = gql`
 const ProfileInfo: React.FC = () => {
   const navigate = useNavigate();
   const [createProfile, newProfile] = useMutation(CREATE_PROFILE);
+
+  //taking state userinput from signup page
   const location = useLocation();
-  const { stateUsername } = location.state;
-  console.log("stateUsername", stateUsername);
+  const input = location.state;
+  console.log("stateUsername", input);
 
   const [formData, setFormData] = useState<FormData>({
-    username: stateUsername,
+    username: input["input"].username,
+    email: input["input"].email,
+    password: input["input"].password,
     name: "",
     biography: "",
     image: null,
@@ -167,6 +175,8 @@ const ProfileInfo: React.FC = () => {
     try {
       const {
         username,
+        email,
+        password,
         name,
         biography,
         university,
@@ -181,6 +191,8 @@ const ProfileInfo: React.FC = () => {
       //graphql req: input payload
       const input = {
         username, //this value has to be passed in from the signup flow to establish the relationship
+        email,
+        password,
         name,
         biography,
         university,
@@ -239,105 +251,104 @@ const ProfileInfo: React.FC = () => {
   }, [0]);
 
   return (
-    <div className="bg-cover bg-black bg-center text-black-800 bg-fixed min-h-screen flex items-center justify-center">
+    // <div className="bg-cover bg-black bg-center text-black-800 bg-fixed min-h-screen flex items-center justify-center">
+    <div
+      className="min-h-screen flex items-center justify-center bg-center bg-cover"
+      style={{
+        backgroundImage: `url(${backgroundPic})`,
+      }}
+    >
+      {/* <div
+        className="overflow-y-auto max-h-screen pt-32"
+        style={{
+          // marginTop: "2rem", // Adjust this value according to the height of the navbar
+          maxHeight: "calc(100vh - 10rem)",
+          // scrollbarWidth: "thin",
+          // scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+        }}
+      > */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
+        className="bg-white bg-opacity-50 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
+        style={{
+          marginTop: "6rem", // Adjust this value according to the height of the navbar
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+        }}
       >
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </label>
-        </div>
-        <br />
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Short Biography:
-            <div>
-              <textarea
-                name="biography"
-                value={formData.biography}
+        <div
+          className="overflow-y-auto max-h-screen pt-32"
+          style={{
+            // marginTop: "2rem", // Adjust this value according to the height of the navbar
+            maxHeight: "calc(100vh - 10rem)",
+            // scrollbarWidth: "thin",
+            // scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+          }}
+        >
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
+                className="mt-1 p-2 w-full border border-gray-300 rounded"
+              />
+            </label>
+          </div>
+          <br />
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">
+              Short Biography:
+              <div>
+                <textarea
+                  name="biography"
+                  value={formData.biography}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
+                />
+              </div>
+            </label>
+          </div>
+
+          <br />
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">
+              Profile Image:
+              <input
+                type="file"
+                onChange={handleImageUpload}
+                className="mt-1 p-1 w-full border border-gray-300 rounded"
+              />
+            </label>
+          </div>
+          <br />
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Hobbies:</label>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Select<HobbyOption, true>
+                options={hobbiesOptions}
+                isMulti
+                onChange={handleHobbiesChange}
+                placeholder="select upto 3 hobbies"
+                maxMenuHeight={formData.hobbies.length < 3 ? 300 : 0} // Set maxMenuHeight to 0 to disable scrolling when 3 hobbies are selected
+                value={hobbiesOptions.filter((option) =>
+                  formData.hobbies.includes(option.value)
+                )}
+                styles={customStyles}
               />
             </div>
-          </label>
-        </div>
-
-        <br />
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Profile Image:
-            <input
-              type="file"
-              onChange={handleImageUpload}
-              className="mt-1 p-1 w-full border border-gray-300 rounded"
-            />
-          </label>
-        </div>
-        <br />
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Hobbies:</label>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Select<HobbyOption, true>
-              options={hobbiesOptions}
-              isMulti
-              onChange={handleHobbiesChange}
-              placeholder="select upto 3 hobbies"
-              maxMenuHeight={formData.hobbies.length < 3 ? 300 : 0} // Set maxMenuHeight to 0 to disable scrolling when 3 hobbies are selected
-              value={hobbiesOptions.filter((option) =>
-                formData.hobbies.includes(option.value)
-              )}
-              styles={customStyles}
-            />
           </div>
-        </div>
-        <br />
-        <div className="select-container mb-4">
-          <label className="block font-semibold mb-1">University:</label>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <select
-              className="mt-1 p-1 w-full border border-gray-300 rounded"
-              name="university"
-              value={formData.university}
-              onChange={handleChange}
-            >
-              {/* Add university options here */}
-              <option value="">Select a university</option>
-              {universities.map((university) => (
-                // <option key={university.country} value={university.name}>
-                <option key={university.name} value={university.name}>
-                  {university.name}
-                </option>
-              ))}
-              {/* <option value="university1">University 1</option>
-          <option value="university2">University 2</option> */}
-            </select>
-          </div>
-        </div>
-        <br />
-        <div className=" mb-4">
-          <label className="block font-semibold mb-1">
-            Major:
+          <br />
+          <div className="select-container mb-4">
+            <label className="block font-semibold mb-1">University:</label>
             <div
               style={{
                 display: "flex",
@@ -347,134 +358,165 @@ const ProfileInfo: React.FC = () => {
             >
               <select
                 className="mt-1 p-1 w-full border border-gray-300 rounded"
-                name="major"
-                value={formData.major}
+                name="university"
+                value={formData.university}
                 onChange={handleChange}
               >
-                <option value="">Select a major</option>
-                {majorsOptions.map((major) => (
-                  <option key={major.id} value={major.name}>
-                    {major.name}
+                {/* Add university options here */}
+                <option value="">Select a university</option>
+                {universities.map((university) => (
+                  // <option key={university.country} value={university.name}>
+                  <option key={university.name} value={university.name}>
+                    {university.name}
                   </option>
                 ))}
+                {/* <option value="university1">University 1</option>
+          <option value="university2">University 2</option> */}
               </select>
             </div>
-          </label>
-        </div>
-        <br />
-        <div className=" mb-4">
-          <label className="block font-semibold mb-1">
-            Sleep Time:
-            <select
-              className="mt-1 p-1 w-full border border-gray-300 rounded"
-              name="sleepTime"
-              value={formData.sleepTime}
-              onChange={handleChange}
-            >
-              <option value="">What's your sleep time?</option>
-              <option value="1">Before 9pm</option>
-              <option value="2">9pm - 11pm</option>
-              <option value="3">11pm - 1am</option>
-              <option value="4">1am - 3am</option>
-              <option value="5">1am - 3am</option>
-            </select>
-          </label>
-        </div>
-        <br />
-        <div className=" mb-4">
-          <label className="block font-semibold mb-1">
-            How often do you clean?:
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="cleanliness"
-              value={formData.cleanliness}
-              onChange={handleChange}
-            >
-              <option value="">select</option>
-              <option value="OFTEN">often</option>
-              <option value="SOMETIMES">sometimes</option>
-              <option value="NEVER">never</option>
-            </select>
-          </label>
-        </div>
-        <br />
-        <div className=" mb-4">
-          <label className="block font-semibold mb-1">
-            How often do you have guests over?:
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="guests"
-              value={formData.guests}
-              onChange={handleChange}
-            >
-              <option value="">select</option>
-              <option value="OFTEN">often</option>
-              <option value="SOMETIMES">sometimes</option>
-              <option value="NEVER">never</option>
-            </select>
-          </label>
-        </div>
-        <br />
-
-        <div className="space-y-4 text-gray-800">
-          <div className="flex items-center">
-            <label className="font-semibold mr-4">Do you smoke?:</label>
-            <label className="inline-flex items-center mr-4">
-              <input
-                type="radio"
-                name="smoking"
-                value="yes"
-                checked={formData.smoking === "yes"}
-                onChange={handleChange}
-                className="text-gray-800"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="smoking"
-                value="no"
-                checked={formData.smoking === "no"}
-                onChange={handleChange}
-                className="text-gray-800"
-              />
-              <span className="ml-2">No</span>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label className="block font-semibold mb-1">
+              Major:
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <select
+                  className="mt-1 p-1 w-full border border-gray-300 rounded"
+                  name="major"
+                  value={formData.major}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a major</option>
+                  {majorsOptions.map((major) => (
+                    <option key={major.id} value={major.name}>
+                      {major.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </label>
           </div>
-
-          <div className="flex items-center">
-            <label className="font-semibold mr-4">Do you have pets?:</label>
-            <label className="inline-flex items-center mr-4">
-              <input
-                type="radio"
-                name="pets"
-                value="yes"
-                checked={formData.pets === "yes"}
+          <br />
+          <div className=" mb-4">
+            <label className="block font-semibold mb-1">
+              Sleep Time:
+              <select
+                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                name="sleepTime"
+                value={formData.sleepTime}
                 onChange={handleChange}
-                className="text-gray-800"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="pets"
-                value="no"
-                checked={formData.pets === "no"}
-                onChange={handleChange}
-                className="text-gray-800"
-              />
-              <span className="ml-2">No</span>
+              >
+                <option value="">What's your sleep time?</option>
+                <option value="1">Before 9pm</option>
+                <option value="2">9pm - 11pm</option>
+                <option value="3">11pm - 1am</option>
+                <option value="4">1am - 3am</option>
+                <option value="5">1am - 3am</option>
+              </select>
             </label>
           </div>
+          <br />
+          <div className=" mb-4">
+            <label className="block font-semibold mb-1">
+              How often do you clean?:
+              <select
+                className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+                name="cleanliness"
+                value={formData.cleanliness}
+                onChange={handleChange}
+              >
+                <option value="">select</option>
+                <option value="OFTEN">often</option>
+                <option value="SOMETIMES">sometimes</option>
+                <option value="NEVER">never</option>
+              </select>
+            </label>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label className="block font-semibold mb-1">
+              How often do you have guests over?:
+              <select
+                className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+                name="guests"
+                value={formData.guests}
+                onChange={handleChange}
+              >
+                <option value="">select</option>
+                <option value="OFTEN">often</option>
+                <option value="SOMETIMES">sometimes</option>
+                <option value="NEVER">never</option>
+              </select>
+            </label>
+          </div>
+          <br />
 
-          <button
-            type="submit"
-            className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
-          >
-            Submit
-          </button>
+          <div className="space-y-4 text-gray-800">
+            <div className="flex items-center">
+              <label className="font-semibold mr-4">Do you smoke?:</label>
+              <label className="inline-flex items-center mr-4">
+                <input
+                  type="radio"
+                  name="smoking"
+                  value="yes"
+                  checked={formData.smoking === "yes"}
+                  onChange={handleChange}
+                  className="text-gray-800"
+                />
+                <span className="ml-2">Yes</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="smoking"
+                  value="no"
+                  checked={formData.smoking === "no"}
+                  onChange={handleChange}
+                  className="text-gray-800"
+                />
+                <span className="ml-2">No</span>
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <label className="font-semibold mr-4">Do you have pets?:</label>
+              <label className="inline-flex items-center mr-4">
+                <input
+                  type="radio"
+                  name="pets"
+                  value="yes"
+                  checked={formData.pets === "yes"}
+                  onChange={handleChange}
+                  className="text-gray-800"
+                />
+                <span className="ml-2">Yes</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="pets"
+                  value="no"
+                  checked={formData.pets === "no"}
+                  onChange={handleChange}
+                  className="text-gray-800"
+                />
+                <span className="ml-2">No</span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </form>
     </div>
