@@ -71,6 +71,12 @@ const typeDefs = gql`
     password: String!
   }
 
+  input UniqueID {
+    username: String!
+    email: String!
+    password: String!
+  }
+
   type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     #user(input: UserInputUniversity!): User!
     #usersByUniversity(input: UserInputUniversity!): [User]! #can be used for search
@@ -82,6 +88,7 @@ const typeDefs = gql`
   type Mutation {
     addUser(input: NewUserInput!): User!
     addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
+    verifyUniqueness(input: UniqueID): String! #can return user or just a string response from the backend
     userLogin(input: UserInputLogin!): User!
   }
 `;

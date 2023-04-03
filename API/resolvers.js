@@ -119,6 +119,18 @@ module.exports = {
     },
   },
   Mutation: {
+    verifyUniqueness: async (_, { input }, { models }) => {
+      //if user exists with either the same username or email
+      let uniqueUsername = await models.User.findOne({
+        username: input.username,
+      }).exec();
+
+      if (uniqueUsername) {
+        return "username already taken";
+      } else {
+        return "username available";
+      }
+    },
     addUser: async (_, { input }, { models }) => {
       const newUser = new models.User({
         //the field names here have to correspond with the field names in the mongoose
@@ -150,6 +162,7 @@ module.exports = {
         console.log("password", input.password);
         if (user.password != input.password) {
           console.error("Error in validating user resolver:");
+          return "failed login"; //if string is returned the return type of the mutation must be User/String
           //throw error;
         } else {
           return user;

@@ -8,17 +8,17 @@ interface SearchAttributes {
   Smoking: boolean;
   Guests: string;
   SleepTime: string;
-  University: string;
+  // University: string;
 }
 
 const booleanAttributeKeys = ["Pets", "Smoking"] as const;
 
-const stringAttributeKeys = [
-  "SleepTime",
-  "Hygiene",
-  "University",
-  "Guests",
-] as const;
+// const stringAttributeKeys = [
+//   "SleepTime",
+//   "Hygiene",
+//   "University",
+//   "Guests",
+// ] as const;
 
 // interface SearchAttributes {
 //   [key in booleanAttributeKeys]: boolean ;
@@ -26,11 +26,14 @@ const stringAttributeKeys = [
 
 interface SearchFilterProps {
   //for the state function to be passed from the home page
-  onSearchAttributesChange: (attributes: SearchAttributes) => void;
+  onSearchAttributesChange: (attributes: any) => void;
+  onToggleView: () => void;
 }
 
+//const SearchFilter: React.FC<SearchFilterProps> = ({
 const SearchFilter: React.FC<SearchFilterProps> = ({
   onSearchAttributesChange,
+  onToggleView,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAttributes, setFilterAttributes] = useState({
@@ -39,23 +42,10 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     Smoking: false,
     Guests: "",
     SleepTime: "",
-    University: "",
+    //University: "",
   });
 
-  // const preferences = [
-  //   "Hygiene",
-  //   "Pets",
-  //   "Smoking",
-  //   "Guests",
-  //   "SleepTime",
-  //   "University",
-  // ];
-
-  const sleepTimes = [
-    "Early (9-10 PM)",
-    "Midnight (11 PM-12 AM)",
-    "Late (1-2 AM)",
-  ];
+  const sleepTimes = ["Before 9 PM", "9-11 PM", "11 PM - 1 AM", "1-3 AM"];
   const frequency = ["OFTEN", "SOMETIMES", "NEVER"];
 
   const handleSearchChange = (e: any) => {
@@ -64,17 +54,26 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
   const [collapsed, setCollapsed] = useState(true);
 
-  const handleAttributeChange = (e: any) => {
+  const handleCheckboxAttributeChange = (e: any) => {
     setFilterAttributes({
       ...filterAttributes,
       [e.target.name]: e.target.checked,
     });
   };
 
+  const handleAttributeChange = (e: any) => {
+    setFilterAttributes({
+      ...filterAttributes,
+      [e.target.name]: e.target.value,
+    });
+    console.log("");
+  };
+
   const handleSearchClick = () => {
-    console.log("Search Term:", searchTerm);
+    // console.log("Search Term:", searchTerm);
     console.log("Filter Attributes:", filterAttributes);
-    onSearchAttributesChange(filterAttributes);
+    onSearchAttributesChange(filterAttributes); //executing the function passed in as prop from Home page
+    onToggleView();
   };
 
   const toggleCollapsed = () => {
@@ -98,7 +97,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   type="checkbox"
                   name={pref}
                   checked={filterAttributes[pref]}
-                  onChange={handleAttributeChange}
+                  onChange={handleCheckboxAttributeChange}
                   className="mr-2"
                 />
                 {pref}
@@ -115,11 +114,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             onChange={handleAttributeChange}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
           >
-            {sleepTimes.map((time) => (
+            {/* {sleepTimes.map((time) => (
               <option key={time} value={time}>
                 {time}
               </option>
-            ))}
+            ))} */}
+            <option value=""></option>
+            <option value="1">Before 9pm</option>
+            <option value="2">9pm - 11pm</option>
+            <option value="3">11pm - 1am</option>
+            <option value="4">1am - 3am</option>
           </select>
         </div>
         <div>
@@ -130,11 +134,10 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             onChange={handleAttributeChange}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
           >
-            {frequency.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
+            <option value=""></option>
+            <option value="OFTEN">often</option>
+            <option value="SOMETIMES">sometimes</option>
+            <option value="NEVER">never</option>
           </select>
         </div>
         <div>
@@ -145,21 +148,26 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             onChange={handleAttributeChange}
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
           >
-            {frequency.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
+            <option value=""></option>
+            <option value="OFTEN">often</option>
+            <option value="SOMETIMES">sometimes</option>
+            <option value="NEVER">never</option>
           </select>
         </div>
       </div>
       <br />
       <div>
-        <button
+        {/* <button
           onClick={handleSearchClick}
           className="ml-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Search
+        </button> */}
+        <button
+          onClick={handleSearchClick}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Show results
         </button>
       </div>
     </div>

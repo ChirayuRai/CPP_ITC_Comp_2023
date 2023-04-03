@@ -11,43 +11,43 @@ import "react-toastify/dist/ReactToastify.css";
 import backgroundPic from "../assets/thanatopsis.jpg";
 import "./signup.css";
 
-const USER_DETAILS = gql`
-  fragment UserDetails on User {
-    id
-    username
-    email
-    #firstName
-    #vaccinated @client
-  }
-`;
+// const USER_DETAILS = gql`
+//   fragment UserDetails on User {
+//     id
+//     username
+//     email
+//     #firstName
+//     #vaccinated @client
+//   }
+// `;
 
-const GET_USERS = gql`
-  query usersList($input: UserInputUniversity) {
-    usersByUniversity(input: $input) {
-      ...UserDetails
-    }
-  }
-  ${USER_DETAILS}
-`;
+// const GET_USERS = gql`
+//   query usersList($input: UserInputUniversity) {
+//     usersByUniversity(input: $input) {
+//       ...UserDetails
+//     }
+//   }
+//   ${USER_DETAILS}
+// `;
 
-const CREATE_USER = gql`
-  mutation CreateUser($input: NewUserInput!) {
-    addUser(input: $input) {
-      ...UserDetails
-    }
+const VERIFY_USERNAME = gql`
+  mutation CreateUser($input: UniqueID) {
+    verifyUniqueness(input: $input)
+    # {
+    #   ...UserDetails
+    # }
   }
-  ${USER_DETAILS}
 `;
 
 const RegistrationForm = () => {
   const navigate = useNavigate();
 
-  //const [createUser, newUser] = useMutation(CREATE_USER);
+  const [verifyUniqueness, uniqueUsername] = useMutation(VERIFY_USERNAME);
 
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 
   const [formData, setFormData] = useState({
-    id: "10", //using hardcoded values to test flow(replace this to be assigned in the backend)
+    //id: "10", //using hardcoded values to test flow(replace this to be assigned in the backend)
     // firstName: "",
     // lastName: "",
     password: "",
@@ -74,7 +74,7 @@ const RegistrationForm = () => {
 
   const handleError = (error: any) => {
     console.error("API error:", error);
-    toast.error("invalid signup request", {
+    toast.error(error.message, {
       position: toast.POSITION.TOP_CENTER,
     });
   };
@@ -90,23 +90,27 @@ const RegistrationForm = () => {
     } else {
       // Send data to the backend/API for registration
       try {
-        const { id, password, username, email } = formData; //destructuring the data to be passed as a req in createUser
-        //graphql req: input payload
+        const { password, username, email } = formData; //destructuring the data to be passed as a req in createUser
+        //graphql req: input payload passed as state var to profile info page
         const input = {
           password,
           username,
           email,
         };
         try {
-          // const response = await createUser({
-          //   variables: { input },
-          // });
-          // console.log("API response:", response.data);
-          // console.log("API response:", newUser);
-          // const stateUsername = response.data["addUser"].username;
-          // console.log("response data username", stateUsername);
-          //console.log("response data", newUser);
-          navigate("/profile-setup", { state: { input } }); //passing the username from response as context for the personal info page
+          //validate the uniqueness of the login creds
+          const response = await verifyUniqueness({
+            variables: { input },
+          });
+
+          console.log("verify uniqueness response", response);
+          if (response["data"].verifyUniqueness === "username already taken") {
+            //throw toastify alert about duplicate username
+            //throw console.error("username already taken");
+            throw new Error("username already taken");
+          } else {
+            navigate("/profile-setup", { state: { input } }); //passing the username from response as context for the personal info page
+          }
         } catch (error) {
           console.error("API error:", error);
           // Handle the error, e.g., show error message, etc.
@@ -132,7 +136,14 @@ const RegistrationForm = () => {
     >
       <div className="max-w-md bg-opacity-50 w-full space-y-8 bg-white p-6 rounded-lg shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-semibold text-blue-800">
+          <h2
+            className="text-2xl font-bold mb-4 text-center text-white"
+            style={{
+              letterSpacing: "0.05em",
+              textShadow:
+                "1px 1px 0 blue, -1px -1px 0 blue, 1px -1px 0 blue, -1px 1px 0 blue",
+            }}
+          >
             Create your profile
           </h2>
         </div>

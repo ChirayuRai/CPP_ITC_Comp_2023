@@ -417,7 +417,6 @@ const ProfileInfo: React.FC = () => {
                 <option value="2">9pm - 11pm</option>
                 <option value="3">11pm - 1am</option>
                 <option value="4">1am - 3am</option>
-                <option value="5">1am - 3am</option>
               </select>
             </label>
           </div>
