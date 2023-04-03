@@ -32,23 +32,27 @@ function App() {
           backgroundImage: `url(${backgroundPic})`,
         }}
       >
-        <div className="bg-white p-8 bg-opacity-60 rounded-lg shadow-md w-full max-w-md mx-auto border-2 border-blue-600">
+        <div className="bg-white p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-md mx-auto border-2 border-blue-800">
           <h2
-            className="text-2xl font-semibold mb-4 text-center text-blue-800"
-            style={{ letterSpacing: "0.05em" }}
+            className="text-2xl font-semibold mb-4 text-center text-white"
+            style={{
+              letterSpacing: "0.05em",
+              textShadow:
+                "1px 1px 0 blue, -1px -1px 0 blue, 1px -1px 0 blue, -1px 1px 0 blue",
+            }}
           >
             Welcome
           </h2>
           <div className="flex justify-center space-x-4">
             <Link
               to="/login"
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
             >
               Login
             </Link>
             <Link
               to="/signup"
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
             >
               Sign Up
             </Link>
