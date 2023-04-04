@@ -6,7 +6,7 @@ const imageName = require('crypto').randomBytes(32).toString("hex")
 const reigon = process.env.AWS_REIGON
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
-const bucketName = process.env.AWS_BUCKET_NAME
+const bucketName = process.env.CYCLIC_BUCKET_NAME
 
 const s3 = new aws.S3({
   reigon,
