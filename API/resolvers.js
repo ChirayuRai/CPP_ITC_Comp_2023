@@ -205,6 +205,7 @@ module.exports = {
           email: input.email,
           name: input.name,
           bio: input.biography,
+          personality: input.personality,
           university: input.university,
           major: input.major,
           sleepTime: input.sleepTime,

@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
     unique: true,
   },
   bio: String,
+  personality: String,
   imgUrl: String,
   university: String,
   major: String,

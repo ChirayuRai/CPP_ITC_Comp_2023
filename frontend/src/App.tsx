@@ -1,4 +1,11 @@
 import "./App.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilter,
+  faLightbulb,
+  faSearch,
+  faSignIn,
+} from "@fortawesome/free-solid-svg-icons";
 //import "./styles/tailwind.css";
 import "./styles/tailwind.css";
 import { useEffect, useState } from "react";
@@ -38,7 +45,7 @@ function App() {
             style={{
               letterSpacing: "0.05em",
               textShadow:
-                "1px 1px 0 blue, -1px -1px 0 blue, 1px -1px 0 blue, -1px 1px 0 blue",
+                "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
             }}
           >
             Welcome
@@ -54,7 +61,7 @@ function App() {
               to="/signup"
               className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
             >
-              Sign Up
+              Get Started
             </Link>
           </div>
         </div>

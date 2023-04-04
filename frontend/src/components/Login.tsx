@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 //import "../styles/tailwind.css";
 import "./login.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFilter,
+  faLightbulb,
+  faSearch,
+  faSignIn,
+} from "@fortawesome/free-solid-svg-icons";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import axios from "axios";
@@ -90,9 +97,10 @@ const LoginForm = () => {
       }}
     >
       {/* <div className="max-w-md w-full space-y-8 bg-white-900 p-6 rounded-lg shadow-lg"> */}
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 bg-opacity-50 rounded-lg shadow-md w-full max-w-md mx-auto"
+        className="bg-white p-8 bg-opacity-50 border-2 border-blue-800 rounded-lg shadow-md w-full max-w-md mx-auto"
       >
         <div className="mb-4">
           {/* <label
@@ -101,6 +109,18 @@ const LoginForm = () => {
           >
             Username:
           </label> */}
+          <div>
+            <h2
+              className="text-2xl font-bold mb-4 text-center text-white"
+              style={{
+                letterSpacing: "0.05em",
+                textShadow:
+                  "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
+              }}
+            >
+              Sign In
+            </h2>
+          </div>
           <input
             type="text"
             name="username"
@@ -134,7 +154,7 @@ const LoginForm = () => {
           type="submit"
           className="bg-blue-500 px-4 py-2 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
         >
-          Login
+          <FontAwesomeIcon icon={faSignIn} />
         </button>
       </form>
     </div>

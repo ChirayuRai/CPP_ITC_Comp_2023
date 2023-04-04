@@ -134,19 +134,20 @@ const RegistrationForm = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className="max-w-md bg-opacity-50 w-full space-y-8 bg-white p-6 rounded-lg shadow-lg">
+      <div className="max-w-md border-2 border-blue-800 bg-opacity-50 w-full space-y-8 bg-white p-6 rounded-lg shadow-lg">
         <div>
           <h2
             className="text-2xl font-bold mb-4 text-center text-white"
             style={{
               letterSpacing: "0.05em",
               textShadow:
-                "1px 1px 0 blue, -1px -1px 0 blue, 1px -1px 0 blue, -1px 1px 0 blue",
+                "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
             }}
           >
             Create your profile
           </h2>
         </div>
+        <hr className="border-t border-black mb-8" />
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
             <div>

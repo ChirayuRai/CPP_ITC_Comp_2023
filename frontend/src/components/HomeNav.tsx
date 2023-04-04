@@ -14,7 +14,7 @@ interface LayoutProps {
 const HomePageNav: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full bg-white bg-opacity-50 shadow-md z-10">
+      <nav className="fixed top-0 left-0 w-full bg-white bg-opacity-50 shadow-md z-10 border-2 border-black">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             {/* <Link
