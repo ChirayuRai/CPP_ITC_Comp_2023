@@ -1,42 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchFilter from "./SearchFilter";
 import { useNavigate, useLocation } from "react-router-dom";
 //import ProfileList from "./ProfileList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFilter,
+  faEdit,
   faLightbulb,
   faSearch,
-  faSignIn,
 } from "@fortawesome/free-solid-svg-icons";
 import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
+import "../styles/transitions.css";
 import backgroundPic from "../assets/login.png";
 //import backgroundPic from "../assets/thanatopsis.jpeg";
 import SearchResults from "./SearchResults";
+import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
+import { useMutation } from "@apollo/react-hooks";
 
 interface User {
-  id: number;
+  username: number;
   name: string;
   email: string;
-  attributes: any;
+  bio: string;
 }
 
 //gql mutation query for the list of users based on the search query
+//update this to include other
 const USER_DETAILS = gql`
   fragment UserDetails on User {
     username
-    # username
+    name
+    bio
     email
-    #firstName
-    #vaccinated @client
   }
 `;
 
+//make sure the mutation exists in the backend
 const SEARCH_USERS = gql`
-  mutation CreateUserProfile($input: UserProfile!) {
-    addUserProfile(input: $input) {
+  mutation SearchUserProfile($input: UserSearch!) {
+    searchUsers(input: $input) {
       ...UserDetails
     }
   }
@@ -44,30 +47,91 @@ const SEARCH_USERS = gql`
 `;
 
 const Home = () => {
-  const [searchAttributes, setSearchAttributes] = useState({});
-  const [results, setResults] = useState<User[]>([]); //the results are being passed to the SearchResults component as a prop
-  const [collapsed, setCollapsed] = useState(true);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Set the component to visible after a delay
+    const timer = setTimeout(() => {
+      setVisible(true);
+    }, 5000); // Adjust the delay as needed
+
+    // Clean up the timer when the component is unmounted
+    return () => clearTimeout(timer);
+  }, []);
+
+  const [searchAttributes, setSearchAttributes] = useState<any>({});
+  const [searchresults, setResults] = useState<User[]>([]); //the results are being passed to the SearchResults component as a prop
+  const [collapsedSearch, setCollapsedSearch] = useState(true);
+  const [collapsedRecs, setCollapsedRecs] = useState(true);
   const [showResults, setShowResults] = useState(false);
+  const [searchUsers, searchedUsers] = useMutation(SEARCH_USERS);
 
   const location = useLocation();
   const { signedUser } = location.state;
-  console.log("signedIn user", signedUser);
-  console.log("searchAttributes", searchAttributes);
 
-  const handleSearchAttributesChange = (attributes: any) => {
+  const imgUrl = signedUser["data"]["userLogin"].imgUrl;
+  const university = signedUser["data"]["userLogin"].university;
+
+  //console.log("signedIn user imgUrl", signedUser["data"]["userLogin"].imgUrl);
+  // console.log("searchAttributes", searchAttributes);
+
+  const handleSearchAttributesChange = async (attributes: any) => {
     setSearchAttributes(attributes); //this will be set from the search filter react component
-    console.log("searchAttributes from searchFilter", searchAttributes);
+    //console.log("searchAttributes from searchFilter", searchAttributes);
+    let searchUniversity = "";
+    const {
+      Guests,
+      Hygiene,
+      Personality,
+      Pets,
+      SleepTime,
+      Smoking,
+      University,
+    } = attributes;
+    if (University) {
+      searchUniversity = university;
+    } else {
+      searchUniversity = "";
+    }
+    //making sure the input keys match the input fields defined in the schema
+    const input = {
+      guests: Guests,
+      university: searchUniversity,
+      hygiene: Hygiene,
+      pets: Pets,
+      smoke: Smoking,
+      sleepTime: SleepTime,
+      personality: Personality,
+    };
+    // console.log(
+    //   "attributes returned from search filter:",
+    //   searchAttributes.Pets
+    // );
+
+    let searchedUsers1 = await searchUsers({
+      variables: { input }, //the input has to match the input schema type defined in backend
+    });
+    // signedUserData = signedUser["userLogin"]
+    console.log("API response for search results:", searchedUsers1.data);
 
     //stucture is an array of json objects; replace with the search results from backend
     //the attributes will be the input and the response would be the user object that matches the attributes
     //then execute setResults hook to assign the resulting user details (array of json)
-    const dummyResults = [
-      { id: 1, name: "User 1", email: "", attributes },
-      { id: 2, name: "User 2", email: "", attributes },
-    ];
+    // const searchResults = [
+    //   { id: 1, name: "User 1", email: "", attributes },
+    //   { id: 2, name: "User 2", email: "", attributes },
+    // ];
+    //const searchResults = searchedUsers.data;
+    let searchResults = searchedUsers1.data.searchUsers.map((user: any) => ({
+      username: user.username, // Replace 'id' with the appropriate property from the user object
+      name: user.name, // Replace 'name' with the appropriate property from the user object
+      email: user.email, // Replace 'email' with the appropriate property from the user object
+      bio: user.bio, // Replace 'attributes' with the appropriate property from the user object
+    }));
+    console.log("searchResults structure", searchResults);
     //call the api to get the list of searched users
 
-    setResults(dummyResults);
+    setResults(searchResults);
   };
 
   const handleToggleView = () => {
@@ -78,78 +142,119 @@ const Home = () => {
 
   return (
     // <div className="container mx-auto px-4 py-6 min-h-screen">
-    <div
-      className="mx-auto px-4 py-6 min-h-screen overflow-y-auto"
-      style={{
-        backgroundImage: `url(${backgroundPic})`,
-      }}
-    >
-      <div className="p-4 ">
+    <div className="transition-wrapper">
+      {!visible && <div className="transition-background"></div>}
+      <div className={`transition-content ${visible ? "visible" : ""}`}>
         <div
-          className="relative w-full rounded-lg max-w-md mx-auto mt-16 mb-3 bg-white bg-opacity-25 bg-gray-100 flex flex-col items-center justify-around border-2 border-black"
-          style={{ maxHeight: "300px" }}
+          className="mx-auto px-4 py-6 min-h-screen overflow-y-auto"
+          style={{
+            backgroundImage: `url(${backgroundPic})`,
+          }}
         >
-          <div
-            className="text-center mb-5"
+          <div className="p-4 ">
+            <div
+              className="relative w-full rounded-lg max-w-md mx-auto mt-16 mb-3 bg-blue-400 bg-opacity-20 flex flex-col items-center justify-around border-4 border-black"
+              style={{ maxHeight: "300px" }}
+            >
+              {/* <div
+            className="text-center  mb-10"
             style={{
               marginTop: "6rem", // Adjust this value according to the height of the navbar
               scrollbarWidth: "thin",
               scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+              borderColor: "#2c5282",
             }}
           >
-            <div className="rounded-full border-3 border-black mb-16 h-24 w-24 bg-gray-300 mx-auto mb-4 glow-blue">
+            <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 glow-blue">
               <img
                 src={profPic}
                 alt="Profile"
                 className="rounded-full h-full w-full object-cover pulse"
               />
             </div>
-            {/* <h2
-              className="text-2xl font-semibold mb-4"
-              style={{
-                color: "#0D47A1", // A shade of blue
-              }}
-            >
-              hi, {signedUser.data["userLogin"].username}.
-            </h2> */}
-          </div>
-          <div className="flex justify-center space-x-2 mb-8">
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              onClick={() => setCollapsed(!collapsed)}
-            >
-              <FontAwesomeIcon icon={faSearch} />
-            </button>
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              onClick={() => console.log("Recommendations clicked")}
-            >
-              <FontAwesomeIcon icon={faLightbulb} />
-            </button>
-          </div>
-        </div>
+          </div> */}
+              <div
+                className="text-center relative mb-10"
+                style={{
+                  marginTop: "6rem", // Adjust this value according to the height of the navbar
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+                }}
+              >
+                <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 glow-blue">
+                  <img
+                    //src={profPic}
+                    src={imgUrl}
+                    alt="Profile"
+                    className="rounded-full h-full w-full object-cover pulse"
+                  />
+                  <div
+                    className="absolute bottom-0 right-0 text-blue-800 p-1 rounded-full"
+                    style={{ transform: "translate(10%, 10%)" }}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-2 mb-8">
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  onClick={() => {
+                    if (!collapsedRecs) {
+                      setCollapsedRecs(!collapsedRecs);
+                    }
+                    setCollapsedSearch(!collapsedSearch);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSearch} />
+                </button>
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  onClick={() => {
+                    if (!collapsedSearch) {
+                      setCollapsedSearch(!collapsedSearch);
+                    }
+                    setCollapsedRecs(!collapsedRecs);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faLightbulb} />
+                </button>
+              </div>
+            </div>
 
-        <div
-          className="relative w-full max-w-md mx-auto "
-          style={{ maxHeight: "300px" }}
-        >
-          <div
-            className={`absolute z-10  border-2 border-black w-full bg-white bg-opacity-50 bg-gray-100 p-6 rounded-lg shadow-lg transition-all duration-300 ${
-              collapsed ? "hidden" : "block"
-            }`}
-          >
-            {showResults ? (
-              <SearchResults
-                results={results}
-                onToggleView={handleToggleView}
-              />
-            ) : (
-              <SearchFilter
-                onSearchAttributesChange={handleSearchAttributesChange}
-                onToggleView={handleToggleView}
-                signedInUser={signedUser}
-              />
-            )}
+            <div
+              className="relative w-full max-w-md mx-auto "
+              style={{ maxHeight: "300px" }}
+            >
+              <div
+                className={`absolute z-10  border-4 border-black w-full bg-blue-500 bg-opacity-20  p-6 rounded-lg shadow-lg transition-all duration-300 ${
+                  collapsedSearch ? "hidden" : "block"
+                }`}
+              >
+                {showResults ? (
+                  <SearchResults
+                    results={searchresults}
+                    onToggleView={handleToggleView}
+                  />
+                ) : (
+                  <SearchFilter
+                    onSearchAttributesChange={handleSearchAttributesChange}
+                    onToggleView={handleToggleView}
+                    signedInUser={signedUser}
+                  />
+                )}
+              </div>
+              <div
+                className={`absolute z-10  border-2 border-black w-full bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg transition-all duration-300 ${
+                  collapsedRecs ? "hidden" : "block"
+                }`}
+              >
+                <Recommendations
+                  results={searchresults}
+                  onToggleView={handleToggleView}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

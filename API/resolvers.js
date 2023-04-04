@@ -131,6 +131,43 @@ module.exports = {
         return "username available";
       }
     },
+    searchUsers: async (_, { input }, { models }) => {
+      const filterAttributes = [
+        input.university ? { university: input.university } : null,
+        input.smoke ? { smoke: input.smoke } : null,
+        input.sleepTime ? { sleepTime: input.sleepTime } : null,
+        input.guests ? { guests: input.guests } : null,
+        input.personality ? { personality: input.personality } : null,
+        input.hygiene ? { hygiene: input.hygiene } : null,
+        input.pets ? { pets: input.pets } : null,
+      ];
+
+      // Remove attributes that are not provided in the input
+      const validAttributes = filterAttributes.filter(
+        (attribute) => attribute !== null
+      );
+
+      const filter = {
+        $and: validAttributes,
+      };
+
+      //if user exists with either the same username or email
+      // const filter = {
+      //   $and: [
+      //     { university: input.university },
+      //     { smoke: input.smoke },
+      //     { sleepTime: input.sleepTime },
+      //     { guests: input.guests },
+      //     { personality: input.personality },
+      //     { hygiene: input.hygiene },
+      //     { pets: input.pets },
+      //   ],
+      // };
+
+      const searchResults = await models.User.find(filter);
+      console.log("search results users:", searchResults);
+      return searchResults;
+    },
     addUser: async (_, { input }, { models }) => {
       const newUser = new models.User({
         //the field names here have to correspond with the field names in the mongoose
@@ -206,6 +243,7 @@ module.exports = {
           name: input.name,
           bio: input.biography,
           personality: input.personality,
+          imgUrl: input.image,
           university: input.university,
           major: input.major,
           sleepTime: input.sleepTime,
@@ -236,7 +274,7 @@ module.exports = {
             //recommendedUsers: compatibleUsers,
             recommendedUsers: compatibleUsers.map((user) => ({
               _id: user._id,
-              username: user.username, //can also include profile pic to retrieve for later
+              username: user.username, //can also include profile pic and email to retrieve for later
             })),
           });
           try {

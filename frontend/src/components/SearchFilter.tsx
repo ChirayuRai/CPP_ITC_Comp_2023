@@ -75,7 +75,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     // console.log("Search Term:", searchTerm);
     console.log("Filter Attributes:", filterAttributes);
     onSearchAttributesChange(filterAttributes); //executing the function passed in as prop from Home page
-    onToggleView();
+    onToggleView(); //toggle the search results
   };
 
   // const toggleCollapsed = () => {
@@ -87,7 +87,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   return (
     <div className="flex flex-col h-full ">
       <div className="justify-between items-center mb-8">
-        <h3 className="text-xl font-semibold mb-4">Search</h3>
+        <h3
+          className="text-2xl font-bold mb-4 text-center text-white"
+          style={{
+            letterSpacing: "0.05em",
+            textShadow:
+              "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
+          }}
+        >
+          Search
+        </h3>
       </div>
 
       <hr className="border-t border-black mb-8" />
@@ -99,7 +108,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           <div className="filter-attributes space-y-4 flex-1 overflow-y-auto max-w-lg">
             {/* <h4 className="font-semibold mb-4 text-center">Preferences:</h4> */}
             <div className="w-1/2 pr-8">
-              <label htmlFor="university" className="font-italic mb-2">
+              <label
+                htmlFor="university"
+                className="font-semibold mb-2"
+                style={{
+                  color: "white",
+                  textShadow:
+                    "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                }}
+              >
                 Match University
               </label>
               <input
@@ -116,9 +133,18 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col items-center">
-                <label htmlFor="pets" className="font-semibold mb-2">
+                <label
+                  htmlFor="pets"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
                   Pets:
                 </label>
+
                 <select
                   id="pets"
                   name="Pets"
@@ -132,7 +158,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </select>
               </div>
               <div className="flex flex-col items-center">
-                <label htmlFor="smoke" className="font-semibold mb-2">
+                <label
+                  htmlFor="smoke"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
                   Smoke:
                 </label>
                 <select
@@ -148,7 +182,18 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </select>
               </div>
               <div className="flex flex-col items-center">
-                <h4 className="font-semibold mb-2">Sleep time:</h4>
+                {/* <h4 className="font-semibold mb-2">Sleep time:</h4> */}
+                <label
+                  htmlFor="sleep"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
+                  Sleep time:
+                </label>
                 <select
                   name="SleepTime"
                   value={filterAttributes.SleepTime}
@@ -163,7 +208,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </select>
               </div>
               <div className="flex flex-col items-center">
-                <h4 className="font-semibold mb-2">Hygiene:</h4>
+                <label
+                  htmlFor="hygiene"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
+                  Hygiene:
+                </label>
                 <select
                   name="Hygiene"
                   value={filterAttributes.Hygiene}
@@ -177,7 +232,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </select>
               </div>
               <div className="flex flex-col items-center">
-                <h4 className="font-semibold mb-2">Guests:</h4>
+                <label
+                  htmlFor="guests"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
+                  Guests:
+                </label>
                 <select
                   name="Guests"
                   value={filterAttributes.Guests}
@@ -191,7 +256,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </select>
               </div>
               <div className="flex flex-col items-center">
-                <h4 className="font-semibold mb-2">Personality:</h4>
+                <label
+                  htmlFor="personality"
+                  className="font-semibold mb-2"
+                  style={{
+                    color: "white",
+                    textShadow:
+                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  }}
+                >
+                  Personality:
+                </label>
                 <select
                   name="Personality"
                   value={filterAttributes.Personality}
@@ -218,14 +293,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       </div>
 
       <br />
-      {/* <div>
-        <button
-          onClick={handleSearchClick}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Show results
-        </button>
-      </div> */}
     </div>
   );
 };

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
-  id: number;
+  username: number;
   name: string;
   email: string;
-  attributes: any;
+  bio: string;
 }
 
 interface SearchResultsProps {
@@ -20,7 +20,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const openDetailedView = (user: User) => {
-    console.log("user attributes from detailed view", user.attributes);
+    console.log("user attributes from detailed view", user.username);
     setSelectedUser(user);
   };
 
@@ -33,11 +33,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <div className="flex flex-wrap justify-between items-start mb-8">
         {results.map((user) => (
           <div
-            key={user.id}
-            className="border border-gray-200 p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+            key={user.username}
+            className="border-4 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
             onClick={() => openDetailedView(user)}
           >
-            <h3>{user.name}</h3>
+            <h3>name: {user.name}</h3>
+            <h3>email: {user.email}</h3>
+            <h3>bio: {user.bio}</h3>
+            <h3>username: {user.username}</h3>
 
             {/* Render other user attributes here */}
           </div>
@@ -48,7 +51,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
             <h2 className="text-2xl font-bold mb-4">{selectedUser.name}</h2>
-            <h3>Hygiene: {selectedUser.attributes.Hygiene}</h3>
+            <h3>User: {selectedUser.username}</h3>
             {/* Render more detailed user attributes here */}
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"
