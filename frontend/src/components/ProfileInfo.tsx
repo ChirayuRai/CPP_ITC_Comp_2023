@@ -8,6 +8,7 @@ import { GroupBase, OptionProps } from "react-select";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import backgroundPic from "../assets/thanatopsis.jpg";
+import { readAndCompressImage } from "browser-image-resizer";
 
 // import "./profileinfo.css";
 
@@ -30,7 +31,7 @@ interface FormData {
   password: string;
   name: string;
   biography: string;
-  imgURL: string;
+  image: string;
   university: string;
   major: string;
   smoking: string;
@@ -85,7 +86,7 @@ const ProfileInfo: React.FC = () => {
     name: "",
     biography: "",
     personality: "",
-    imgURL: "",
+    image: "",
     university: "",
     major: "",
     smoking: "",
@@ -166,28 +167,48 @@ const ProfileInfo: React.FC = () => {
   };
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    try {
-      // forming a secure connection to server and getting back our signed URL
-      const file = e.target.files[0]
-      const { url } = await fetch(`http://localhost:3000/s3url`).then(res => res.json())
+    // if (e.target.files && e.target.files.length > 0) {
+    //   const base64Image = await fileToBase64(e.target.files[0]);
+    //   console.log("profile pic base64 encoded", base64Image);
+    //   setFormData({ ...formData, image: base64Image });
+    // }
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
 
-      // putting the image into the S3 bucket
-      await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        body: file
-      })
+      const config = {
+        quality: 0.7,
+        maxWidth: 800,
+        maxHeight: 800,
+        autoRotate: true,
+        debug: true,
+      };
 
-      // getting back the image URL
-      const imageURL = url.split("?")[0]
-      console.log(imageURL)
-      setFormData({ ...formData, imgURL: imageURL });
-    } catch (err) {
-      console.log(err)
+      try {
+        const optimizedImage = await readAndCompressImage(file, config);
+        const reader = new FileReader();
+        reader.readAsDataURL(optimizedImage);
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            setFormData({ ...formData, image: reader.result });
+          } else {
+            throw new Error("Error uploading image");
+          }
+        };
+      } catch (error) {
+        console.error("Error resizing image:", error);
+      }
     }
   };
+
+  // const fileToBase64 = (file: File) => {
+  //   //encode the file to base64 string
+  //   return new Promise<string>((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = (error) => reject(error);
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -199,9 +220,9 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
-        imgURL,
         personality,
         university,
+        image,
         major,
         smoking,
         sleepTime,
@@ -217,9 +238,9 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
-        imgURL,
         personality,
         university,
+        image,
         major,
         smoking,
         sleepTime,
@@ -242,6 +263,7 @@ const ProfileInfo: React.FC = () => {
       // Handle the error, e.g., show error message, etc.
     }
     console.log("Form submitted:", formData);
+    console.log("image", formData.image);
     console.log("Form submitted:", formData);
     navigate("/login");
   };
@@ -292,7 +314,7 @@ const ProfileInfo: React.FC = () => {
       > */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white bg-opacity-50 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
+        className="bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
         style={{
           marginTop: "6rem", // Adjust this value according to the height of the navbar
           scrollbarWidth: "thin",
@@ -308,47 +330,84 @@ const ProfileInfo: React.FC = () => {
             // scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
           }}
         >
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">
-              Name:
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="mt-1 p-2 w-full border border-gray-300 rounded"
-              />
+          <div className="mb-4 ">
+            <label
+              htmlFor="name"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Name:{" "}
             </label>
+
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded"
+            />
           </div>
           <br />
           <div className="mb-4">
-            <label className="block font-semibold mb-1">
-              Short Biography:
-              <div>
-                <textarea
-                  name="biography"
-                  value={formData.biography}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
-                />
-              </div>
+            <label
+              htmlFor="bio"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Short Biography:{" "}
             </label>
+
+            <div>
+              <textarea
+                name="biography"
+                value={formData.biography}
+                onChange={handleChange}
+                className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
+              />
+            </div>
           </div>
 
           <br />
           <div className="mb-4">
-            <label className="block font-semibold mb-1">
-              Profile Image:
-              <input
-                type="file"
-                onChange={handleImageUpload}
-                className="mt-1 p-1 w-full border border-gray-300 rounded"
-              />
+            <label
+              htmlFor="ppic"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Profile Image:{" "}
             </label>
+
+            <input
+              type="file"
+              onChange={handleImageUpload}
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+            />
           </div>
           <br />
           <div className="mb-4">
-            <label className="block font-semibold mb-1">Hobbies:</label>
+            <label
+              htmlFor="hobbies"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Hobbies:
+            </label>
             <div
               style={{
                 display: "flex",
@@ -371,7 +430,17 @@ const ProfileInfo: React.FC = () => {
           </div>
           <br />
           <div className="select-container mb-4">
-            <label className="block font-semibold mb-1">University:</label>
+            <label
+              htmlFor="university"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              University:
+            </label>
             <div
               style={{
                 display: "flex",
@@ -400,162 +469,203 @@ const ProfileInfo: React.FC = () => {
           </div>
           <br />
           <div className=" mb-4">
-            <label className="block font-semibold mb-1">
-              Major:
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <select
-                  className="mt-1 p-1 w-full border border-gray-300 rounded"
-                  name="major"
-                  value={formData.major}
-                  onChange={handleChange}
-                >
-                  <option value="">Select a major</option>
-                  {majorsOptions.map((major) => (
-                    <option key={major.id} value={major.name}>
-                      {major.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </label>
-          </div>
-          <br />
-          <div className=" mb-4">
-            <label className="block font-semibold mb-1">
-              Sleep Time:
-              <select
-                className="mt-1 p-1 w-full border border-gray-300 rounded"
-                name="sleepTime"
-                value={formData.sleepTime}
-                onChange={handleChange}
-              >
-                <option value="">What's your sleep time?</option>
-                <option value="1">Before 9pm</option>
-                <option value="2">9pm - 11pm</option>
-                <option value="3">11pm - 1am</option>
-                <option value="4">1am - 3am</option>
-              </select>
-            </label>
-          </div>
-          <br />
-          <div className=" mb-4">
-            <label className="block font-semibold mb-1">
-              Personality:
-              <select
-                className="mt-1 p-1 w-full border border-gray-300 rounded"
-                name="personality"
-                value={formData.personality}
-                onChange={handleChange}
-              >
-                <option value=""></option>
-                <option value="introvert">introvert</option>
-                <option value="extrovert">extrovert</option>
-                <option value="ambivert">ambivert</option>
-              </select>
-            </label>
-          </div>
-          <br />
-          <div className=" mb-4">
-            <label className="block font-semibold mb-1">
-              How often do you clean?:
-              <select
-                className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-                name="cleanliness"
-                value={formData.cleanliness}
-                onChange={handleChange}
-              >
-                <option value="">select</option>
-                <option value="OFTEN">often</option>
-                <option value="SOMETIMES">sometimes</option>
-                <option value="NEVER">never</option>
-              </select>
-            </label>
-          </div>
-          <br />
-          <div className=" mb-4">
-            <label className="block font-semibold mb-1">
-              How often do you have guests over?:
-              <select
-                className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-                name="guests"
-                value={formData.guests}
-                onChange={handleChange}
-              >
-                <option value="">select</option>
-                <option value="OFTEN">often</option>
-                <option value="SOMETIMES">sometimes</option>
-                <option value="NEVER">never</option>
-              </select>
-            </label>
-          </div>
-          <br />
-
-          <div className="space-y-4 text-gray-800">
-            <div className="flex items-center">
-              <label className="font-semibold mr-4">Do you smoke?:</label>
-              <label className="inline-flex items-center mr-4">
-                <input
-                  type="radio"
-                  name="smoking"
-                  value="yes"
-                  checked={formData.smoking === "yes"}
-                  onChange={handleChange}
-                  className="text-gray-800"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="smoking"
-                  value="no"
-                  checked={formData.smoking === "no"}
-                  onChange={handleChange}
-                  className="text-gray-800"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-
-            <div className="flex items-center">
-              <label className="font-semibold mr-4">Do you have pets?:</label>
-              <label className="inline-flex items-center mr-4">
-                <input
-                  type="radio"
-                  name="pets"
-                  value="yes"
-                  checked={formData.pets === "yes"}
-                  onChange={handleChange}
-                  className="text-gray-800"
-                />
-                <span className="ml-2">Yes</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="pets"
-                  value="no"
-                  checked={formData.pets === "no"}
-                  onChange={handleChange}
-                  className="text-gray-800"
-                />
-                <span className="ml-2">No</span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
+            <label
+              htmlFor="major"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
             >
-              Submit
-            </button>
+              Major:
+            </label>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <select
+                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                name="major"
+                value={formData.major}
+                onChange={handleChange}
+              >
+                <option value="">Select a major</option>
+                {majorsOptions.map((major) => (
+                  <option key={major.id} value={major.name}>
+                    {major.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+          <br />
+          <div className=" mb-4">
+            <label
+              htmlFor="sleep"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Sleep Time:{" "}
+            </label>
+
+            <select
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+              name="sleepTime"
+              value={formData.sleepTime}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="1">Before 9pm</option>
+              <option value="2">9pm - 11pm</option>
+              <option value="3">11pm - 1am</option>
+              <option value="4">1am - 3am</option>
+            </select>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label
+              htmlFor="personality"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Personality:{" "}
+            </label>
+
+            <select
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+              name="personality"
+              value={formData.personality}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="introvert">introvert</option>
+              <option value="extrovert">extrovert</option>
+              <option value="ambivert">ambivert</option>
+            </select>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label
+              htmlFor="hygiene"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              How often do you clean?
+            </label>
+
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="cleanliness"
+              value={formData.cleanliness}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="OFTEN">often</option>
+              <option value="SOMETIMES">sometimes</option>
+              <option value="NEVER">never</option>
+            </select>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label
+              htmlFor="smoke"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              How often do you have guests over?:{" "}
+            </label>
+
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="guests"
+              value={formData.guests}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="OFTEN">often</option>
+              <option value="SOMETIMES">sometimes</option>
+              <option value="NEVER">never</option>
+            </select>
+          </div>
+          <br />
+
+          {/* <div className="space-y-4 text-gray-800"> */}
+          <div className="mb-4">
+            <label
+              htmlFor="smoke"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Do you smoke?
+            </label>
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="smoking"
+              value={formData.smoking}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="yes">yes</option>
+              <option value="no">no</option>
+            </select>
+          </div>
+          <br />
+
+          <div className="mb-4">
+            <label
+              htmlFor="pets"
+              className="font-semibold mb-2"
+              style={{
+                color: "white",
+                textShadow:
+                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+              }}
+            >
+              Do you have pets?
+            </label>
+            <select
+              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
+              name="pets"
+              value={formData.pets}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="yes">yes</option>
+              <option value="no">no</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
+          >
+            Submit
+          </button>
         </div>
       </form>
     </div>

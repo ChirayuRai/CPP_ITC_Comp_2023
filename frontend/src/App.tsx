@@ -5,6 +5,9 @@ import {
   faLightbulb,
   faSearch,
   faSignIn,
+  faUserPlus,
+  faSignInAlt,
+  faSearchPlus,
 } from "@fortawesome/free-solid-svg-icons";
 //import "./styles/tailwind.css";
 import "./styles/tailwind.css";
@@ -39,7 +42,7 @@ function App() {
           backgroundImage: `url(${backgroundPic})`,
         }}
       >
-        <div className="bg-white p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-md mx-auto border-2 border-blue-800">
+        <div className="bg-blue-400 p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-md mx-auto border-4 border-black">
           <h2
             className="text-2xl font-semibold mb-4 text-center text-white"
             style={{
@@ -53,16 +56,17 @@ function App() {
           <div className="flex justify-center space-x-4">
             <Link
               to="/login"
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-600 to-blue-400 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
             >
-              Login
+              {/* <FontAwesomeIcon icon={faSearch} /> */}
+              Search Roommates
             </Link>
-            <Link
+            {/* <Link
               to="/signup"
               className="px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-300 text-white font-bold rounded hover:from-blue-400 hover:via-blue-300 hover:to-blue-200 transition-all"
             >
-              Get Started
-            </Link>
+              <FontAwesomeIcon icon={faUserPlus} />
+            </Link> */}
           </div>
         </div>
       </div>

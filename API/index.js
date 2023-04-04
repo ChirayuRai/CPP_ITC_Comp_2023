@@ -4,7 +4,6 @@ const typeDefs = require("./schema");
 const resolvers = require("./resolvers");
 //const { models, db } = require("./db");
 const initializeDatabase = require("./db");
-const s3 = require("./s3")
 
 const { ApolloServer } = require("apollo-server-express");
 //const { typeDefs, resolvers } = require('./graphql');
@@ -43,9 +42,8 @@ const startServer = async () => {
   });
 
   //normal endpoints accessible as well
-  app.get("/s3url", async (req, res) => {
-    const url = await s3.generateUploadURL()
-    res.send({ url })
+  app.get("/", (req, res) => {
+    res.send("Hello World");
   });
 
   app.listen(PORT, () => {

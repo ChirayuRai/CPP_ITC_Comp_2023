@@ -1,7 +1,7 @@
 //const { MongoClient } = require("mongodb");
 // const client = new MongoClient(uri);
 
-require("dotenv").config();
+require("dotenv").config({ path: ".env" });
 
 const uri = process.env.MONGO_CONN;
 

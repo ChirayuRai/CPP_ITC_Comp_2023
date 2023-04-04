@@ -134,7 +134,7 @@ const RegistrationForm = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className="max-w-md border-2 border-blue-800 bg-opacity-50 w-full space-y-8 bg-white p-6 rounded-lg shadow-lg">
+      <div className="max-w-md border-4 border-black bg-blue-500 bg-opacity-20 w-full space-y-8 p-6 rounded-lg shadow-lg">
         <div>
           <h2
             className="text-2xl font-bold mb-4 text-center text-white"
@@ -147,7 +147,7 @@ const RegistrationForm = () => {
             Create your profile
           </h2>
         </div>
-        <hr className="border-t border-black mb-8" />
+        <hr className="border-1 border-black mb-8" />
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -161,8 +161,9 @@ const RegistrationForm = () => {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Username"
+                style={{ backgroundColor: "rgba(0, 235 , 235, 0.5)" }}
               />
             </div>
             <div>
@@ -176,8 +177,9 @@ const RegistrationForm = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Email"
+                style={{ backgroundColor: "rgba(0, 235 , 235, 0.5)" }}
               />
             </div>
             <div>
@@ -191,8 +193,9 @@ const RegistrationForm = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+                style={{ backgroundColor: "rgba(0, 235 , 235, 0.5)" }}
               />
             </div>
             <div>
@@ -206,8 +209,9 @@ const RegistrationForm = () => {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-orange-300 placeholder-black-500 text-black-100 rounded-b-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-black-100 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
+                style={{ backgroundColor: "rgba(0, 235 , 235, 0.5)" }}
               />
             </div>
           </div>

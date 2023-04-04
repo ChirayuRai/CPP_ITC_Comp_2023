@@ -52,7 +52,7 @@ const typeDefs = gql`
     name: String!
     biography: String!
     personality: String!
-    #image: String!
+    image: String!
     university: String!
     major: String!
     sleepTime: String!
@@ -79,8 +79,13 @@ const typeDefs = gql`
   }
 
   input UserSearch {
-    hygiene: String!
-    pets: String!
+    university: String
+    smoke: String
+    sleepTime: String
+    guests: String
+    personality: String
+    hygiene: String
+    pets: String
   }
 
   type Query { #the query can be of any name but the input type and return types are usually defined in the schema
@@ -96,6 +101,7 @@ const typeDefs = gql`
     addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
     verifyUniqueness(input: UniqueID): String! #can return user or just a string response from the backend
     userLogin(input: UserInputLogin!): User!
+    searchUsers(input: UserSearch): [User]
   }
 `;
 
