@@ -30,7 +30,7 @@ interface FormData {
   password: string;
   name: string;
   biography: string;
-  image: File | null;
+  imgURL: string;
   university: string;
   major: string;
   smoking: string;
@@ -85,7 +85,7 @@ const ProfileInfo: React.FC = () => {
     name: "",
     biography: "",
     personality: "",
-    image: null,
+    imgURL: "",
     university: "",
     major: "",
     smoking: "",
@@ -165,9 +165,27 @@ const ProfileInfo: React.FC = () => {
     }
   };
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFormData({ ...formData, image: e.target.files[0] });
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    try {
+      // forming a secure connection to server and getting back our signed URL
+      const file = e.target.files[0]
+      const { url } = await fetch(`http://localhost:3000/s3url`).then(res => res.json())
+
+      // putting the image into the S3 bucket
+      await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        body: file
+      })
+
+      // getting back the image URL
+      const imageURL = url.split("?")[0]
+      console.log(imageURL)
+      setFormData({ ...formData, imgURL: imageURL });
+    } catch (err) {
+      console.log(err)
     }
   };
 
@@ -181,6 +199,7 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
+        imgURL,
         personality,
         university,
         major,
@@ -198,6 +217,7 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
+        imgURL,
         personality,
         university,
         major,
@@ -222,7 +242,6 @@ const ProfileInfo: React.FC = () => {
       // Handle the error, e.g., show error message, etc.
     }
     console.log("Form submitted:", formData);
-    console.log("image", formData.image);
     console.log("Form submitted:", formData);
     navigate("/login");
   };
