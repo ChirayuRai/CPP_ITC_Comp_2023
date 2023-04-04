@@ -38,6 +38,7 @@ interface FormData {
   cleanliness: string;
   guests: string;
   pets: string;
+  personality: string;
   hobbies: string[];
 }
 
@@ -83,6 +84,7 @@ const ProfileInfo: React.FC = () => {
     password: input["input"].password,
     name: "",
     biography: "",
+    personality: "",
     image: null,
     university: "",
     major: "",
@@ -179,6 +181,7 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
+        personality,
         university,
         major,
         smoking,
@@ -195,6 +198,7 @@ const ProfileInfo: React.FC = () => {
         password,
         name,
         biography,
+        personality,
         university,
         major,
         smoking,
@@ -417,6 +421,23 @@ const ProfileInfo: React.FC = () => {
                 <option value="2">9pm - 11pm</option>
                 <option value="3">11pm - 1am</option>
                 <option value="4">1am - 3am</option>
+              </select>
+            </label>
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label className="block font-semibold mb-1">
+              Personality:
+              <select
+                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                name="personality"
+                value={formData.personality}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="introvert">introvert</option>
+                <option value="extrovert">extrovert</option>
+                <option value="ambivert">ambivert</option>
               </select>
             </label>
           </div>

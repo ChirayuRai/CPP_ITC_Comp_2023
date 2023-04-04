@@ -8,6 +8,7 @@ import LoginForm from "./components/Login";
 import Home from "./components/Home";
 import Layout from "./components/Layout";
 import HomePageNav from "./components/HomeNav";
+import Recommendations from "./components/Recommendations";
 
 //import "./index.css";
 //import "../dist/index.css";
@@ -23,28 +24,28 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-function MainRoutes() {
-  return (
-    <Layout>
-      <Routes>
-        <Route index element={<App />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<RegistrationForm />} />
-        <Route path="/profile-setup" element={<ProfileInfo />} />
-      </Routes>
-    </Layout>
-  );
-}
+// function MainRoutes() {
+//   return (
+//     <Layout>
+//       <Routes>
+//         <Route index element={<App />} />
+//         <Route path="/login" element={<LoginForm />} />
+//         <Route path="/signup" element={<RegistrationForm />} />
+//         <Route path="/profile-setup" element={<ProfileInfo />} />
+//       </Routes>
+//     </Layout>
+//   );
+// }
 
-function HomeRoutes() {
-  return (
-    <HomePageNav>
-      <Routes>
-        <Route index element={<Home />} />
-      </Routes>
-    </HomePageNav>
-  );
-}
+// function HomeRoutes() {
+//   return (
+//     <HomePageNav>
+//       <Routes>
+//         <Route index element={<Home />} />
+//       </Routes>
+//     </HomePageNav>
+//   );
+// }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <BrowserRouter>

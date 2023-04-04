@@ -11,5 +11,14 @@
 }
 
 .pulse {
-  animation: pulse 5s infinite;
+  animation: pulse 10s infinite;
+}
+
+.glow-blue {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.glow-blue:hover {
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.7), 0 0 20px rgba(0, 123, 255, 0.6),
+    0 0 30px rgba(0, 123, 255, 0.5);
 }

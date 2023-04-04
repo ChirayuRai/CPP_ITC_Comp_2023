@@ -51,6 +51,7 @@ const typeDefs = gql`
     email: String!
     name: String!
     biography: String!
+    personality: String!
     #image: String!
     university: String!
     major: String!
@@ -75,6 +76,11 @@ const typeDefs = gql`
     username: String!
     email: String!
     password: String!
+  }
+
+  input UserSearch {
+    hygiene: String!
+    pets: String!
   }
 
   type Query { #the query can be of any name but the input type and return types are usually defined in the schema
