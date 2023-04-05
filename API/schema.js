@@ -8,21 +8,21 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID!
-    name: String!
-    password: String!
-    email: String!
-    username: String!
-    bio: String!
-    imgUrl: String!
-    university: String!
-    major: String!
-    sleepTime: Int!
-    hygiene: Frequency!
-    hobbies: [String!]!
-    smoke: Boolean!
-    pets: Boolean!
-    createdAt: Int!
+    #id: ID!
+    name: String
+    password: String
+    email: String
+    username: String
+    bio: String
+    imgUrl: String
+    university: String
+    major: String
+    sleepTime: Int
+    hygiene: Frequency
+    hobbies: [String]
+    smoke: Boolean
+    pets: Boolean
+    createdAt: Int
   }
 
   type ProfileInfo {
@@ -88,20 +88,21 @@ const typeDefs = gql`
     pets: String
   }
 
-  type Query { #the query can be of any name but the input type and return types are usually defined in the schema
-    #user(input: UserInputUniversity!): User!
-    #usersByUniversity(input: UserInputUniversity!): [User]! #can be used for search
+  input UserRecs {
+    username: String!
+  }
 
-    #userLogin(input: UserInputLogin): User! #a query which can be used to get user details based on username to handle login
+  type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
   }
 
   type Mutation {
     addUser(input: NewUserInput!): User!
     addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
-    verifyUniqueness(input: UniqueID): String! #can return user or just a string response from the backend
+    verifyUniqueness(input: UniqueID): String! #used to check if username already exists during signup
     userLogin(input: UserInputLogin!): User!
     searchUsers(input: UserSearch): [User]
+    recommendUsers(input: UserRecs): [User]
   }
 `;
 

@@ -1,5 +1,18 @@
 const tf = require("@tensorflow/tfjs");
 const { v4: uuidv4 } = require("uuid");
+const Redis = require("ioredis");
+
+function getNewRedisClient() {
+  const client = new Redis({
+    // Add your configuration options here, if needed
+    password: "DLtLfalG0P1q4DEC6NZIQB54Z23WCImL",
+    host: "redis-15161.c246.us-east-1-4.ec2.cloud.redislabs.com",
+    port: 15161,
+  });
+  console.log("New Redis client created");
+
+  return client;
+}
 
 const possibleHobbies = ["reading", "sports", "music", "gaming", "cooking"];
 
@@ -31,6 +44,12 @@ async function findCompatibleUsers(models, targetUser) {
   const boo = {
     yes: 1,
     no: 0,
+  };
+
+  const personality = {
+    introvert: 1,
+    extrovert: 2,
+    ambivert: 3,
   };
 
   const sleepTime = {
@@ -151,22 +170,18 @@ module.exports = {
         $and: validAttributes,
       };
 
-      //if user exists with either the same username or email
-      // const filter = {
-      //   $and: [
-      //     { university: input.university },
-      //     { smoke: input.smoke },
-      //     { sleepTime: input.sleepTime },
-      //     { guests: input.guests },
-      //     { personality: input.personality },
-      //     { hygiene: input.hygiene },
-      //     { pets: input.pets },
-      //   ],
-      // };
-
       const searchResults = await models.User.find(filter);
       console.log("search results users:", searchResults);
       return searchResults;
+    },
+    recommendUsers: async (_, { input }, { models }) => {
+      console.log("resolvers output for rec username", input.username);
+      userList = await models.Recs.findOne({
+        user: input.username,
+      }).exec();
+      console.log("recommended users:", userList["recommendedUsers"]);
+      //return "recommended resolver accessed";
+      return userList["recommendedUsers"];
     },
     addUser: async (_, { input }, { models }) => {
       const newUser = new models.User({
@@ -186,21 +201,45 @@ module.exports = {
         throw new Error("Failed to create user");
       }
     },
+
     async userLogin(_, { input }, { models }) {
+      //trying out redis
       console.log("Input:", input);
       try {
-        let user = await models.User.findOne({
-          username: input.username,
-        }).exec();
+        // First, try to get the user from the Redis cache
+        const redisClient = getNewRedisClient();
+        console.log("Using Redis client");
+
+        const redisKey = `user:${input.username}`;
+        const cachedUser = await redisClient.get(redisKey).then(JSON.parse);
+
+        let user;
+
+        // If the user is found in the cache, use it
+        if (cachedUser) {
+          console.log("User found in cache:", cachedUser);
+          user = cachedUser;
+        } else {
+          // If the user is not in the cache, query the database
+          user = await models.User.findOne({
+            username: input.username,
+          }).exec();
+
+          // Store the user in the Redis cache
+          await redisClient.set(redisKey, JSON.stringify(user), "EX", 3600); // Cache for 1 hour
+          console.log("User fetched from database:", user);
+        }
+
+        redisClient.quit();
+
         console.log("User:", user);
         console.log("resolver password:", input.password);
 
-        //perform pwd validation
+        // Perform password validation
         console.log("password", input.password);
         if (user.password != input.password) {
           console.error("Error in validating user resolver:");
-          return "failed login"; //if string is returned the return type of the mutation must be User/String
-          //throw error;
+          return "failed login";
         } else {
           return user;
         }
@@ -233,6 +272,7 @@ module.exports = {
         //   update,
         //   options
         // );
+
         const newUser = new models.User({
           //the field names here have to correspond with the field names in the mongoose
           //schema defined in user.js

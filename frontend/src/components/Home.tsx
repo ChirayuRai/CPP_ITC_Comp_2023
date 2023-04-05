@@ -7,12 +7,15 @@ import {
   faEdit,
   faLightbulb,
   faSearch,
+  faSun,
+  faMoon,
 } from "@fortawesome/free-solid-svg-icons";
 import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
-import "../styles/transitions.css";
-import backgroundPic from "../assets/login.png";
-//import backgroundPic from "../assets/thanatopsis.jpeg";
+import "./home.css";
+//import "../styles/transitions.css";
+import lightBackgroundPic from "../assets/oxbow.jpg";
+import darkBackgroundPic from "../assets/catskills.jpg";
 import SearchResults from "./SearchResults";
 import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
@@ -38,7 +41,7 @@ const USER_DETAILS = gql`
 
 //make sure the mutation exists in the backend
 const SEARCH_USERS = gql`
-  mutation SearchUserProfile($input: UserSearch!) {
+  mutation SearchUserProfile($input: UserSearch) {
     searchUsers(input: $input) {
       ...UserDetails
     }
@@ -59,6 +62,8 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   const [searchAttributes, setSearchAttributes] = useState<any>({});
   const [searchresults, setResults] = useState<User[]>([]); //the results are being passed to the SearchResults component as a prop
   const [collapsedSearch, setCollapsedSearch] = useState(true);
@@ -71,7 +76,7 @@ const Home = () => {
 
   const imgUrl = signedUser["data"]["userLogin"].imgUrl;
   const university = signedUser["data"]["userLogin"].university;
-
+  const username = signedUser["data"]["userLogin"].username;
   //console.log("signedIn user imgUrl", signedUser["data"]["userLogin"].imgUrl);
   // console.log("searchAttributes", searchAttributes);
 
@@ -93,6 +98,7 @@ const Home = () => {
     } else {
       searchUniversity = "";
     }
+    console.log("Guests search response:", typeof Guests);
     //making sure the input keys match the input fields defined in the schema
     const input = {
       guests: Guests,
@@ -103,10 +109,6 @@ const Home = () => {
       sleepTime: SleepTime,
       personality: Personality,
     };
-    // console.log(
-    //   "attributes returned from search filter:",
-    //   searchAttributes.Pets
-    // );
 
     let searchedUsers1 = await searchUsers({
       variables: { input }, //the input has to match the input schema type defined in backend
@@ -114,14 +116,6 @@ const Home = () => {
     // signedUserData = signedUser["userLogin"]
     console.log("API response for search results:", searchedUsers1.data);
 
-    //stucture is an array of json objects; replace with the search results from backend
-    //the attributes will be the input and the response would be the user object that matches the attributes
-    //then execute setResults hook to assign the resulting user details (array of json)
-    // const searchResults = [
-    //   { id: 1, name: "User 1", email: "", attributes },
-    //   { id: 2, name: "User 2", email: "", attributes },
-    // ];
-    //const searchResults = searchedUsers.data;
     let searchResults = searchedUsers1.data.searchUsers.map((user: any) => ({
       username: user.username, // Replace 'id' with the appropriate property from the user object
       name: user.name, // Replace 'name' with the appropriate property from the user object
@@ -146,9 +140,11 @@ const Home = () => {
       {!visible && <div className="transition-background"></div>}
       <div className={`transition-content ${visible ? "visible" : ""}`}>
         <div
-          className="mx-auto px-4 py-6 min-h-screen overflow-y-auto"
+          className="mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto"
           style={{
-            backgroundImage: `url(${backgroundPic})`,
+            backgroundImage: `url(${
+              isDarkMode ? darkBackgroundPic : lightBackgroundPic
+            })`,
           }}
         >
           <div className="p-4 ">
@@ -156,23 +152,6 @@ const Home = () => {
               className="relative w-full rounded-lg max-w-md mx-auto mt-16 mb-3 bg-blue-400 bg-opacity-20 flex flex-col items-center justify-around border-4 border-black"
               style={{ maxHeight: "300px" }}
             >
-              {/* <div
-            className="text-center  mb-10"
-            style={{
-              marginTop: "6rem", // Adjust this value according to the height of the navbar
-              scrollbarWidth: "thin",
-              scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
-              borderColor: "#2c5282",
-            }}
-          >
-            <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 glow-blue">
-              <img
-                src={profPic}
-                alt="Profile"
-                className="rounded-full h-full w-full object-cover pulse"
-              />
-            </div>
-          </div> */}
               <div
                 className="text-center relative mb-10"
                 style={{
@@ -198,7 +177,7 @@ const Home = () => {
               </div>
               <div className="flex justify-center space-x-2 mb-8">
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
                     if (!collapsedRecs) {
                       setCollapsedRecs(!collapsedRecs);
@@ -209,7 +188,7 @@ const Home = () => {
                   <FontAwesomeIcon icon={faSearch} />
                 </button>
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="bg-blue-600 text-white rounded-full px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
                     if (!collapsedSearch) {
                       setCollapsedSearch(!collapsedSearch);
@@ -218,6 +197,21 @@ const Home = () => {
                   }}
                 >
                   <FontAwesomeIcon icon={faLightbulb} />
+                </button>
+                <button
+                  className={`dark-mode-button p-2 rounded-full text-white bg-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors ${
+                    isDarkMode ? "text-white-500" : "text-white-500"
+                  }`}
+                  onClick={() => setIsDarkMode(!isDarkMode)}
+                  title={
+                    isDarkMode ? "Switch to light mode" : "Switch to dark mode"
+                  }
+                >
+                  {isDarkMode ? (
+                    <FontAwesomeIcon icon={faSun} />
+                  ) : (
+                    <FontAwesomeIcon icon={faMoon} />
+                  )}
                 </button>
               </div>
             </div>
@@ -245,12 +239,13 @@ const Home = () => {
                 )}
               </div>
               <div
-                className={`absolute z-10  border-2 border-black w-full bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg transition-all duration-300 ${
+                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg transition-all duration-300 ${
                   collapsedRecs ? "hidden" : "block"
                 }`}
               >
                 <Recommendations
                   results={searchresults}
+                  loggedInUser={username}
                   onToggleView={handleToggleView}
                 />
               </div>

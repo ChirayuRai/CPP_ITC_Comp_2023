@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
-  username: number;
+  username: string;
   name: string;
   email: string;
   bio: string;
@@ -34,12 +34,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         {results.map((user) => (
           <div
             key={user.username}
-            className="border-4 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+            className="border-2 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
             onClick={() => openDetailedView(user)}
           >
             <h3>name: {user.name}</h3>
-            <h3>email: {user.email}</h3>
-            <h3>bio: {user.bio}</h3>
+            {/* <h3>email: {user.email}</h3>
+            <h3>bio: {user.bio}</h3> */}
             <h3>username: {user.username}</h3>
 
             {/* Render other user attributes here */}
