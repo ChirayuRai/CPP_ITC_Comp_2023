@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/react-hooks";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
-  username: number;
+  username: string;
   name: string;
   email: string;
   bio: string;
@@ -10,14 +12,37 @@ interface User {
 
 interface RecommendationsResultsProps {
   results: User[];
+  loggedInUser: String;
   onToggleView: () => void;
 }
 
+//define mutation query to fetch the results
+const USER_DETAILS = gql`
+  fragment UserDetails on User {
+    username
+    name
+    bio
+    email
+  }
+`;
+
+//make sure the mutation exists in the backend
+const RECOMMEND_USERS = gql`
+  mutation UserRecommendations($input: UserRecs) {
+    recommendUsers(input: $input) {
+      ...UserDetails
+    }
+  }
+  ${USER_DETAILS}
+`;
+
 const Recommendations: React.FC<RecommendationsResultsProps> = ({
   results,
+  loggedInUser,
   onToggleView,
 }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [recommendUsers, recommendedUsers] = useMutation(RECOMMEND_USERS);
 
   const openDetailedView = (user: User) => {
     console.log("user attributes from detailed view", user.name);
@@ -35,13 +60,58 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
     //requests the latest list of recommendations from the backend
   };
 
+  const [recommendations, setRecommendations] = useState<User[] | any>([]);
+
+  //refresh the recommended user list:
+  const refreshRecommendations = async () => {
+    try {
+      const input = {
+        //this variable has to match the defined parameter accepted by the resolver
+        username: loggedInUser,
+      };
+      console.log("username rec view", input);
+      //execute the mutation query to return a list of recommended users for the logged in user
+      let recdUsers = await recommendUsers({
+        variables: { input }, //the input has to match the input schema type defined in backend
+      });
+      console.log("refreshed list of users: ", recommendedUsers); //the obj set by the useState hook
+      console.log("refreshed list of users: ", recdUsers); //the response from the backend
+      //setRecommendations(recdUsers); //useState setter to set the returned recommendations
+    } catch (error) {
+      console.error("Error fetching majors:", error);
+    }
+  };
+
+  //fetch recommended users upon initial page load
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const input = {
+          //this variable has to match the defined parameter accepted by the resolver
+          username: loggedInUser,
+        };
+        console.log("username rec view", input);
+        //execute the mutation query to return a list of recommended users for the logged in user
+        let recdUsers = await recommendUsers({
+          variables: { input }, //the input has to match the input schema type defined in backend
+        });
+        console.log("recommended list of users: ", recommendedUsers);
+        console.log("recommended list of users: ", recdUsers);
+        //setRecommendations(recdUsers); //useState setter to set the returned recommendations
+      } catch (error) {
+        console.error("Error fetching recommended users:", error);
+      }
+    };
+    fetchRecommendations();
+  }, []);
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex  flex-col h-full">
       <div className="flex flex-wrap justify-between items-start mb-8">
         {results.map((user) => (
           <div
             key={user.username}
-            className="border border-gray-200 p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+            className="border border-2 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
             onClick={() => openDetailedView(user)}
           >
             <h3>{user.name}</h3>
@@ -68,7 +138,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
       )}
       <div>
         <button
-          onClick={onToggleView}
+          onClick={refreshRecommendations}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           {/* {showResults ? "Go back to search filter" : "Show results"} */}

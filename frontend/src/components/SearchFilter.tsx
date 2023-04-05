@@ -2,27 +2,6 @@ import React, { useState } from "react";
 
 //setting type
 
-// interface SearchAttributes {
-//   Hygiene: string;
-//   Pets: string;
-//   Smoking: string;
-//   Guests: string;
-//   SleepTime: string;
-// }
-
-// const booleanAttributeKeys = ["Pets", "Smoking"] as const;
-
-// const stringAttributeKeys = [
-//   "SleepTime",
-//   "Hygiene",
-//   "University",
-//   "Guests",
-// ] as const;
-
-// interface SearchAttributes {
-//   [key in booleanAttributeKeys]: boolean ;
-// }
-
 interface SearchFilterProps {
   //for the state function to be passed from the home page
   onSearchAttributesChange: (attributes: any) => void;
@@ -46,13 +25,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     Personality: "",
     University: false,
   });
-
-  // const sleepTimes = ["Before 9 PM", "9-11 PM", "11 PM - 1 AM", "1-3 AM"];
-  // const frequency = ["OFTEN", "SOMETIMES", "NEVER"];
-
-  // const handleSearchChange = (e: any) => {
-  //   setSearchTerm(e.target.value);
-  // };
 
   const [collapsed, setCollapsed] = useState(true);
 
@@ -78,21 +50,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     onToggleView(); //toggle the search results
   };
 
-  // const toggleCollapsed = () => {
-  //   setCollapsed(!collapsed);
-  // };
-
-  //const [preferences, setPreferences] = useState(initialPreferences);
-
   return (
     <div className="flex flex-col h-full ">
       <div className="justify-between items-center mb-8">
         <h3
-          className="text-2xl font-bold mb-4 text-center text-white"
+          className="text-2xl font-semibold mb-4 text-center text-white"
           style={{
+            fontFamily: "Roboto, sans-serif",
             letterSpacing: "0.05em",
             textShadow:
-              "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
+              "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
           }}
         >
           Search
@@ -110,11 +77,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             <div className="w-1/2 pr-8">
               <label
                 htmlFor="university"
-                className="font-semibold mb-2"
+                className="font-semibold mb-2 text-white"
                 style={{
-                  color: "white",
+                  fontFamily: "Roboto, sans-serif",
+                  letterSpacing: "0.05em",
                   textShadow:
-                    "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                    "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                 }}
               >
                 Match University
@@ -135,11 +103,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="pets"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Pets:
@@ -160,11 +129,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="smoke"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Smoke:
@@ -185,11 +155,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 {/* <h4 className="font-semibold mb-2">Sleep time:</h4> */}
                 <label
                   htmlFor="sleep"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Sleep time:
@@ -210,11 +181,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="hygiene"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Hygiene:
@@ -234,11 +206,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="guests"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Guests:
@@ -258,11 +231,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="personality"
-                  className="font-semibold mb-2"
+                  className="font-semibold mb-2 text-white"
                   style={{
-                    color: "white",
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
                     textShadow:
-                      "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                   }}
                 >
                   Personality:

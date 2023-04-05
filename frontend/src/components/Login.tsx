@@ -19,7 +19,7 @@ import backgroundPic from "../assets/thanatopsis.jpg";
 
 const USER_DETAILS = gql`
   fragment SignedInUserDetails on User {
-    id
+    #id
     username
     imgUrl
     university
@@ -114,11 +114,12 @@ const LoginForm = () => {
           </label> */}
           <div>
             <h2
-              className="text-2xl font-bold mb-4 text-center text-white"
+              className="text-2xl font-semibold mb-4 text-center text-white"
               style={{
+                fontFamily: "Roboto, sans-serif",
                 letterSpacing: "0.05em",
                 textShadow:
-                  "2px 2px 0 blue, -2px -2px 0 blue, 2px -2px 0 blue, -2px 2px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Sign In
