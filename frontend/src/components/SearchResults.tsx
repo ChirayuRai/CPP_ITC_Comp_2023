@@ -28,19 +28,39 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setSelectedUser(null);
   };
 
+  //update view to show similarity score for each user.
   return (
     <div className="flex flex-col h-full">
       <div className="flex flex-wrap justify-between items-start mb-8">
         {results.map((user) => (
           <div
             key={user.username}
-            className="border-2 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+            className="border-4 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
             onClick={() => openDetailedView(user)}
           >
-            <h3>name: {user.name}</h3>
-            {/* <h3>email: {user.email}</h3>
-            <h3>bio: {user.bio}</h3> */}
-            <h3>username: {user.username}</h3>
+            <h3
+              className="font-semibold mb-2 text-white"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              {user.name}
+            </h3>
+
+            <h3
+              className="font-semibold mb-2 text-white"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              {user.username}
+            </h3>
 
             {/* Render other user attributes here */}
           </div>

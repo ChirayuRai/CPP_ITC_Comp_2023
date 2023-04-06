@@ -23,6 +23,7 @@ const typeDefs = gql`
     smoke: Boolean
     pets: Boolean
     createdAt: Int
+    similarity: Int
   }
 
   type ProfileInfo {

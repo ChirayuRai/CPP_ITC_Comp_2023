@@ -11,6 +11,7 @@ const RecommendedSchema = new mongoose.Schema({
       // userId: String,
       _id: String,
       username: String,
+      similarity: Number,
       // Include other relevant fields for a recommended user, if needed
     },
   ],

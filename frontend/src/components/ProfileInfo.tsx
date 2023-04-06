@@ -18,8 +18,8 @@ type HobbyOption = {
 };
 
 type MajorOption = {
-  name: string;
   id: number;
+  name: string;
 };
 // type HobbyGroup = GroupBase<HobbyOption> & {
 //   options: HobbyOption[];
@@ -45,7 +45,10 @@ interface FormData {
 
 interface University {
   name: string;
-  state: string;
+  country: string;
+  city?: string;
+  state?: string;
+  web_pages?: string[];
 }
 
 const USER_DETAILS = gql`
@@ -95,7 +98,7 @@ const ProfileInfo: React.FC = () => {
   });
   console.log("form data Username", formData.username);
 
-  const [majorList, setMajorList] = useState<MajorOption[]>([]);
+  const [majorsList, setMajors] = useState([]);
   const [universities, setUniversities] = useState<University[]>([]);
   const [selectedHobbies, setSelectedHobbies] = useState([]);
 
@@ -124,6 +127,14 @@ const ProfileInfo: React.FC = () => {
     // Add more hobbies options here
   ];
 
+  const majorsOptions: MajorOption[] = [
+    { name: "Computer Science", id: 1 },
+    { name: "Mechanical Engineering", id: 2 },
+    { name: "Electrical Engineering", id: 3 },
+    { name: "Civil Engineering", id: 4 },
+    { name: "Physics", id: 5 },
+    { name: "Mathematics", id: 6 },
+  ];
 
   // const groupedHobbyOptions: HobbyGroup[] = [
   //   {
@@ -150,6 +161,7 @@ const ProfileInfo: React.FC = () => {
       const selectedHobbies = selectedOptions.map(
         (option: any) => option.value
       );
+      setFormData({ ...formData, hobbies: selectedHobbies });
       console.log("hobbies", formData.hobbies);
     }
   };
@@ -257,35 +269,28 @@ const ProfileInfo: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchMajors = async () => {
+      try {
+        const response = await fetch("https://your-api-url.com/majors");
+        const data = await response.json();
+        setMajors(data);
+      } catch (error) {
+        console.error("Error fetching majors:", error);
+      }
+    };
+
     const fetchUniversities = async () => {
       try {
         const response = await fetch(
-          'https://parseapi.back4app.com/classes/University?limit=3002&order=name',
-          {
-            headers: {
-              'X-Parse-Application-Id': 'Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe',
-              'X-Parse-Master-Key': 'HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp',
-            }
-          });
+          "http://universities.hipolabs.com/search?country=United States"
+        );
         const universities = await response.json();
-        console.log(universities)
-        setUniversities(universities.results);
+        setUniversities(universities);
       } catch (error) {
         console.error("Error fetching universities:", error);
       }
     };
 
-    const fetchMajors = async () => {
-      try {
-        const response = await fetch(
-          "https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name,+rowid+as+id+from+%5Bcollege-majors/majors-list%5D+order+by+Major+limit+200"
-        );
-        const data = await response.json();
-        setMajorList(data.rows);
-      } catch (error) {
-        console.error("Error fetching universities:", error);
-      }
-    };
     fetchMajors();
     fetchUniversities();
   }, [0]);
@@ -309,7 +314,7 @@ const ProfileInfo: React.FC = () => {
       > */}
       <form
         onSubmit={handleSubmit}
-        className="bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto"
+        className="bg-blue-500 bg-opacity-20 p-6 border-black border-2 rounded-lg shadow-lg w-full max-w-md mx-auto"
         style={{
           marginTop: "6rem", // Adjust this value according to the height of the navbar
           scrollbarWidth: "thin",
@@ -328,11 +333,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4 ">
             <label
               htmlFor="name"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Name:{" "}
@@ -350,11 +356,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="bio"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Short Biography:{" "}
@@ -374,11 +381,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="ppic"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Profile Image:{" "}
@@ -394,11 +402,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="hobbies"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Hobbies:
@@ -427,11 +436,12 @@ const ProfileInfo: React.FC = () => {
           <div className="select-container mb-4">
             <label
               htmlFor="university"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               University:
@@ -451,8 +461,9 @@ const ProfileInfo: React.FC = () => {
               >
                 {/* Add university options here */}
                 <option value="">Select a university</option>
-                {universities.map((university, index) => (
-                  <option key={index} value={university.name}>
+                {universities.map((university) => (
+                  // <option key={university.country} value={university.name}>
+                  <option key={university.name} value={university.name}>
                     {university.name}
                   </option>
                 ))}
@@ -465,11 +476,12 @@ const ProfileInfo: React.FC = () => {
           <div className=" mb-4">
             <label
               htmlFor="major"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Major:
@@ -489,7 +501,7 @@ const ProfileInfo: React.FC = () => {
                 onChange={handleChange}
               >
                 <option value="">Select a major</option>
-                {majorList.map((major) => (
+                {majorsOptions.map((major) => (
                   <option key={major.id} value={major.name}>
                     {major.name}
                   </option>
@@ -501,11 +513,12 @@ const ProfileInfo: React.FC = () => {
           <div className=" mb-4">
             <label
               htmlFor="sleep"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Sleep Time:{" "}
@@ -528,11 +541,12 @@ const ProfileInfo: React.FC = () => {
           <div className=" mb-4">
             <label
               htmlFor="personality"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Personality:{" "}
@@ -554,11 +568,12 @@ const ProfileInfo: React.FC = () => {
           <div className=" mb-4">
             <label
               htmlFor="hygiene"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               How often do you clean?
@@ -580,11 +595,12 @@ const ProfileInfo: React.FC = () => {
           <div className=" mb-4">
             <label
               htmlFor="smoke"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               How often do you have guests over?:{" "}
@@ -608,11 +624,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="smoke"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Do you smoke?
@@ -633,11 +650,12 @@ const ProfileInfo: React.FC = () => {
           <div className="mb-4">
             <label
               htmlFor="pets"
-              className="font-semibold mb-2"
+              className="font-semibold mb-2 text-white"
               style={{
-                color: "white",
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
                 textShadow:
-                  "1.5px 1.5px 0 blue, -1.5px -1.5px 0 blue, 1.5px -1.5px 0 blue, -1.5px 1.5px 0 blue",
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
               Do you have pets?
