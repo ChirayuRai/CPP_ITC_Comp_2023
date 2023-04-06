@@ -356,18 +356,21 @@ module.exports = {
             //return newRecommendation;
           } catch (err) {
             console.error("Error creating user:", err);
-            throw new Error("Failed to create user");
+            //throw new Error("Failed to create user");
+            throw err
           }
 
           //return newly created user;
           return newUser;
         } catch (err) {
           console.error("Error creating user:", err);
-          throw new Error("Failed to create user");
+          //throw new Error("Failed to create user");
+          throw err
         }
       } catch (err) {
         console.error("Error updating user profile:", err);
-        throw new Error("Failed to update user profile");
+        //throw new Error("Failed to update user profile");
+        throw err
       }
     },
   },
