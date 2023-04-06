@@ -45,10 +45,6 @@ interface FormData {
 
 interface University {
   name: string;
-  country: string;
-  city?: string;
-  state?: string;
-  web_pages?: string[];
 }
 
 const USER_DETAILS = gql`
@@ -98,7 +94,7 @@ const ProfileInfo: React.FC = () => {
   });
   console.log("form data Username", formData.username);
 
-  const [majorsList, setMajors] = useState([]);
+  const [majors, setMajors] = useState<MajorOption[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
   const [selectedHobbies, setSelectedHobbies] = useState([]);
 
@@ -127,21 +123,6 @@ const ProfileInfo: React.FC = () => {
     // Add more hobbies options here
   ];
 
-  const majorsOptions: MajorOption[] = [
-    { name: "Computer Science", id: 1 },
-    { name: "Mechanical Engineering", id: 2 },
-    { name: "Electrical Engineering", id: 3 },
-    { name: "Civil Engineering", id: 4 },
-    { name: "Physics", id: 5 },
-    { name: "Mathematics", id: 6 },
-  ];
-
-  // const groupedHobbyOptions: HobbyGroup[] = [
-  //   {
-  //     label: "Hobbies",
-  //     options: hobbiesOptions,
-  //   },
-  // ];
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -271,9 +252,9 @@ const ProfileInfo: React.FC = () => {
   useEffect(() => {
     const fetchMajors = async () => {
       try {
-        const response = await fetch("https://your-api-url.com/majors");
+        const response = await fetch("https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name%2C+rowid+as+id+from+%5Bcollege-majors%2Fmajors-list%5D+order+by+Major+limit+200");
         const data = await response.json();
-        setMajors(data);
+        setMajors(data.rows);
       } catch (error) {
         console.error("Error fetching majors:", error);
       }
@@ -282,10 +263,17 @@ const ProfileInfo: React.FC = () => {
     const fetchUniversities = async () => {
       try {
         const response = await fetch(
-          "http://universities.hipolabs.com/search?country=United States"
+          'https://parseapi.back4app.com/classes/University?limit=3002&order=name',
+          {
+            headers: {
+              'X-Parse-Application-Id': 'Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe', // This is the fake app's application id
+              'X-Parse-Master-Key': 'HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp', // This is the fake app's readonly master key
+            }
+          }
         );
         const universities = await response.json();
-        setUniversities(universities);
+        console.log(universities)
+        setUniversities(universities.results);
       } catch (error) {
         console.error("Error fetching universities:", error);
       }
@@ -461,9 +449,9 @@ const ProfileInfo: React.FC = () => {
               >
                 {/* Add university options here */}
                 <option value="">Select a university</option>
-                {universities.map((university) => (
+                {universities.map((university, index) => (
                   // <option key={university.country} value={university.name}>
-                  <option key={university.name} value={university.name}>
+                  <option key={index} value={university.name}>
                     {university.name}
                   </option>
                 ))}
@@ -501,7 +489,7 @@ const ProfileInfo: React.FC = () => {
                 onChange={handleChange}
               >
                 <option value="">Select a major</option>
-                {majorsOptions.map((major) => (
+                {majors.map((major) => (
                   <option key={major.id} value={major.name}>
                     {major.name}
                   </option>
