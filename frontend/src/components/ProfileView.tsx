@@ -11,11 +11,12 @@ interface User {
 }
 
 interface RecommendationsResultsProps {
-  loggedInUser: String;
+  //results: User[];
+  loggedInUser: any;
   onToggleView: () => void;
 }
 
-//define mutation query to fetch the results
+//define mutation query to update the profile
 const USER_DETAILS = gql`
   fragment UserDetails on User {
     username
@@ -26,7 +27,7 @@ const USER_DETAILS = gql`
 `;
 
 //make sure the mutation exists in the backend
-const RECOMMEND_USERS = gql`
+const UPDATE_USER = gql`
   mutation UserRecommendations($input: UserRecs) {
     recommendUsers(input: $input) {
       ...UserDetails
@@ -35,12 +36,16 @@ const RECOMMEND_USERS = gql`
   ${USER_DETAILS}
 `;
 
-const Recommendations: React.FC<RecommendationsResultsProps> = ({
+//displays the logged in users profile info and handles edit feature functionality ()
+//when the user edits their profile, the edit profile resolver is called which takes the newly
+//updated user, executes the recommender (with the updated user obj and its attrs) to update the
+//the recommendations document in mongodb with the newly recommended list of users under the same username (find and update)
+const ProfileView: React.FC<RecommendationsResultsProps> = ({
   loggedInUser,
   onToggleView,
 }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [recommendUsers, recommendedUsers] = useMutation(RECOMMEND_USERS);
+  const [updateUser, updatedUser] = useMutation(UPDATE_USER);
 
   const openDetailedView = (user: User) => {
     console.log("user attributes from detailed view", user.name);
@@ -53,15 +58,11 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
     setSelectedUser(null);
   };
 
-  const refreshRecs = () => {
-    //implment the refresh
-    //requests the latest list of recommendations from the backend
-  };
-
   const [recommendations, setRecommendations] = useState<User[] | any>([]);
 
-  //refresh the recommended user list:
-  const refreshRecommendations = async () => {
+  //edit the logged in user :
+  const editProfile = async () => {
+    console.log("profile being edited", loggedInUser);
     try {
       const input = {
         //this variable has to match the defined parameter accepted by the resolver
@@ -69,10 +70,10 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
       };
       console.log("username rec view", input);
       //execute the mutation query to return a list of recommended users for the logged in user
-      let recdUsers = await recommendUsers({
+      let recdUsers = await updateUser({
         variables: { input }, //the input has to match the input schema type defined in backend
       });
-      console.log("refreshed recommended list of users: ", recommendedUsers);
+      // console.log("refreshed recommended list of users: ", recommendedUsers);
       console.log(
         "recommended list of users: ",
         recdUsers,
@@ -85,31 +86,6 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
   };
 
   //fetch recommended users upon initial page load
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        const input = {
-          //this variable has to match the defined parameter accepted by the resolver
-          username: loggedInUser,
-        };
-        console.log("username rec view", input);
-        //execute the mutation query to return a list of recommended users for the logged in user
-        let recdUsers = await recommendUsers({
-          variables: { input }, //the input has to match the input schema type defined in backend
-        });
-        console.log("recommended list of users: ", recommendedUsers);
-        console.log(
-          "recommended list of users: ",
-          recdUsers,
-          recdUsers.data.recommendUsers
-        );
-        setRecommendations(recdUsers.data.recommendUsers); //useState setter to set the returned recommendations
-      } catch (error) {
-        console.error("Error fetching recommended users:", error);
-      }
-    };
-    fetchRecommendations();
-  }, []);
 
   return (
     <div className="flex  flex-col h-full">
@@ -127,7 +103,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
         ))}
       </div>
 
-      {selectedUser && (
+      {selectedUser && ( //if selectedUser exists, the following component will be rendered
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
             <h2 className="text-2xl font-bold mb-4">{selectedUser.name}</h2>
@@ -144,7 +120,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
       )}
       <div>
         <button
-          onClick={refreshRecommendations}
+          onClick={editProfile}
           className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           {/* {showResults ? "Go back to search filter" : "Show results"} */}
@@ -155,4 +131,4 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
   );
 };
 
-export default Recommendations;
+export default ProfileView;

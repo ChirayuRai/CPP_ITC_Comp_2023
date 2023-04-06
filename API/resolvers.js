@@ -17,6 +17,7 @@ function getNewRedisClient() {
 const possibleHobbies = ["reading", "sports", "music", "gaming", "cooking"];
 
 function oneHotEncodeHobbies(hobbies) {
+  //match based on hobbies later?
   const encodedHobbies = possibleHobbies.map((hobby) =>
     hobbies.includes(hobby) ? 1 : 0
   );
@@ -78,6 +79,7 @@ async function findCompatibleUsers(models, targetUser) {
       frequency[user.guests] || 0,
       sleepTime[user.sleepTime] || 0,
       frequency[user.hygiene] || 0,
+      personality[user.personality] || 0,
       //...encodedHobbies
     ]);
   });
@@ -92,6 +94,8 @@ async function findCompatibleUsers(models, targetUser) {
     frequency[targetUser.guests] || 0,
     sleepTime[targetUser.sleepTime] || 0,
     frequency[targetUser.hygiene] || 0,
+    personality[targetUser.personality] || 0,
+
     //...targetUserEncodedHobbies
   ]);
   const similarities = userTensors.map((userTensor) => {
@@ -180,8 +184,38 @@ module.exports = {
         user: input.username,
       }).exec();
       console.log("recommended users:", userList["recommendedUsers"]);
-      //return "recommended resolver accessed";
-      return userList["recommendedUsers"];
+
+      const recommendedUsers = userList["recommendedUsers"];
+      // let searchResults = userList.map((user) => ({
+      //   username: user.username, // Replace 'id' with the appropriate property from the user object
+      //   name: user.name, // Replace 'name' with the appropriate property from the user object
+      //   email: user.email, // Replace 'email' with the appropriate property from the user object
+      //   bio: user.bio, // Replace 'attributes' with the appropriate property from the user object
+      // }));
+      // //return "recommended resolver accessed";
+      //return userList["recommendedUsers"];
+
+      //go through the usernames of each user and store the returned objects in a list of users
+      async function fetchRecommendedUsers(recommendedUsers, userModel) {
+        try {
+          const usersPromises = recommendedUsers.map((user) =>
+            userModel.findOne({ username: user.username }).exec()
+          );
+          // console.log("user promises from inside fetchRecUsers", userPromises);
+          const users = await Promise.all(usersPromises);
+          console.log("users inside fetchRecUsers", users);
+          return users;
+        } catch (error) {
+          console.error("Error fetching recommended users:", error);
+          throw error;
+        }
+      }
+      let recUsers = fetchRecommendedUsers(recommendedUsers, models.User);
+      // .then((users) => (recUsers = users)) //what are the use cases for usage of .then()?
+      // .catch((error) => console.error("Error:", error));
+      console.log("rec users", recUsers);
+
+      return recUsers;
     },
     addUser: async (_, { input }, { models }) => {
       const newUser = new models.User({
