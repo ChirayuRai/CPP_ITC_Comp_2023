@@ -45,10 +45,7 @@ interface FormData {
 
 interface University {
   name: string;
-  country: string;
-  city?: string;
-  state?: string;
-  web_pages?: string[];
+  state: string;
 }
 
 const USER_DETAILS = gql`
@@ -127,6 +124,7 @@ const ProfileInfo: React.FC = () => {
     // Add more hobbies options here
   ];
 
+
   // const groupedHobbyOptions: HobbyGroup[] = [
   //   {
   //     label: "Hobbies",
@@ -152,7 +150,6 @@ const ProfileInfo: React.FC = () => {
       const selectedHobbies = selectedOptions.map(
         (option: any) => option.value
       );
-      setFormData({ ...formData, hobbies: selectedHobbies });
       console.log("hobbies", formData.hobbies);
     }
   };
@@ -263,10 +260,16 @@ const ProfileInfo: React.FC = () => {
     const fetchUniversities = async () => {
       try {
         const response = await fetch(
-          "http://universities.hipolabs.com/search?country=United States"
-        );
+          'https://parseapi.back4app.com/classes/University?limit=3002&order=name',
+          {
+            headers: {
+              'X-Parse-Application-Id': 'Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe',
+              'X-Parse-Master-Key': 'HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp',
+            }
+          });
         const universities = await response.json();
-        setUniversities(universities);
+        console.log(universities)
+        setUniversities(universities.results);
       } catch (error) {
         console.error("Error fetching universities:", error);
       }
