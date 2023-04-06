@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "source": "/(.*)",
-      "destination": "http://localhost:3000/"
+      "src": "/(.*)",
+      "dest": "http://localhost:3000/"
     }
   ]
 }
