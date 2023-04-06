@@ -33,7 +33,7 @@ const delay = setContext(
 
 const cache = new InMemoryCache();
 const http = new HttpLink({
-  uri: "cpp-itc-comp-2023-toypfjydy-chirayurai.vercel.app/graphql",
+  uri: "https://cpp-itc-comp-2023.vercel.app/graphql",
 });
 
 const link = ApolloLink.from([delay, http]);
