@@ -8,8 +8,6 @@ const initializeDatabase = require("./db");
 const { ApolloServer } = require("apollo-server-express");
 //const { typeDefs, resolvers } = require('./graphql');
 
-require("dotenv").config({ path: ".env" });
-
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {

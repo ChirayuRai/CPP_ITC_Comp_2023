@@ -18,8 +18,8 @@ type HobbyOption = {
 };
 
 type MajorOption = {
-  id: number;
   name: string;
+  id: number;
 };
 // type HobbyGroup = GroupBase<HobbyOption> & {
 //   options: HobbyOption[];
@@ -98,7 +98,7 @@ const ProfileInfo: React.FC = () => {
   });
   console.log("form data Username", formData.username);
 
-  const [majorsList, setMajors] = useState([]);
+  const [majorList, setMajorList] = useState<MajorOption[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
   const [selectedHobbies, setSelectedHobbies] = useState([]);
 
@@ -125,15 +125,6 @@ const ProfileInfo: React.FC = () => {
     { value: "traveling", label: "Traveling" },
     { value: "cooking", label: "Cooking" },
     // Add more hobbies options here
-  ];
-
-  const majorsOptions: MajorOption[] = [
-    { name: "Computer Science", id: 1 },
-    { name: "Mechanical Engineering", id: 2 },
-    { name: "Electrical Engineering", id: 3 },
-    { name: "Civil Engineering", id: 4 },
-    { name: "Physics", id: 5 },
-    { name: "Mathematics", id: 6 },
   ];
 
   // const groupedHobbyOptions: HobbyGroup[] = [
@@ -269,16 +260,6 @@ const ProfileInfo: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchMajors = async () => {
-      try {
-        const response = await fetch("https://your-api-url.com/majors");
-        const data = await response.json();
-        setMajors(data);
-      } catch (error) {
-        console.error("Error fetching majors:", error);
-      }
-    };
-
     const fetchUniversities = async () => {
       try {
         const response = await fetch(
@@ -291,6 +272,17 @@ const ProfileInfo: React.FC = () => {
       }
     };
 
+    const fetchMajors = async () => {
+      try {
+        const response = await fetch(
+          "https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name,+rowid+as+id+from+%5Bcollege-majors/majors-list%5D+order+by+Major+limit+200"
+        );
+        const data = await response.json();
+        setMajorList(data.rows);
+      } catch (error) {
+        console.error("Error fetching universities:", error);
+      }
+    };
     fetchMajors();
     fetchUniversities();
   }, [0]);
@@ -456,9 +448,8 @@ const ProfileInfo: React.FC = () => {
               >
                 {/* Add university options here */}
                 <option value="">Select a university</option>
-                {universities.map((university) => (
-                  // <option key={university.country} value={university.name}>
-                  <option key={university.name} value={university.name}>
+                {universities.map((university, index) => (
+                  <option key={index} value={university.name}>
                     {university.name}
                   </option>
                 ))}
@@ -495,7 +486,7 @@ const ProfileInfo: React.FC = () => {
                 onChange={handleChange}
               >
                 <option value="">Select a major</option>
-                {majorsOptions.map((major) => (
+                {majorList.map((major) => (
                   <option key={major.id} value={major.name}>
                     {major.name}
                   </option>
