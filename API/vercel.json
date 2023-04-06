@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/graphql",
-      "dest": "http://localhost:3000/graphql"
+      "src": "/(.*)",
+      "dest": "index.js"
     }
   ]
 }
