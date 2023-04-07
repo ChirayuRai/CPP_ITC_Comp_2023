@@ -16,7 +16,7 @@ import "../styles/pulse.css";
 import "./home.css";
 //import "../styles/transitions.css";
 import lightBackgroundPic from "../assets/oxbow.jpg";
-import darkBackgroundPic from "../assets/catskills.jpg";
+import darkBackgroundPic from "../assets/twilight.jpg";
 //import darkBackgroundPic from "../assets/darkcauter.jpg";
 import SearchResults from "./SearchResults";
 import Recommendations from "./Recommendations";
