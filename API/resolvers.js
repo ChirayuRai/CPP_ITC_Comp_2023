@@ -53,6 +53,13 @@ async function findCompatibleUsers(models, targetUser) {
     ambivert: 3,
   };
 
+  // const sleepTime = {
+  //   "": 1,
+  //   "before 9pm": 2,
+  //   "9pm-11pm": 3,
+  //   "11pm-1am": 4,
+  //   "1am-3am": 5,
+  // };
   const sleepTime = {
     1: 1,
     2: 2,
@@ -66,7 +73,7 @@ async function findCompatibleUsers(models, targetUser) {
   // Fetch all users
   const users = await models.User.find({});
 
-  // Process user data into tensors
+  // Process user data into tensors and store in userTensors
   const userTensors = users.map((user) => {
     //const encodedHobbies = oneHotEncodeHobbies(user.hobbies);
     // Convert user data into a tensor
@@ -98,6 +105,8 @@ async function findCompatibleUsers(models, targetUser) {
 
     //...targetUserEncodedHobbies
   ]);
+
+  //calculate similarity score for each userTensor in the userTensors array
   const similarities = userTensors.map((userTensor) => {
     const dotProduct = tf.sum(tf.mul(userTensor, targetUserTensor));
     const userTensorMagnitude = tf.norm(userTensor);
@@ -117,6 +126,7 @@ async function findCompatibleUsers(models, targetUser) {
     }))
     .sort((a, b) => b.similarity - a.similarity);
 
+  console.log("sorted users recommender function", sortedUsers);
   return sortedUsers.slice(1); // Exclude the target user from the result
 }
 
@@ -180,40 +190,56 @@ module.exports = {
     },
     recommendUsers: async (_, { input }, { models }) => {
       console.log("resolvers output for rec username", input.username);
+      //fetching the list of recommended user data for the logged in user
       userList = await models.Recs.findOne({
         user: input.username,
       }).exec();
       console.log("recommended users:", userList["recommendedUsers"]);
 
-      const recommendedUsers = userList["recommendedUsers"];
-      // let searchResults = userList.map((user) => ({
-      //   username: user.username, // Replace 'id' with the appropriate property from the user object
-      //   name: user.name, // Replace 'name' with the appropriate property from the user object
-      //   email: user.email, // Replace 'email' with the appropriate property from the user object
-      //   bio: user.bio, // Replace 'attributes' with the appropriate property from the user object
-      // }));
-      // //return "recommended resolver accessed";
-      //return userList["recommendedUsers"];
+      const recommendedUsersResult = userList["recommendedUsers"];
 
-      //go through the usernames of each user and store the returned objects in a list of users
+      //go through the usernames of each user returned from the above function and store the returned objects in a list of users
       async function fetchRecommendedUsers(recommendedUsers, userModel) {
         try {
-          const usersPromises = recommendedUsers.map((user) =>
-            userModel.findOne({ username: user.username }).exec()
+          //find the corresponding User obj from User document and store in the userList
+          const usersPromises = recommendedUsers.map(
+            (
+              user //store the corresponding User obj for each user in the recommendations list
+            ) => userModel.findOne({ username: user.username }).exec() //arrow function
           );
-          // console.log("user promises from inside fetchRecUsers", userPromises);
+          //go through the list of User objects but how to get
+
+          //list of recommen
           const users = await Promise.all(usersPromises);
+
+          //adding the similarity attribute to the response of each user object returned from the User table
+          const recUsersSimilarityScore = recommendedUsers.map(
+            (user, index) => ({
+              ...users[index]._doc,
+              similarity: user.similarity,
+            })
+          );
           console.log("users inside fetchRecUsers", users);
-          return users;
+          console.log(
+            "users inside fetchRecUsers with similarity score",
+            recUsersSimilarityScore
+          );
+          //return the above payload with the similarity score added
+          return recUsersSimilarityScore;
         } catch (error) {
           console.error("Error fetching recommended users:", error);
           throw error;
         }
       }
-      let recUsers = fetchRecommendedUsers(recommendedUsers, models.User);
+      console.log(
+        "recommended users returned from recommended function",
+        recommendedUsersResult
+      );
+      let recUsers = fetchRecommendedUsers(recommendedUsersResult, models.User); //recUser objects from User document
+
       // .then((users) => (recUsers = users)) //what are the use cases for usage of .then()?
       // .catch((error) => console.error("Error:", error));
-      console.log("rec users", recUsers);
+      console.log("rec users:", recUsers);
 
       return recUsers;
     },
@@ -273,7 +299,8 @@ module.exports = {
         console.log("password", input.password);
         if (user.password != input.password) {
           console.error("Error in validating user resolver:");
-          return "failed login";
+          throw error;
+          //return "failed login";
         } else {
           return user;
         }
@@ -285,27 +312,6 @@ module.exports = {
     addUserProfile: async (_, { input }, { models }) => {
       try {
         /*implement below logic for updateUserProfile() mutation*/
-        // const filter = { username: input.username };
-        // const update = {
-        //   name: input.name,
-        //   bio: input.biography,
-        //   university: input.university,
-        //   major: input.major,
-        //   sleepTime: input.sleepTime,
-        //   guests: input.guests,
-        //   hygiene: input.cleanliness,
-        //   hobbies: input.hobbies,
-        //   smoke: input.smoking,
-        //   pets: input.pets,
-        // };
-
-        // const options = { new: true, upsert: true };
-
-        // const updatedProfile = await models.User.findOneAndUpdate(
-        //   filter, //the filter here being the unique username from the frontend
-        //   update,
-        //   options
-        // );
 
         const newUser = new models.User({
           //the field names here have to correspond with the field names in the mongoose
@@ -335,6 +341,8 @@ module.exports = {
           }
 
           const compatibleUsers = await findCompatibleUsers(
+            //calling the tensorflow function implementation for comparing cosine similarities
+            //returns a list of compatible users
             models,
             //updatedProfile
             newUser
@@ -342,6 +350,7 @@ module.exports = {
 
           console.log("compatible users:", compatibleUsers);
           //compiling a list of recommendations upon new user sign up
+          //stores the list of compatible users for the user that just signed up
           const newRecommendation = await new models.Recs({
             _id: uuidv4(),
             user: input.username,
@@ -349,29 +358,59 @@ module.exports = {
             recommendedUsers: compatibleUsers.map((user) => ({
               _id: user._id,
               username: user.username, //can also include profile pic and email to retrieve for later
+              similarity: user.similarity, //storing the similarity value to be displayed as part of the recommended results
             })),
           });
           try {
-            await newRecommendation.save();
+            await newRecommendation.save(); //saving the changes to db
             //return newRecommendation;
           } catch (err) {
             console.error("Error creating user:", err);
-            //throw new Error("Failed to create user");
-            throw err
+            throw new Error("Failed to create user");
           }
 
+          //update the user object in the recommendations list with the similarity score:
+          //similarity score cannot be a direct field in the original user schema because it is subjective for each user and can overlap (not specific to a user)
           //return newly created user;
+
           return newUser;
         } catch (err) {
           console.error("Error creating user:", err);
-          //throw new Error("Failed to create user");
-          throw err
+          throw new Error("Failed to create user");
         }
       } catch (err) {
         console.error("Error updating user profile:", err);
-        //throw new Error("Failed to update user profile");
-        throw err
+        throw new Error("Failed to update user profile");
       }
+    },
+    //finds the user object by username and updates the document with the passed in attrs
+    //calls the recommender system to update the recs document with the latest recommendations for
+    //the passed in user (similar to the addUser flow)
+    editUserProfile: async (_, { input }, { models }) => {
+      const filter = { username: input.username };
+      const update = {
+        //the input would have to be passed in from the root state (Home.tsx)
+        //name: input.name,
+        bio: input.biography,
+        university: input.university,
+        major: input.major,
+        sleepTime: input.sleepTime,
+        guests: input.guests,
+        hygiene: input.cleanliness,
+        hobbies: input.hobbies,
+        smoke: input.smoking,
+        pets: input.pets,
+      };
+
+      const options = { new: true, upsert: true };
+
+      const updatedProfile = await models.User.findOneAndUpdate(
+        filter, //the filter here being the unique username from the frontend
+        update,
+        options
+      );
+
+      console.log("updated user profile:", updatedProfile);
     },
   },
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 //setting type
+import "../styles/pulse.css";
 
 interface SearchFilterProps {
   //for the state function to be passed from the home page
@@ -51,8 +52,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full ">
-      <div className="justify-between items-center mb-8">
+    <div className="flex flex-col h-full">
+      <div className="justify-between items-center mb-4">
         <h3
           className="text-2xl font-semibold mb-4 text-center text-white"
           style={{
@@ -65,8 +66,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           Search
         </h3>
       </div>
+      <hr className=" border-t" />
 
-      <hr className="border-t border-black mb-8" />
+      <hr className="border border-black mb-8" />
       <div
         className="flex flex-col h-full"
         style={{ maxHeight: "300px", overflowY: "auto" }}
@@ -97,7 +99,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               />
             </div>
             <br />
-            <hr className="border-t border-black mb-8" />
+            {/* <hr className="border-t border-black mb-8" /> */}
+            <hr className="flame border-t" />
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col items-center">

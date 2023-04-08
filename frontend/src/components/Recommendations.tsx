@@ -8,6 +8,7 @@ interface User {
   name: string;
   email: string;
   bio: string;
+  similarity: number;
 }
 
 interface RecommendationsResultsProps {
@@ -22,8 +23,16 @@ const USER_DETAILS = gql`
     name
     bio
     email
+    similarity
   }
 `;
+
+//define a fragment
+// const REC_USER_DETAILS = gql`
+//   fragment SimilarityScore on Similarity {
+//     similarity
+//   }
+// `;
 
 //make sure the mutation exists in the backend
 const RECOMMEND_USERS = gql`
@@ -121,6 +130,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
             onClick={() => openDetailedView(user)}
           >
             <h3>{user.name}</h3>
+            <h3>similarity {user.similarity}</h3>
 
             {/* Render other user attributes here */}
           </div>
