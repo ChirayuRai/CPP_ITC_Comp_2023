@@ -4,6 +4,7 @@ import { readAndCompressImage } from "browser-image-resizer";
 import { useMutation } from "@apollo/react-hooks";
 import Select from "react-select";
 import "../styles/pulse.css";
+import "./searchfilter.css";
 
 //define types:
 type HobbyOption = {
@@ -356,6 +357,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                 value={formData.biography}
                 onChange={handleChange}
                 className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
+                style={{ backgroundColor: "rgba(240, 240, 240, 0.8)" }}
               />
             </div>
           </div>
@@ -437,7 +439,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
               }}
             >
               <select
-                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                className="filter-select mb-2 transparent-dropdown"
                 name="university"
                 value={formData.university}
                 onChange={handleChange}
@@ -478,7 +480,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
               }}
             >
               <select
-                className="mt-1 p-1 w-full border border-gray-300 rounded"
+                className="filter-select mb-2 transparent-dropdown"
                 name="major"
                 value={formData.major}
                 onChange={handleChange}
@@ -507,18 +509,26 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
               Sleep Time:{" "}
             </label>
 
-            <select
-              className="mt-1 p-1 w-full border border-gray-300 rounded"
-              name="sleepTime"
-              value={formData.sleepTime}
-              onChange={handleChange}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <option value=""></option>
-              <option value="1">Before 9pm</option>
-              <option value="2">9pm - 11pm</option>
-              <option value="3">11pm - 1am</option>
-              <option value="4">1am - 3am</option>
-            </select>
+              <select
+                className="filter-select mb-2 transparent-dropdown"
+                name="sleepTime"
+                value={formData.sleepTime}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="1">Before 9pm</option>
+                <option value="2">9pm - 11pm</option>
+                <option value="3">11pm - 1am</option>
+                <option value="4">1am - 3am</option>
+              </select>
+            </div>
           </div>
 
           <br />
@@ -533,20 +543,28 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
-              Hygiene
+              Hygiene:{" "}
             </label>
 
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="cleanliness"
-              value={formData.cleanliness}
-              onChange={handleChange}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <option value=""></option>
-              <option value="OFTEN">often</option>
-              <option value="SOMETIMES">sometimes</option>
-              <option value="NEVER">never</option>
-            </select>
+              <select
+                className="filter-select mb-2 transparent-dropdown"
+                name="cleanliness"
+                value={formData.cleanliness}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="OFTEN">often</option>
+                <option value="SOMETIMES">sometimes</option>
+                <option value="NEVER">never</option>
+              </select>
+            </div>
           </div>
           <br />
           <div className=" mb-4">
@@ -563,17 +581,25 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
               Guests:{" "}
             </label>
 
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="guests"
-              value={formData.guests}
-              onChange={handleChange}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <option value=""></option>
-              <option value="OFTEN">often</option>
-              <option value="SOMETIMES">sometimes</option>
-              <option value="NEVER">never</option>
-            </select>
+              <select
+                className="filter-select mb-2 transparent-dropdown"
+                name="guests"
+                value={formData.guests}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="OFTEN">often</option>
+                <option value="SOMETIMES">sometimes</option>
+                <option value="NEVER">never</option>
+              </select>
+            </div>
           </div>
           <br />
 
@@ -591,16 +617,24 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
             >
               Smoking
             </label>
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="smoking"
-              value={formData.smoking}
-              onChange={handleChange}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <option value=""></option>
-              <option value="yes">yes</option>
-              <option value="no">no</option>
-            </select>
+              <select
+                className="filter-select mb-2 transparent-dropdown"
+                name="smoking"
+                value={formData.smoking}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+              </select>
+            </div>
           </div>
           <br />
 
@@ -617,21 +651,29 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
             >
               Pets
             </label>
-            <select
-              className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
-              name="pets"
-              value={formData.pets}
-              onChange={handleChange}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <option value=""></option>
-              <option value="yes">yes</option>
-              <option value="no">no</option>
-            </select>
+              <select
+                className="filter-select mb-2 transparent-dropdown"
+                name="pets"
+                value={formData.pets}
+                onChange={handleChange}
+              >
+                <option value=""></option>
+                <option value="yes">yes</option>
+                <option value="no">no</option>
+              </select>
+            </div>
           </div>
 
           <button
             onClick={editProfile}
-            className="bg-gray-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
+            className="bg-blue-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
           >
             Update
           </button>

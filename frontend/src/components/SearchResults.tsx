@@ -6,6 +6,13 @@ interface User {
   username: string;
   name: string;
   email: string;
+  hygiene: string;
+  sleepTime: string;
+  smoking: string;
+  pets: string;
+  personality: string;
+  major: string;
+  university: string;
   bio: string;
   imgUrl: string;
 }
@@ -30,6 +37,19 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setSelectedUser(null);
   };
 
+  function getSleepTimeDescription(sleepTime: any) {
+    switch (sleepTime) {
+      case "1":
+        return "Before 9pm";
+      case "2":
+        return "9pm-11pm";
+      case "3":
+        return "11pm-1am";
+      case "4":
+        return "1am-3am";
+    }
+  }
+
   //update view to show similarity score for each user.
   return (
     <>
@@ -42,7 +62,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           Back
         </button>
       </div>
-      <hr className="flame border border-black mt-8" />
+      <hr className="flame border border-t mt-8" />
       <div
         className="flex flex-col h-full"
         style={{ maxHeight: "300px", overflowY: "auto" }}
@@ -77,7 +97,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             >
               {user.username}
             </h3> */}
-              <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 flame">
+              <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
                 <img
                   //src={profPic}
                   src={user.imgUrl}
@@ -103,8 +123,29 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         {selectedUser && (
           <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-              <h2 className="text-2xl font-bold mb-4">{selectedUser.name}</h2>
-              <h3>User: {selectedUser.username}</h3>
+              <h2 className="text-2xl font-bold mb-4">
+                User: {selectedUser.username}{" "}
+              </h2>
+              <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                <img
+                  //src={profPic}
+                  src={selectedUser.imgUrl}
+                  alt="Profile"
+                  className="rounded-full h-full w-full object-cover"
+                />
+              </div>
+              <h3>Name: {selectedUser.name}</h3>
+              <h3>Bio: {selectedUser.bio}</h3>
+              <h3>Email: {selectedUser.email}</h3>
+              <h3>Personality: {selectedUser.personality}</h3>
+              <h3>Hygiene: {selectedUser.hygiene}</h3>
+              <h3>University: {selectedUser.university}</h3>
+              <h3>Major: {selectedUser.major}</h3>
+              <h3>
+                Sleep Time: {getSleepTimeDescription(selectedUser.sleepTime)}
+              </h3>
+              <h3>Smokes: {selectedUser.smoking}</h3>
+              <h3>Has Pets: {selectedUser.pets}</h3>
               {/* Render more detailed user attributes here */}
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"

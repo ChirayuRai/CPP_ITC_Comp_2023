@@ -24,6 +24,7 @@ const USER_DETAILS = gql`
     bio
     email
     similarity
+    imgUrl
   }
 `;
 
@@ -121,16 +122,47 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
   }, []);
 
   return (
-    <div className="flex  flex-col h-full">
+    <div
+      className="flex  flex-col h-full"
+      style={{ maxHeight: "380px", overflowY: "auto" }}
+    >
       <div className="flex flex-wrap justify-between items-start mb-8">
         {recommendations.map((user: any) => (
           <div
             key={user.username}
-            className="border border-2 border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+            className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
             onClick={() => openDetailedView(user)}
           >
-            <h3>{user.name}</h3>
-            <h3>similarity {user.similarity}</h3>
+            {/* <h3
+              className="font-semibold mb-2 text-white"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              {user.name}
+            </h3> */}
+            <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+              <img
+                //src={profPic}
+                src={user.imgUrl}
+                alt="Profile"
+                className="rounded-full h-full w-full object-cover"
+              />
+            </div>
+            <h3
+              className="font-semibold mb-2 text-white"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+            </h3>
 
             {/* Render other user attributes here */}
           </div>

@@ -16,7 +16,7 @@ interface LayoutProps {
 const HomePageNav: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full bg-blue-500 bg-opacity-20 shadow-md z-10 border-4 border-black navflame">
+      <nav className="fixed top-0 left-0 w-full bg-blue-500 bg-opacity-20 shadow-md z-10 border-4 border-black hahaha">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             {/* <Link
@@ -24,7 +24,7 @@ const HomePageNav: React.FC<LayoutProps> = ({ children }) => {
               className="text-lg font-semibold text-blue-800 hover:text-blue-600"
             > */}
             <h1
-              className="text-4xl font-bold text-white border border-blue-800 border-4 rounded p-2 outline-blue flame mb-1"
+              className="text-4xl font-bold text-white border border-blue-800 border-4 rounded p-2 outline-blue bruh mb-1"
               style={{
                 WebkitTextStroke: "2px #2563EB", // Adjust the stroke width and color as needed
               }}
