@@ -206,9 +206,8 @@ const Home = () => {
           }}
         > */}
         <div
-          className={`mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto ${
-            isDarkMode ? "bg-dark" : "bg-light"
-          } bg-transition`}
+          className={`mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto ${isDarkMode ? "bg-dark" : "bg-light"
+            } bg-transition`}
           style={{
             // backgroundImage: `url(${
             //   isDarkMode ? darkBackgroundPic : lightBackgroundPic
@@ -292,9 +291,8 @@ const Home = () => {
                   <FontAwesomeIcon icon={faLightbulb} />
                 </button>
                 <button
-                  className={`dark-mode-button p-2 rounded-full text-white bg-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors ${
-                    isDarkMode ? "text-white-500" : "text-white-500"
-                  }`}
+                  className={`dark-mode-button p-2 rounded-full text-white bg-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors ${isDarkMode ? "text-white-500" : "text-white-500"
+                    }`}
                   onClick={() => setIsDarkMode(!isDarkMode)}
                   title={
                     isDarkMode ? "Switch to light mode" : "Switch to dark mode"
@@ -337,9 +335,11 @@ const Home = () => {
               style={{ maxHeight: "300px" }}
             >
               <div
+
                 className={`absolute z-10  border-4 border-black w-full bg-blue-500 bg-opacity-25  p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedSearch ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
+
               >
                 {showResults ? (
                   <SearchResults
@@ -355,9 +355,13 @@ const Home = () => {
                 )}
               </div>
               <div
+
                 className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedRecs ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
+
+              
+
               >
                 <Recommendations
                   loggedInUser={username}
@@ -365,13 +369,17 @@ const Home = () => {
                 />
               </div>
               <div
+
                 className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedEdit ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
+
+              
+
               >
                 <ProfileView
                   loggedInUser={signedUser}
-                  //onToggleView={handleToggleView}
+                //onToggleView={handleToggleView}
                 />
               </div>
             </div>
