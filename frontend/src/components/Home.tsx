@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import SearchFilter from "./SearchFilter";
 import { useNavigate, useLocation } from "react-router-dom";
 //import ProfileList from "./ProfileList";
-import ProfileView from "./ProfileView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -92,8 +91,7 @@ const Home = () => {
   };
   const [searchAttributes, setSearchAttributes] = useState<any>({});
   const [searchresults, setResults] = useState<User[]>([]); //the results are being passed to the SearchResults component as a prop
-  const [collapsedSearch, setCollapsedSearch] = useState(true); //default state is hidden to be conditionally changed when buttons are clicked
-  const [collapsedEdit, setCollapsedEdit] = useState(true);
+  const [collapsedSearch, setCollapsedSearch] = useState(true);
   const [collapsedRecs, setCollapsedRecs] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const [searchUsers, searchedUsers] = useMutation(SEARCH_USERS);
@@ -170,9 +168,8 @@ const Home = () => {
         {/* <div
           className="mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto"
           style={{
-            backgroundImage: `url(${
-              isDarkMode ? darkBackgroundPic : lightBackgroundPic
-            })`,
+            backgroundImage: `url(${isDarkMode ? darkBackgroundPic : lightBackgroundPic
+              })`,
           }}
         > */}
         <div
@@ -209,20 +206,7 @@ const Home = () => {
                     className="absolute bottom-0 right-0 text-blue-800 p-1 rounded-full"
                     style={{ transform: "translate(10%, 10%)" }}
                   >
-                    <button
-                      className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      onClick={() => {
-                        if (!collapsedRecs) {
-                          setCollapsedRecs(!collapsedRecs);
-                        }
-                        if (!collapsedSearch) {
-                          setCollapsedSearch(!collapsedSearch);
-                        }
-                        setCollapsedEdit(!collapsedEdit);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
+                    <FontAwesomeIcon icon={faEdit} />
                   </div>
                 </div>
               </div>
@@ -231,12 +215,9 @@ const Home = () => {
                   className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
                     if (!collapsedRecs) {
-                      setCollapsedRecs(!collapsedRecs); //setting rec view hidden to true
+                      setCollapsedRecs(!collapsedRecs);
                     }
-                    if (!collapsedEdit) {
-                      setCollapsedEdit(!collapsedEdit);
-                    }
-                    setCollapsedSearch(!collapsedSearch); //and set the
+                    setCollapsedSearch(!collapsedSearch);
                   }}
                 >
                   <FontAwesomeIcon icon={faSearch} />
@@ -246,9 +227,6 @@ const Home = () => {
                   onClick={() => {
                     if (!collapsedSearch) {
                       setCollapsedSearch(!collapsedSearch);
-                    }
-                    if (!collapsedEdit) {
-                      setCollapsedEdit(!collapsedEdit);
                     }
                     setCollapsedRecs(!collapsedRecs);
                   }}
@@ -321,6 +299,7 @@ const Home = () => {
                   }`}
               >
                 <Recommendations
+                  results={searchresults}
                   loggedInUser={username}
                   onToggleView={handleToggleView}
                 />
