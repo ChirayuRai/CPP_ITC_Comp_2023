@@ -33,6 +33,7 @@ interface FormData {
   biography: string;
   image: string;
   university: string;
+  gender: string;
   major: string;
   smoking: string;
   sleepTime: string;
@@ -86,6 +87,7 @@ const ProfileInfo: React.FC = () => {
     name: "",
     biography: "",
     personality: "",
+    gender: "",
     image: "",
     university: "",
     major: "",
@@ -127,15 +129,6 @@ const ProfileInfo: React.FC = () => {
     { value: "cooking", label: "Cooking" },
     // Add more hobbies options here
   ];
-
-  // const majorsOptions: MajorOption[] = [
-  //   { name: "Computer Science", id: 1 },
-  //   { name: "Mechanical Engineering", id: 2 },
-  //   { name: "Electrical Engineering", id: 3 },
-  //   { name: "Civil Engineering", id: 4 },
-  //   { name: "Physics", id: 5 },
-  //   { name: "Mathematics", id: 6 },
-  // ];
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -201,6 +194,7 @@ const ProfileInfo: React.FC = () => {
         biography,
         personality,
         university,
+        gender,
         image,
         major,
         smoking,
@@ -219,6 +213,7 @@ const ProfileInfo: React.FC = () => {
         biography,
         personality,
         university,
+        gender,
         image,
         major,
         smoking,
@@ -352,6 +347,34 @@ const ProfileInfo: React.FC = () => {
               onChange={handleChange}
               className="mt-1 p-2 w-full border border-gray-300 rounded"
             />
+          </div>
+          <br />
+          <div className=" mb-4">
+            <label
+              htmlFor="gender"
+              className="font-semibold mb-2 text-white"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              Gender:{" "}
+            </label>
+
+            <select
+              className="mt-1 p-1 w-full border border-gray-300 rounded"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value=""></option>
+              <option value="male">male</option>
+              <option value="female">female</option>
+              {/* <option value="3">11pm - 1am</option>
+              <option value="4">1am - 3am</option> */}
+            </select>
           </div>
           <br />
           <div className="mb-4">

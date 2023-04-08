@@ -11,6 +11,7 @@ interface User {
   smoking: string;
   pets: string;
   personality: string;
+  gender: string;
   major: string;
   university: string;
   bio: string;
@@ -65,7 +66,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <hr className="flame border border-t mt-8" />
       <div
         className="flex flex-col h-full"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        style={{ maxHeight: "225px", overflowY: "auto" }}
       >
         <div className="flex flex-wrap justify-between items-start mb-8">
           {results.map((user) => (

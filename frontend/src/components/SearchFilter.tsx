@@ -73,7 +73,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       <hr className="border border-black mb-8" />
       <div
         className="flex flex-col h-full"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        style={{ maxHeight: "169px", overflowY: "auto" }}
       >
         <div className="flex justify-center">
           <div className="filter-attributes space-y-4 flex-1 overflow-y-auto max-w-lg">
@@ -293,16 +293,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             </div>
           </div>
         </div>
-        <div>
-          <button
-            onClick={handleSearchClick}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Show Results
-          </button>
-        </div>
       </div>
-
+      <div>
+        <button
+          onClick={handleSearchClick}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Show Results
+        </button>
+      </div>
       <br />
     </div>
   );

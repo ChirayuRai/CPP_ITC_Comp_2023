@@ -124,7 +124,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
   return (
     <div
       className="flex  flex-col h-full"
-      style={{ maxHeight: "380px", overflowY: "auto" }}
+      style={{ maxHeight: "340px", overflowY: "auto" }}
     >
       <div className="flex flex-wrap justify-between items-start mb-8">
         {recommendations.map((user: any) => (

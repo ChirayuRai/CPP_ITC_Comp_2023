@@ -2,20 +2,24 @@ const cors = require("cors");
 const express = require("express");
 const typeDefs = require("./schema");
 const resolvers = require("./resolvers");
+//const { models, db } = require("./db");
 const initializeDatabase = require("./db");
 
 const { ApolloServer } = require("apollo-server-express");
+//const { typeDefs, resolvers } = require('./graphql');
 
 require("dotenv").config({ path: ".env" });
 
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
+  //const db = await connectToMongoDB();
   const { models, db } = await initializeDatabase();
   const server = new ApolloServer({
     typeDefs,
     resolvers,
     context() {
+      //({ db });
       return { models, db };
     },
   });
@@ -28,16 +32,9 @@ const startServer = async () => {
   app.use(express.json());
   app.use(
     cors({
-      origin: "https://boisterous-khapse-d92f01.netlify.app",
-      methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-      credentials: true,
-      preflightContinue: true,
-      allowedHeaders: "X-CSRF-Token,X-Requested-With,Accept,Accept-Version,Content-Length,Content-MD5,Content-Type,Date,X-Api-Version",
-      maxAge: 9999999999,
+      origin: "*",
     })
   );
-
-  app.options('*', cors())
 
   app.use((err, req, res, next) => {
     console.error(err.stack);
