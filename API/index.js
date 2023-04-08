@@ -28,13 +28,15 @@ const startServer = async () => {
   app.use(express.json());
   app.use(
     cors({
-      origin: false,
+      origin: "https://boisterous-khapse-d92f01.netlify.app",
       methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
       credentials: true,
       preflightContinue: true,
       allowedHeaders: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     })
   );
+
+  app.options('*', cors())
 
   app.use((err, req, res, next) => {
     console.error(err.stack);
