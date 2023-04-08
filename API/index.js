@@ -33,6 +33,7 @@ const startServer = async () => {
       credentials: true,
       preflightContinue: true,
       allowedHeaders: "X-CSRF-Token,X-Requested-With,Accept,Accept-Version,Content-Length,Content-MD5,Content-Type,Date,X-Api-Version",
+      maxAge: 9999999999,
     })
   );
 
