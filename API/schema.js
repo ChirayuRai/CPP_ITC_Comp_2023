@@ -17,13 +17,13 @@ const typeDefs = gql`
     imgUrl: String
     university: String
     major: String
-    sleepTime: Int
+    sleepTime: String
     hygiene: Frequency
     hobbies: [String]
-    smoke: Boolean
-    pets: Boolean
+    smoke: String
+    pets: String
     createdAt: Int
-    similarity: Int
+    similarity: Float
   }
 
   type ProfileInfo {
@@ -64,6 +64,23 @@ const typeDefs = gql`
     pets: String!
   }
 
+  input UserEditProfile {
+    #id: ID!
+    username: String
+    password: String
+    email: String
+    biography: String
+    image: String
+    university: String
+    major: String
+    sleepTime: String
+    cleanliness: Frequency
+    guests: Frequency
+    hobbies: [String]
+    smoking: String
+    pets: String
+  }
+
   input UserInputUniversity {
     university: String!
   }
@@ -100,6 +117,7 @@ const typeDefs = gql`
   type Mutation {
     addUser(input: NewUserInput!): User!
     addUserProfile(input: UserProfile): User! #mutation definition to add profile info to the user
+    editUserProfile(input: UserEditProfile): User #mutation definition to add profile info to the user
     verifyUniqueness(input: UniqueID): String! #used to check if username already exists during signup
     userLogin(input: UserInputLogin!): User!
     searchUsers(input: UserSearch): [User]
