@@ -40,6 +40,11 @@ async function findCompatibleUsers(models, targetUser) {
     NEVER: 3,
   };
 
+  const gender = {
+    male: 1,
+    female: 2,
+  };
+
   const major = {
     "Computer Science": 1,
     "Mechanical Engineering": 2,
@@ -92,6 +97,7 @@ async function findCompatibleUsers(models, targetUser) {
       sleepTime[user.sleepTime] || 0,
       frequency[user.hygiene] || 0,
       personality[user.personality] || 0,
+      gender[user.gender] || 0,
       //...encodedHobbies
     ]);
   });
@@ -107,6 +113,7 @@ async function findCompatibleUsers(models, targetUser) {
     sleepTime[targetUser.sleepTime] || 0,
     frequency[targetUser.hygiene] || 0,
     personality[targetUser.personality] || 0,
+    gender[targetUser.gender] || 0,
 
     //...targetUserEncodedHobbies
   ]);
@@ -188,6 +195,7 @@ module.exports = {
         input.sleepTime ? { sleepTime: input.sleepTime } : null,
         input.guests ? { guests: input.guests } : null,
         input.personality ? { personality: input.personality } : null,
+        input.gender ? { gender: input.gender } : null,
         input.hygiene ? { hygiene: input.hygiene } : null,
         input.pets ? { pets: input.pets } : null,
       ];
@@ -197,8 +205,14 @@ module.exports = {
         (attribute) => attribute !== null
       );
 
+      // const filter = {
+      //   $and: validAttributes,
+      // };
       const filter = {
-        $and: validAttributes,
+        $and: [
+          ...validAttributes,
+          { username: { $ne: input.user } }, // Exclude logged-in user based on their ID
+        ],
       };
 
       //const searchResults = await models.User.find(filter);
@@ -441,6 +455,7 @@ module.exports = {
           name: input.name,
           bio: input.biography,
           personality: input.personality,
+          gender: input.gender,
           imgUrl: input.image,
           university: input.university,
           major: input.major,

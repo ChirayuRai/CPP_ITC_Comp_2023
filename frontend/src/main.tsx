@@ -5,13 +5,13 @@ import "./styles/transitions.css";
 import ReactDOM from "react-dom/client";
 //import { createRoot } from "react-dom";
 import App from "./App";
-import About from "./components/About"
 import ProfileInfo from "./components/ProfileInfo";
 import RegistrationForm from "./components/SignUp";
 import LoginForm from "./components/Login";
 import Home from "./components/Home";
 import Layout from "./components/Layout";
 import HomePageNav from "./components/HomeNav";
+import About from "./components/About";
 import Recommendations from "./components/Recommendations";
 
 //import "./index.css";

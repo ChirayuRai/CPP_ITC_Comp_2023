@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   },
   bio: String,
   personality: String,
+  gender: String,
   imgUrl: String,
   university: String,
   major: String,
@@ -41,6 +42,7 @@ UserSchema.index({ smoke: 1 });
 UserSchema.index({ sleepTime: 1 });
 UserSchema.index({ guests: 1 });
 UserSchema.index({ personality: 1 });
+UserSchema.index({ gender: 1 });
 UserSchema.index({ hygiene: 1 });
 UserSchema.index({ pets: 1 });
 

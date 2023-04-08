@@ -19,6 +19,7 @@ const typeDefs = gql`
     major: String
     sleepTime: String
     personality: String
+    gender: String
     hygiene: Frequency
     hobbies: [String]
     smoke: String
@@ -48,21 +49,22 @@ const typeDefs = gql`
 
   input UserProfile {
     #id: ID!
-    username: String!
-    password: String!
-    email: String!
-    name: String!
-    biography: String!
-    personality: String!
-    image: String!
-    university: String!
-    major: String!
-    sleepTime: String!
-    cleanliness: Frequency!
-    guests: Frequency!
-    hobbies: [String!]!
-    smoking: String!
-    pets: String!
+    username: String
+    password: String
+    email: String
+    name: String
+    biography: String
+    personality: String
+    gender: String
+    image: String
+    university: String
+    major: String
+    sleepTime: String
+    cleanliness: Frequency
+    guests: Frequency
+    hobbies: [String]
+    smoking: String
+    pets: String
   }
 
   input UserEditProfile {
@@ -98,11 +100,13 @@ const typeDefs = gql`
   }
 
   input UserSearch {
+    user: String
     university: String
     smoke: String
     sleepTime: String
     guests: String
     personality: String
+    gender: String
     hygiene: String
     pets: String
   }

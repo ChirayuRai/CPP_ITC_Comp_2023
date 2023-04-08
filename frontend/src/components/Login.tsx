@@ -32,6 +32,7 @@ const USER_DETAILS = gql`
     email
     name
     bio
+    gender
     #similarity
     #vaccinated @client
   }
