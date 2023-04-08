@@ -26,6 +26,7 @@ const startServer = async () => {
   server.applyMiddleware({ app });
 
   app.use(express.json());
+  app.options('*', cors())
   app.use(
     cors({
       origin: "*",
