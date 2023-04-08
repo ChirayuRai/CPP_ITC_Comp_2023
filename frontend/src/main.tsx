@@ -5,6 +5,7 @@ import "./styles/transitions.css";
 import ReactDOM from "react-dom/client";
 //import { createRoot } from "react-dom";
 import App from "./App";
+import About from "./components/About"
 import ProfileInfo from "./components/ProfileInfo";
 import RegistrationForm from "./components/SignUp";
 import LoginForm from "./components/Login";
@@ -47,6 +48,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path="/login" element={<LoginForm />} />
             <Route path="/signup" element={<RegistrationForm />} />
             <Route path="/profile-setup" element={<ProfileInfo />} />
+            <Route path="/about" element={<About />} />
           </Route>
           <Route
             path="/home/*"
