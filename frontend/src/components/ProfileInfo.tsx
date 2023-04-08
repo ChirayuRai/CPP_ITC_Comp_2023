@@ -45,6 +45,10 @@ interface FormData {
 
 interface University {
   name: string;
+  // country: string;
+  // city?: string;
+  // state?: string;
+  // web_pages?: string[];
 }
 
 const USER_DETAILS = gql`
@@ -94,9 +98,10 @@ const ProfileInfo: React.FC = () => {
   });
   console.log("form data Username", formData.username);
 
+  //const [majorsList, setMajors] = useState([]);
   const [majors, setMajors] = useState<MajorOption[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
-  const [selectedHobbies, setSelectedHobbies] = useState([]);
+  //const [selectedHobbies, setSelectedHobbies] = useState([]);
 
   const customStyles = {
     control: (provided: any) => ({
@@ -123,6 +128,14 @@ const ProfileInfo: React.FC = () => {
     // Add more hobbies options here
   ];
 
+  // const majorsOptions: MajorOption[] = [
+  //   { name: "Computer Science", id: 1 },
+  //   { name: "Mechanical Engineering", id: 2 },
+  //   { name: "Electrical Engineering", id: 3 },
+  //   { name: "Civil Engineering", id: 4 },
+  //   { name: "Physics", id: 5 },
+  //   { name: "Mathematics", id: 6 },
+  // ];
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -148,11 +161,6 @@ const ProfileInfo: React.FC = () => {
   };
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    // if (e.target.files && e.target.files.length > 0) {
-    //   const base64Image = await fileToBase64(e.target.files[0]);
-    //   console.log("profile pic base64 encoded", base64Image);
-    //   setFormData({ ...formData, image: base64Image });
-    // }
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
 
@@ -180,16 +188,6 @@ const ProfileInfo: React.FC = () => {
       }
     }
   };
-
-  // const fileToBase64 = (file: File) => {
-  //   //encode the file to base64 string
-  //   return new Promise<string>((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.onload = () => resolve(reader.result as string);
-  //     reader.onerror = (error) => reject(error);
-  //     reader.readAsDataURL(file);
-  //   });
-  // };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -250,9 +248,32 @@ const ProfileInfo: React.FC = () => {
   };
 
   useEffect(() => {
+    // const fetchMajors = async () => {
+    //   try {
+    //     const response = await fetch("https://your-api-url.com/majors");
+    //     const data = await response.json();
+    //     setMajors(data);
+    //   } catch (error) {
+    //     console.error("Error fetching majors:", error);
+    //   }
+    // };
+
+    // const fetchUniversities = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       "http://universities.hipolabs.com/search?country=United States"
+    //     );
+    //     const universities = await response.json();
+    //     setUniversities(universities);
+    //   } catch (error) {
+    //     console.error("Error fetching universities:", error);
+    //   }
+    // };
     const fetchMajors = async () => {
       try {
-        const response = await fetch("https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name%2C+rowid+as+id+from+%5Bcollege-majors%2Fmajors-list%5D+order+by+Major+limit+200");
+        const response = await fetch(
+          "https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name%2C+rowid+as+id+from+%5Bcollege-majors%2Fmajors-list%5D+order+by+Major+limit+200"
+        );
         const data = await response.json();
         setMajors(data.rows);
       } catch (error) {
@@ -263,16 +284,17 @@ const ProfileInfo: React.FC = () => {
     const fetchUniversities = async () => {
       try {
         const response = await fetch(
-          'https://parseapi.back4app.com/classes/University?limit=3002&order=name',
+          "https://parseapi.back4app.com/classes/University?limit=3002&order=name",
           {
             headers: {
-              'X-Parse-Application-Id': 'Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe', // This is the fake app's application id
-              'X-Parse-Master-Key': 'HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp', // This is the fake app's readonly master key
-            }
+              "X-Parse-Application-Id":
+                "Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe", // This is the fake app's application id
+              "X-Parse-Master-Key": "HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp", // This is the fake app's readonly master key
+            },
           }
         );
         const universities = await response.json();
-        console.log(universities)
+        console.log(universities);
         setUniversities(universities.results);
       } catch (error) {
         console.error("Error fetching universities:", error);
@@ -291,15 +313,6 @@ const ProfileInfo: React.FC = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      {/* <div
-        className="overflow-y-auto max-h-screen pt-32"
-        style={{
-          // marginTop: "2rem", // Adjust this value according to the height of the navbar
-          maxHeight: "calc(100vh - 10rem)",
-          // scrollbarWidth: "thin",
-          // scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
-        }}
-      > */}
       <form
         onSubmit={handleSubmit}
         className="bg-blue-500 bg-opacity-20 p-6 border-black border-2 rounded-lg shadow-lg w-full max-w-md mx-auto"
