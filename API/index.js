@@ -28,7 +28,7 @@ const startServer = async () => {
   app.use(express.json());
   app.use(
     cors({
-      origin: "*",
+      origin: false,
       methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
       credentials: true,
       preflightContinue: true,
