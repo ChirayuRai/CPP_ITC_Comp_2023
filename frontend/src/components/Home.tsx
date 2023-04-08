@@ -14,6 +14,7 @@ import {
 import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
 import "./background.css";
+import "./powerup.css";
 //import "../styles/transitions.css";
 import lightBackgroundPicIndoor from "../assets/sunset.jpeg";
 import darkBackgroundPicIndoor from "../assets/hammershoi.jpg";
@@ -25,10 +26,24 @@ import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 
+// interface User {
+//   username: string;
+//   name: string;
+//   email: string;
+//   bio: string;
+//   imgUrl: string;
+// }
 interface User {
   username: string;
   name: string;
   email: string;
+  hygiene: string;
+  sleepTime: string;
+  smoking: string;
+  pets: string;
+  personality: string;
+  major: string;
+  university: string;
   bio: string;
   imgUrl: string;
 }
@@ -42,6 +57,13 @@ const USER_DETAILS = gql`
     bio
     email
     imgUrl
+    hygiene
+    sleepTime
+    smoke
+    pets
+    personality
+    major
+    university
   }
 `;
 
@@ -69,7 +91,7 @@ const Home = () => {
   }, []);
 
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [backgroundSelection, setBackgroundSelection] = useState("indoor");
+  const [backgroundSelection, setBackgroundSelection] = useState("outdoor");
 
   // Define your background images for each category and mode
   const indoorBackgrounds = {
@@ -120,6 +142,7 @@ const Home = () => {
       Smoking,
       University,
     } = attributes;
+    //if university is selected (true) set the university field to match the logged in user's university
     if (University) {
       searchUniversity = university;
     } else {
@@ -149,6 +172,13 @@ const Home = () => {
       email: user.email, // Replace 'email' with the appropriate property from the user object
       bio: user.bio, // Replace 'attributes' with the appropriate property from the user object
       imgUrl: user.imgUrl,
+      hygiene: user.hygiene,
+      sleepTime: user.sleepTime,
+      personality: user.personality,
+      major: user.major,
+      university: user.university,
+      smoking: user.smoke,
+      pets: user.pets,
     }));
     console.log("searchResults structure", searchResults);
     //call the api to get the list of searched users
@@ -188,7 +218,9 @@ const Home = () => {
         >
           <div className="p-4 mt-2">
             <div
-              className=" relative w-full rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-20 flex flex-col items-center justify-around border-4 border-black"
+              className={` relative w-full rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-25 flex flex-col items-center justify-around border-4 border-black ${
+                isDarkMode ? "bruh" : ""
+              }`}
               style={{ maxHeight: "400px" }}
             >
               <div
@@ -239,6 +271,9 @@ const Home = () => {
                     }
                     setCollapsedSearch(!collapsedSearch); //and set the
                   }}
+                  title={
+                    collapsedSearch ? "Search Roommates" : "Collapse Search"
+                  }
                 >
                   <FontAwesomeIcon icon={faSearch} />
                 </button>
@@ -272,7 +307,7 @@ const Home = () => {
                   )}
                 </button>
               </div>
-              <div>
+              {/* <div>
                 <label
                   htmlFor="hobbies"
                   className="font-semibold mb-2 text-white"
@@ -294,7 +329,7 @@ const Home = () => {
                   <option value="indoor">Indoor</option>
                   <option value="outdoor">Outdoor</option>
                 </select>
-              </div>
+              </div> */}
             </div>
 
             <div
@@ -302,9 +337,9 @@ const Home = () => {
               style={{ maxHeight: "300px" }}
             >
               <div
-                className={`absolute z-10  border-4 border-black w-full bg-blue-500 bg-opacity-20  p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10  border-4 border-black w-full bg-blue-500 bg-opacity-25  p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedSearch ? "hidden" : "block"
-                }`}
+                } ${isDarkMode ? "bruh" : ""}`}
               >
                 {showResults ? (
                   <SearchResults
@@ -320,9 +355,9 @@ const Home = () => {
                 )}
               </div>
               <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedRecs ? "hidden" : "block"
-                }`}
+                } ${isDarkMode ? "bruh" : ""}`}
               >
                 <Recommendations
                   loggedInUser={username}
@@ -330,9 +365,9 @@ const Home = () => {
                 />
               </div>
               <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-20 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedEdit ? "hidden" : "block"
-                }`}
+                } ${isDarkMode ? "bruh" : ""}`}
               >
                 <ProfileView
                   loggedInUser={signedUser}

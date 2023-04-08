@@ -18,6 +18,7 @@ const typeDefs = gql`
     university: String
     major: String
     sleepTime: String
+    personality: String
     hygiene: Frequency
     hobbies: [String]
     smoke: String

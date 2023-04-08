@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 //setting type
 import "../styles/pulse.css";
+import "./searchfilter.css";
 
 interface SearchFilterProps {
   //for the state function to be passed from the home page
@@ -25,6 +26,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     SleepTime: "",
     Personality: "",
     University: false,
+    Gender: false,
   });
 
   const [collapsed, setCollapsed] = useState(true);
@@ -76,69 +78,100 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         <div className="flex justify-center">
           <div className="filter-attributes space-y-4 flex-1 overflow-y-auto max-w-lg">
             {/* <h4 className="font-semibold mb-4 text-center">Preferences:</h4> */}
-            <div className="w-1/2 pr-8">
-              <label
-                htmlFor="university"
-                className="font-semibold mb-2 text-white"
-                style={{
-                  fontFamily: "Roboto, sans-serif",
-                  letterSpacing: "0.05em",
-                  textShadow:
-                    "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                Match University
-              </label>
-              <input
-                type="checkbox"
-                checked={filterAttributes.University}
-                onChange={handleCheckboxAttributeChange}
-                id="university"
-                name="University"
-                className="ml-2 align-middle"
-              />
+            <div className="flex">
+              <div className="w-1/2 pr-8">
+                <label
+                  htmlFor="university"
+                  className="font-semibold mb-2 text-white"
+                  style={{
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
+                    textShadow:
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  Match University
+                </label>
+                <input
+                  type="checkbox"
+                  checked={filterAttributes.University}
+                  onChange={handleCheckboxAttributeChange}
+                  id="university"
+                  name="University"
+                  className="ml-2 align-middle"
+                />
+              </div>
+              <div className="w-1/2 pr-8">
+                <label
+                  htmlFor="gender"
+                  className="font-semibold mb-2 text-white"
+                  style={{
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
+                    textShadow:
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  Match Gender
+                </label>
+                <input
+                  type="checkbox"
+                  checked={filterAttributes.Gender}
+                  onChange={handleCheckboxAttributeChange}
+                  id="gender"
+                  name="Gender"
+                  className="ml-2 align-middle"
+                />
+              </div>
             </div>
             <br />
             {/* <hr className="border-t border-black mb-8" /> */}
             <hr className="flame border-t" />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col items-center">
-                <label
-                  htmlFor="pets"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Pets:
-                </label>
+            {/* <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col items-center"> */}
+            <div className="filter-container">
+              <div className="filter-grid">
+                <div className="flex flex-col items-center">
+                  <label
+                    htmlFor="pets"
+                    className="filter-label"
+                    // className="font-semibold mb-2 text-white"
+                    // style={{
+                    //   fontFamily: "Roboto, sans-serif",
+                    //   letterSpacing: "0.05em",
+                    //   textShadow:
+                    //     "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                    // }}
+                  >
+                    Pets:
+                  </label>
 
-                <select
-                  id="pets"
-                  name="Pets"
-                  value={filterAttributes.Pets}
-                  onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
-                >
-                  <option value=""></option>
-                  <option value="yes">yea</option>
-                  <option value="no">nay</option>
-                </select>
+                  <select
+                    id="pets"
+                    name="Pets"
+                    value={filterAttributes.Pets}
+                    onChange={handleAttributeChange}
+                    // className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                    className="filter-select mb-4 transparent-dropdown"
+                  >
+                    <option value=""></option>
+                    <option value="yes">yea</option>
+                    <option value="no">nay</option>
+                  </select>
+                </div>
               </div>
               <div className="flex flex-col items-center">
                 <label
                   htmlFor="smoke"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
+                  className="filter-label"
+                  // className="font-semibold mb-2 text-white"
+                  // style={{
+                  //   fontFamily: "Roboto, sans-serif",
+                  //   letterSpacing: "0.05em",
+                  //   textShadow:
+                  //     "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                  // }}
                 >
                   Smoke:
                 </label>
@@ -147,7 +180,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="Smoking"
                   value={filterAttributes.Smoking}
                   onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  // className="w-full px-3 py-2 border border-gray-300 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  className="filter-select mb-4 transparent-dropdown"
                 >
                   <option value=""></option>
                   <option value="yes">yea</option>
@@ -172,7 +206,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="SleepTime"
                   value={filterAttributes.SleepTime}
                   onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  className="filter-select mb-4 transparent-dropdown"
                 >
                   <option value=""></option>
                   <option value="1">Before 9pm</option>
@@ -198,7 +232,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="Hygiene"
                   value={filterAttributes.Hygiene}
                   onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  className="filter-select mb-4 transparent-dropdown"
                 >
                   <option value=""></option>
                   <option value="OFTEN">often</option>
@@ -223,7 +257,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="Guests"
                   value={filterAttributes.Guests}
                   onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  className="filter-select mb-4 transparent-dropdown"
                 >
                   <option value=""></option>
                   <option value="OFTEN">often</option>
@@ -248,7 +282,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="Personality"
                   value={filterAttributes.Personality}
                   onChange={handleAttributeChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent max-w-xs"
+                  className="filter-select mb-4 transparent-dropdown"
                 >
                   <option value=""></option>
                   <option value="introvert">introvert</option>

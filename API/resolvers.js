@@ -14,6 +14,13 @@ function getNewRedisClient() {
   return client;
 }
 
+function generateCacheKey(input) {
+  return Object.entries(input)
+    .sort()
+    .map(([key, value]) => `${key}:${value}`)
+    .join("|");
+}
+
 const possibleHobbies = ["reading", "sports", "music", "gaming", "cooking"];
 
 function oneHotEncodeHobbies(hobbies) {
@@ -53,13 +60,6 @@ async function findCompatibleUsers(models, targetUser) {
     ambivert: 3,
   };
 
-  // const sleepTime = {
-  //   "": 1,
-  //   "before 9pm": 2,
-  //   "9pm-11pm": 3,
-  //   "11pm-1am": 4,
-  //   "1am-3am": 5,
-  // };
   const sleepTime = {
     1: 1,
     2: 2,
@@ -72,6 +72,11 @@ async function findCompatibleUsers(models, targetUser) {
 
   // Fetch all users
   const users = await models.User.find({});
+  // const users = await models.User.find({
+  //   //culprit for not finding the recommended users
+  //   university: targetUser.university,
+  //   major: targetUser.major,
+  // }).select("username major smoke pets guests sleepTime hygiene personality");
 
   // Process user data into tensors and store in userTensors
   const userTensors = users.map((user) => {
@@ -107,16 +112,28 @@ async function findCompatibleUsers(models, targetUser) {
   ]);
 
   //calculate similarity score for each userTensor in the userTensors array
-  const similarities = userTensors.map((userTensor) => {
-    const dotProduct = tf.sum(tf.mul(userTensor, targetUserTensor));
-    const userTensorMagnitude = tf.norm(userTensor);
-    const targetUserTensorMagnitude = tf.norm(targetUserTensor);
-    return dotProduct
-      .div(
-        userTensorMagnitude.add(1e-8).mul(targetUserTensorMagnitude.add(1e-8))
-      )
-      .arraySync();
-  });
+  // const similarities = userTensors.map((userTensor) => {
+  //   const dotProduct = tf.sum(tf.mul(userTensor, targetUserTensor));
+  //   const userTensorMagnitude = tf.norm(userTensor);
+  //   const targetUserTensorMagnitude = tf.norm(targetUserTensor);
+  //   return dotProduct
+  //     .div(
+  //       userTensorMagnitude.add(1e-8).mul(targetUserTensorMagnitude.add(1e-8))
+  //     )
+  //     .arraySync();
+  // });
+  const similarities = await Promise.all(
+    userTensors.map(async (userTensor) => {
+      const dotProduct = tf.sum(tf.mul(userTensor, targetUserTensor));
+      const userTensorMagnitude = tf.norm(userTensor);
+      const targetUserTensorMagnitude = tf.norm(targetUserTensor);
+      return dotProduct
+        .div(
+          userTensorMagnitude.add(1e-8).mul(targetUserTensorMagnitude.add(1e-8))
+        )
+        .arraySync();
+    })
+  );
 
   // Sort users by similarity and return the most compatible users
   const sortedUsers = users
@@ -164,7 +181,7 @@ module.exports = {
         return "username available";
       }
     },
-    searchUsers: async (_, { input }, { models }) => {
+    searchUsers: async (_, { input, skip = 0, limit = 100 }, { models }) => {
       const filterAttributes = [
         input.university ? { university: input.university } : null,
         input.smoke ? { smoke: input.smoke } : null,
@@ -184,13 +201,109 @@ module.exports = {
         $and: validAttributes,
       };
 
-      const searchResults = await models.User.find(filter);
+      //const searchResults = await models.User.find(filter);
+
+      const searchResults = await models.User.find(filter)
+        .skip(skip)
+        .limit(limit);
       console.log("search results users:", searchResults);
       return searchResults;
+      // const filterAttributes = [
+      //   input.university ? { university: input.university } : null,
+      //   input.smoke ? { smoke: input.smoke } : null,
+      //   input.sleepTime ? { sleepTime: input.sleepTime } : null,
+      //   input.guests ? { guests: input.guests } : null,
+      //   input.personality ? { personality: input.personality } : null,
+      //   input.hygiene ? { hygiene: input.hygiene } : null,
+      //   input.pets ? { pets: input.pets } : null,
+      // ];
+
+      // const validAttributes = filterAttributes.filter(
+      //   (attribute) => attribute !== null
+      // );
+
+      // const filter = {
+      //   $and: validAttributes,
+      // };
+
+      // // Generate a unique cache key based on the input filters
+      // const cacheKey = generateCacheKey(input);
+
+      // // Check if the search results are available in the Redis cache
+      // const redisClient = getNewRedisClient();
+      // const cachedResults = await redisClient.get(cacheKey);
+
+      // if (cachedResults) {
+      //   console.log("Using cached results");
+      //   return JSON.parse(cachedResults);
+      // }
+
+      // const searchResults = await models.User.find(filter)
+      //   .skip(skip)
+      //   .limit(limit);
+      // console.log("Search results users:", searchResults);
+
+      // // Cache the search results in Redis with an expiration time (e.g. 1 hour)
+      // await redisClient.setex(cacheKey, 3600, JSON.stringify(searchResults));
+      // redisClient.quit();
+
+      // return searchResults;
     },
-    recommendUsers: async (_, { input }, { models }) => {
+    recommendUsers: async (_, { input, skip = 0, limit = 10 }, { models }) => {
+      user = await models.User.findOne({
+        username: input.username,
+      }).exec();
+      const compatibleUsers = await findCompatibleUsers(
+        //calling the tensorflow function implementation for comparing cosine similarities
+        //returns a list of compatible users
+        models,
+        user
+      );
+
+      console.log("compatible users:", compatibleUsers);
+      //compiling a list of recommendations upon new user sign up
+      //stores the list of compatible users for the user that just signed up
+      // const updateRecommendation = await new models.Recs({
+      //   _id: uuidv4(),
+      //   user: input.username,
+      //   //recommendedUsers: compatibleUsers,
+      //   recommendedUsers: compatibleUsers.map((user) => ({
+      //     _id: user._id,
+      //     username: user.username, //can also include profile pic and email to retrieve for later
+      //     similarity: user.similarity, //storing the similarity value to be displayed as part of the recommended results
+      //   })),
+      // });
+      const updateRecommendation = await models.Recs.findOneAndUpdate(
+        { user: input.username }, // Find the document by username
+        {
+          $set: {
+            // Update the fields
+            user: input.username,
+            recommendedUsers: compatibleUsers.map((user) => ({
+              _id: user._id,
+              username: user.username,
+              similarity: user.similarity,
+            })),
+          },
+        },
+        {
+          upsert: true, // Create a new document if it does not exist
+          new: true, // Return the updated document
+        }
+      );
+      try {
+        await updateRecommendation.save(); //saving the changes to db
+        //return newRecommendation;
+      } catch (err) {
+        console.error("Error creating user:", err);
+        throw new Error("Failed to create user");
+      }
+
       console.log("resolvers output for rec username", input.username);
-      //fetching the list of recommended user data for the logged in user
+
+      //call the recommender system again to update the recommendations to handle new user signups
+
+      //fetching the existing list of recommended user data for the logged in user
       userList = await models.Recs.findOne({
         user: input.username,
       }).exec();
@@ -205,11 +318,16 @@ module.exports = {
           const usersPromises = recommendedUsers.map(
             (
               user //store the corresponding User obj for each user in the recommendations list
-            ) => userModel.findOne({ username: user.username }).exec() //arrow function
+            ) =>
+              userModel
+                .findOne({ username: user.username })
+                // .skip(skip)
+                // .limit(limit)
+                .exec() //arrow function
           );
           //go through the list of User objects but how to get
 
-          //list of recommen
+          //list of recommended users
           const users = await Promise.all(usersPromises);
 
           //adding the similarity attribute to the response of each user object returned from the User table
@@ -243,24 +361,24 @@ module.exports = {
 
       return recUsers;
     },
-    addUser: async (_, { input }, { models }) => {
-      const newUser = new models.User({
-        //the field names here have to correspond with the field names in the mongoose
-        //schema defined in user.js
+    // addUser: async (_, { input }, { models }) => {
+    //   const newUser = new models.User({
+    //     //the field names here have to correspond with the field names in the mongoose
+    //     //schema defined in user.js
 
-        username: input.username,
-        password: input.password,
-        email: input.email,
-      });
+    //     username: input.username,
+    //     password: input.password,
+    //     email: input.email,
+    //   });
 
-      try {
-        await newUser.save();
-        return newUser;
-      } catch (err) {
-        console.error("Error creating user:", err);
-        throw new Error("Failed to create user");
-      }
-    },
+    //   try {
+    //     await newUser.save();
+    //     return newUser;
+    //   } catch (err) {
+    //     console.error("Error creating user:", err);
+    //     throw new Error("Failed to create user");
+    //   }
+    // },
 
     async userLogin(_, { input }, { models }) {
       //trying out redis
