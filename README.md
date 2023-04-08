@@ -32,7 +32,7 @@ The recommender system is a function defined in the Express backend that uses Te
 Redis is used as a caching mechanism for the login flow, improving performance and reducing the load on the MongoDB database.
 
 ## Architecture Diagram
-
+```
 +-----------------------------+
 |   Frontend (React, TS,      |
 |   Tailwind CSS)             |
@@ -53,4 +53,4 @@ Redis is used as a caching mechanism for the login flow, improving performance a
 +-----------------------------+
 |     MongoDB (Users, Recs)   |
 +-----------------------------+
-
+```
