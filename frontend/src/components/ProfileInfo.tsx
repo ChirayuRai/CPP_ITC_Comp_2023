@@ -63,7 +63,7 @@ const USER_DETAILS = gql`
 `;
 
 const CREATE_PROFILE = gql`
-  mutation CreateUserProfile($input: UserProfile!) {
+  mutation CreateUserProfile($input: UserProfile) {
     addUserProfile(input: $input) {
       ...UserDetails
     }
