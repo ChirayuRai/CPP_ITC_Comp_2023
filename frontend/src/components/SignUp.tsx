@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "../styles/tailwind.css";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { Link } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import Loader from "../components/Loader";
@@ -135,6 +137,12 @@ const RegistrationForm = () => {
       }}
     >
       <div className=" max-w-md border-4 border-black bg-blue-500 bg-opacity-20 w-full space-y-8 p-6 rounded-lg shadow-lg">
+      <Link
+          to="/login"
+          className="position: relative top-2 right-2 text-blue"
+        >
+          <FiArrowLeft size={29} />
+        </Link>
         <div>
           <h2
             className="text-2xl font-semibold mb-4 text-center text-white"
