@@ -2,6 +2,10 @@
 
 The Roommate Finder App is a web application built using the MERN stack, designed to help users find compatible roommates based on their preferences and lifestyle choices. This application is mobile-browser friendly and provides a seamless user experience.
 
+## Test it out for yourself!
+
+To access this project, just click this [link](https://boisterous-khapse-d92f01.netlify.app)
+
 ## Architecture
 
 The application's architecture consists of the following components:

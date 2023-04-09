@@ -24,7 +24,7 @@ function App() {
     // Set the component to visible after a delay
     const timer = setTimeout(() => {
       setVisible(true);
-    }, 5000); // Adjust the delay as needed
+    }, 2000); // Adjust the delay as needed
 
     // Clean up the timer when the component is unmounted
     return () => clearTimeout(timer);
