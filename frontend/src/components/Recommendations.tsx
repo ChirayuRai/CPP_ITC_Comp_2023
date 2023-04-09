@@ -226,7 +226,6 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
               </h3>
               <h3>Smokes: {selectedUser.smoke}</h3>
               <h3>Has Pets: {selectedUser.pets}</h3>
-              <h3>Hygiene: {selectedUser.username}</h3>
               {/* Render more detailed user attributes here */}
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"
