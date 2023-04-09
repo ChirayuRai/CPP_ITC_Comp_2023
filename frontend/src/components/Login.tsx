@@ -10,6 +10,7 @@ import {
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
+import { FiX } from "react-icons/fi";
 import gql from "graphql-tag";
 import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
@@ -114,6 +115,9 @@ const LoginForm = () => {
         onSubmit={handleSubmit}
         className=" bg-blue-500 bg-opacity-20 p-8 border-4 border-black rounded-lg shadow-md w-full max-w-md mx-auto"
       >
+       <Link to="/" className="position: relative top-2 right-2 text-blue">
+          <FiX size={29} />
+        </Link>
         <div className="mb-4">
           {/* <label
             htmlFor="username"
