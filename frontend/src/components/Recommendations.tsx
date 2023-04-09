@@ -215,7 +215,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
               </div>
               <h3>Name: {selectedUser.name}</h3>
               <h3>Bio: {selectedUser.bio}</h3>
-              <h3>Email: {selectedUser.email}</h3>
+<h3>Email: <a href={`mailto:${selectedUser.email}`} className="text-blue-500">{selectedUser.email}</a></h3>
               <h3>Gender: {selectedUser.gender}</h3>
               <h3>Personality: {selectedUser.personality}</h3>
               <h3>Hygiene: {selectedUser.hygiene}</h3>
