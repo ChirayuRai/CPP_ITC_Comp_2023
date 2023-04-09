@@ -1,5 +1,6 @@
 import backgroundPic from "../assets/thanatopsis.jpg";
-
+import { Link } from "react-router-dom";
+import { FiX } from "react-icons/fi";
 const About = () => {
   return (
     <div
@@ -9,6 +10,9 @@ const About = () => {
       }}
     >
       <div className="bg-blue-400 p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-2xl mx-auto border-4 border-black">
+      <Link to="/" className="position: relative top-2 right-2 text-blue">
+          <FiX size={34} />
+        </Link>
         <h2
           className="text-4xl font-semibold mb-4 text-center text-white"
           style={{
