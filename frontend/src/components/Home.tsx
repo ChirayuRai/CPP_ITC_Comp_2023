@@ -3,6 +3,7 @@ import SearchFilter from "./SearchFilter";
 import { useNavigate, useLocation } from "react-router-dom";
 //import ProfileList from "./ProfileList";
 import ProfileView from "./ProfileView";
+import DetailedProfileView from "./DetailedProfileView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -274,6 +275,17 @@ const Home = () => {
                   </div>
                 </div>
               </div>
+              <h2
+                className="text-2xl font-semibold mb-4 text-center text-white"
+                style={{
+                  fontFamily: "Roboto, sans-serif",
+                  letterSpacing: "0.05em",
+                  textShadow:
+                    "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                }}
+              >
+                hi, {username}
+              </h2>
               <div className="flex justify-center space-x-2 mb-4">
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -386,6 +398,16 @@ const Home = () => {
                   //onToggleView={handleToggleView}
                 />
               </div>
+              {/* <div
+                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                  collapsedEdit ? "hidden" : "block"
+                } ${isDarkMode ? "bruh" : ""}`}
+              >
+                <DetailedProfileView
+                  loggedInUser={signedUser}
+                  //onToggleView={handleToggleView}
+                />
+              </div> */}
             </div>
           </div>
         </div>

@@ -42,9 +42,8 @@ const About = () => {
             }}
           >
             In Icelandic, "hæli" is a noun that translates to "shelter" or
-            "protection" in English. It refers to a place or situation that
-            provides safety from adverse weather, danger, or any other
-            threatening conditions
+            "protection". It refers to a place or situation that provides safety
+            from adverse weather, danger, or any other threatening conditions
           </p>
           <br />
           <p
@@ -133,10 +132,10 @@ const About = () => {
                 "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
             }}
           >
-            This project is based off the MERN stack, but we have also added a
-            layer of graphql for easier querying, as well as redis for caching
-            user recommendations. The recommendation system also utilizes tensor
-            flow, allowing for more accurate pairing between users.
+            This project is based off the MERN stack, along with a graphql
+            implementation as middleware for easier querying, as well as redis
+            for caching user data. The recommendation system also utilizes
+            tensor flow.js, allowing for more accurate pairing between users.
           </p>
           <br />
           <p
