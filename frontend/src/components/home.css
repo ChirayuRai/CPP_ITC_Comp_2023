@@ -1,33 +1,42 @@
-/* .transition-wrapper {
+@keyframes clowing {
+  0% {
+    box-shadow: 0 0 5px #9ddcff, 0 0 10px #9ddcff, 0 0 20px #9ddcff,
+      0 0 30px #9ddcff;
+  }
+  50% {
+    box-shadow: 0 0 10px #9ddcff, 0 0 20px #9ddcff, 0 0 30px #9ddcff,
+      0 0 40px #9ddcff;
+  }
+  100% {
+    box-shadow: 0 0 5px #9ddcff, 0 0 10px #9ddcff, 0 0 20px #9ddcff,
+      0 0 30px #9ddcff;
+  }
+}
+
+.clame {
   position: relative;
+  width: 20px;
+  height: 60px;
+  background-color: #9ddcff;
+  border-radius: 50% 50% 50% 50%/100% 100% 0% 0%;
+  animation: clowing 2s infinite;
 }
 
-.transition-background {
+.clame::before,
+.clame::after {
+  content: "";
   position: absolute;
-  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #9ddcff;
+}
+
+.clame::before {
   left: 0;
+  border-radius: 50% 0% 50% 0%/100% 0% 0% 0%;
+}
+
+.clame::after {
   right: 0;
-  bottom: 0;
-  background-size: cover;
-  background-position: center;
-  transition: opacity 1s ease-in-out;
-  z-index: -1;
+  border-radius: 0% 50% 0% 50%/0% 100% 0% 0%;
 }
-
-.bg-light {
-  background-image: url("../assets/oxbow.jpg");
-  opacity: 1;
-}
-
-.bg-dark {
-  background-image: url("../assets/catskills.jpg");
-  opacity: 0;
-}
-
-.is-dark-mode .bg-light {
-  opacity: 0;
-}
-
-.is-dark-mode .bg-dark {
-  opacity: 1;
-} */
