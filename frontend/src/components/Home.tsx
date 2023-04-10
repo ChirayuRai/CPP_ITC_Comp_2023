@@ -16,6 +16,7 @@ import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
 import "./background.css";
 import "./powerup.css";
+import "./home.css";
 //import "../styles/transitions.css";
 import lightBackgroundPicIndoor from "../assets/sunset.jpeg";
 import darkBackgroundPicIndoor from "../assets/hammershoi.jpg";
@@ -82,6 +83,8 @@ const SEARCH_USERS = gql`
 
 const Home = () => {
   const [visible, setVisible] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+
 
   useEffect(() => {
     // Set the component to visible after a delay
@@ -134,6 +137,7 @@ const Home = () => {
   // console.log("searchAttributes", searchAttributes);
 
   const handleSearchAttributesChange = async (attributes: any) => {
+    setSearchLoading(true);
     setSearchAttributes(attributes); //this will be set from the search filter react component
     //console.log("searchAttributes from searchFilter", searchAttributes);
     let searchUniversity = "";
@@ -178,6 +182,7 @@ const Home = () => {
     });
     // signedUserData = signedUser["userLogin"]
     console.log("API response for search results:", searchedUsers1.data);
+        setSearchLoading(false);
 
     let searchResults = searchedUsers1.data.searchUsers.map((user: any) => ({
       username: user.username, // Replace 'id' with the appropriate property from the user object
@@ -365,7 +370,12 @@ const Home = () => {
                   collapsedSearch ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
-                {showResults ? (
+                {searchLoading ? (
+                  <div className="flex justify-center items-center">
+                 
+                    <div className="clame"></div>
+                  </div>
+                ) : showResults ? (
                   <SearchResults
                     results={searchresults}
                     onToggleView={handleToggleView}

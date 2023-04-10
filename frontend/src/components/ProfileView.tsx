@@ -559,7 +559,6 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                 value={formData.cleanliness}
                 onChange={handleChange}
               >
-                <option value=""></option>
                 <option value="OFTEN">often</option>
                 <option value="SOMETIMES">sometimes</option>
                 <option value="NEVER">never</option>
@@ -594,7 +593,6 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                 value={formData.guests}
                 onChange={handleChange}
               >
-                <option value=""></option>
                 <option value="OFTEN">often</option>
                 <option value="SOMETIMES">sometimes</option>
                 <option value="NEVER">never</option>
