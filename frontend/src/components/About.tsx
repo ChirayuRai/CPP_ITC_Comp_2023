@@ -83,33 +83,6 @@ const About = () => {
               {" "}
               Chirayu Rai{" "}
             </a>
-            ,{" "}
-            <a
-              href="https://www.linkedin.com/in/gerardosolisit/"
-              target="_blank"
-              className="hover:text-slate-300"
-            >
-              {" "}
-              Gerardo Solis{" "}
-            </a>
-            ,{" "}
-            <a
-              href="https://www.linkedin.com/in/andy-diep/"
-              target="_blank"
-              className="hover:text-slate-300"
-            >
-              {" "}
-              Andy Diep{" "}
-            </a>
-            ,{" "}
-            <a
-              href="https://www.linkedin.com/in/sararosec/"
-              target="_blank"
-              className="hover:text-slate-300"
-            >
-              {" "}
-              Sara Cozart{" "}
-            </a>
           </p>
           <br />
           <p
