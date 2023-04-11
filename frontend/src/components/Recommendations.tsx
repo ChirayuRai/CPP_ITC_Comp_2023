@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
+import "./recs.css";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
@@ -17,6 +18,7 @@ interface User {
   university: string;
   bio: string;
   imgUrl: string;
+  hobbies: [string];
 }
 
 interface RecommendationsResultsProps {
@@ -33,14 +35,15 @@ const USER_DETAILS = gql`
     email
     hygiene
     personality
-    gender
     university
+    gender
     major
     sleepTime
     smoke
     pets
     similarity
     imgUrl
+    hobbies
   }
 `;
 
@@ -85,6 +88,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
   };
 
   const [recommendations, setRecommendations] = useState<User[] | any>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   //refresh the recommended user list:
   const refreshRecommendations = async () => {
@@ -95,6 +99,8 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
       };
       console.log("username rec view", input);
       //execute the mutation query to return a list of recommended users for the logged in user
+      setSearchLoading(true);
+
       let recdUsers = await recommendUsers({
         variables: { input }, //the input has to match the input schema type defined in backend
       });
@@ -105,6 +111,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
         recdUsers.data.recommendUsers
       );
       setRecommendations(recdUsers.data.recommendUsers); //useState setter to set the returned recommendations
+      setSearchLoading(false);
     } catch (error) {
       console.error("Error fetching recommended users:", error);
     }
@@ -133,6 +140,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
         };
         console.log("username rec view", input);
         //execute the mutation query to return a list of recommended users for the logged in user
+        setSearchLoading(true);
         let recdUsers = await recommendUsers({
           variables: { input }, //the input has to match the input schema type defined in backend
         });
@@ -143,6 +151,7 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
           recdUsers.data.recommendUsers
         );
         setRecommendations(recdUsers.data.recommendUsers); //useState setter to set the returned recommendations
+        setSearchLoading(false);
       } catch (error) {
         console.error("Error fetching recommended users:", error);
       }
@@ -152,18 +161,29 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
 
   return (
     <>
-      <div
-        className="flex  flex-col h-full"
-        style={{ maxHeight: "260px", overflowY: "auto" }}
-      >
-        <div className="flex flex-wrap justify-between items-start mb-8">
-          {recommendations.map((user: any) => (
-            <div
-              key={user.username}
-              className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
-              onClick={() => openDetailedView(user)}
-            >
-              {/* <h3
+      {searchLoading ? (
+        <div
+          className="flex justify-center items-center"
+          style={{
+            height: "290px",
+            // overflowY: "auto",
+          }}
+        >
+          <div className="rlame"></div>
+        </div>
+      ) : (
+        <div
+          className="flex  flex-col h-full"
+          style={{ maxHeight: "290px", overflowY: "auto" }}
+        >
+          <div className="flex flex-wrap justify-between items-start mb-8">
+            {recommendations.map((user: any) => (
+              <div
+                key={user.username}
+                className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                onClick={() => openDetailedView(user)}
+              >
+                {/* <h3
               className="font-semibold mb-2 text-white"
               style={{
                 fontFamily: "Roboto, sans-serif",
@@ -174,69 +194,71 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
             >
               {user.name}
             </h3> */}
-              <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
-                <img
-                  //src={profPic}
-                  src={user.imgUrl}
-                  alt="Profile"
-                  className="rounded-full h-full w-full object-cover"
-                />
-              </div>
-              <h3
-                className="font-semibold mb-2 text-white"
-                style={{
-                  fontFamily: "Roboto, sans-serif",
-                  letterSpacing: "0.05em",
-                  textShadow:
-                    "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                {(parseFloat(user.similarity) * 100).toFixed(2)}% match
-              </h3>
+                <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                  <img
+                    //src={profPic}
+                    src={user.imgUrl}
+                    alt="Profile"
+                    className="rounded-full h-full w-full object-cover"
+                  />
+                </div>
+                <h3
+                  className="font-semibold mb-2 text-white"
+                  style={{
+                    fontFamily: "Roboto, sans-serif",
+                    letterSpacing: "0.05em",
+                    textShadow:
+                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+                </h3>
 
-              {/* Render other user attributes here */}
-            </div>
-          ))}
-        </div>
-
-        {selectedUser && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-              <h2 className="text-2xl font-bold mb-4">
-                User: {selectedUser.username}{" "}
-              </h2>
-              <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
-                <img
-                  //src={profPic}
-                  src={selectedUser.imgUrl}
-                  alt="Profile"
-                  className="rounded-full h-full w-full object-cover"
-                />
+                {/* Render other user attributes here */}
               </div>
-              <h3>Name: {selectedUser.name}</h3>
-              <h3>Bio: {selectedUser.bio}</h3>
-<h3>Email: <a href={`mailto:${selectedUser.email}`} className="text-blue-500">{selectedUser.email}</a></h3>
-              <h3>Gender: {selectedUser.gender}</h3>
-              <h3>Personality: {selectedUser.personality}</h3>
-              <h3>Hygiene: {selectedUser.hygiene}</h3>
-              <h3>University: {selectedUser.university}</h3>
-              <h3>Major: {selectedUser.major}</h3>
-              <h3>
-                Sleep Time: {getSleepTimeDescription(selectedUser.sleepTime)}
-              </h3>
-              <h3>Smokes: {selectedUser.smoke}</h3>
-              <h3>Has Pets: {selectedUser.pets}</h3>
-              {/* Render more detailed user attributes here */}
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"
-                onClick={closeDetailedView}
-              >
-                Close
-              </button>
-            </div>
+            ))}
           </div>
-        )}
-      </div>
+
+          {selectedUser && (
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+                <h2 className="text-2xl font-bold mb-4">
+                  User: {selectedUser.username}{" "}
+                </h2>
+                <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                  <img
+                    //src={profPic}
+                    src={selectedUser.imgUrl}
+                    alt="Profile"
+                    className="rounded-full h-full w-full object-cover"
+                  />
+                </div>
+                <h3>Name: {selectedUser.name}</h3>
+                <h3>Bio: {selectedUser.bio}</h3>
+                <h3>Email: {selectedUser.email}</h3>
+                <h3>Gender: {selectedUser.gender}</h3>
+                <h3>Personality: {selectedUser.personality}</h3>
+                <h3>Hobbies: {selectedUser.hobbies.join(", ")}</h3>
+                <h3>Hygiene: {selectedUser.hygiene}</h3>
+                <h3>University: {selectedUser.university}</h3>
+                <h3>Major: {selectedUser.major}</h3>
+                <h3>
+                  Sleep Time: {getSleepTimeDescription(selectedUser.sleepTime)}
+                </h3>
+                <h3>Smokes: {selectedUser.smoke}</h3>
+                <h3>Has Pets: {selectedUser.pets}</h3>
+                {/* Render more detailed user attributes here */}
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4"
+                  onClick={closeDetailedView}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div>
         <button
           onClick={refreshRecommendations}

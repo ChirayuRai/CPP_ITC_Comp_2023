@@ -265,7 +265,6 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
       // console.log("refreshed recommended list of users: ", recommendedUsers);
       console.log(
         "recommended list of users: ",
-        updatedUser,
         updatedUser.data.recommendUsers
       );
       setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
@@ -310,7 +309,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
               "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
           }}
         >
-          Edit Profile
+          Your Profile
         </h3>
       </div>
       <hr className="flame border border-black mt-8" />
@@ -326,7 +325,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
       > */}
       <div
         className="flex flex-col h-full"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        style={{ maxHeight: "280px", overflowY: "auto" }}
       >
         <div
           className="overflow-y-auto max-h-screen pt-10"
