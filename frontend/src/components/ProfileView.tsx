@@ -112,34 +112,21 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
   const [majors, setMajors] = useState<MajorOption[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
 
-  // const [formData, setFormData] = useState<FormData>({
-  //   username: loggedInUser["data"]["userLogin"].username,
-  //   email: loggedInUser["data"]["userLogin"].email,
-  //   biography: loggedInUser["data"]["userLogin"].bio,
-  //   image: loggedInUser["data"]["userLogin"].imgUrl,
-  //   university: loggedInUser["data"]["userLogin"].university,
-  //   major: loggedInUser["data"]["userLogin"].major,
-  //   sleepTime: loggedInUser["data"]["userLogin"].sleepTime,
-  //   cleanliness: loggedInUser["data"]["userLogin"].hygiene,
-  //   smoking: loggedInUser["data"]["userLogin"].smoking,
-  //   guests: loggedInUser["data"]["userLogin"].guests,
-  //   pets: loggedInUser["data"]["userLogin"].pets,
-  //   hobbies: loggedInUser["data"]["userLogin"].hobbies,
-  // });
   const [formData, setFormData] = useState<FormData>({
     username: loggedInUser["data"]["userLogin"].username,
     email: loggedInUser["data"]["userLogin"].email,
-    biography: "",
-    image: "",
-    university: "",
-    major: "",
-    sleepTime: "",
-    cleanliness: "",
-    smoking: "",
-    guests: "",
-    pets: "",
+    biography: loggedInUser["data"]["userLogin"].bio,
+    image: loggedInUser["data"]["userLogin"].imgUrl,
+    university: loggedInUser["data"]["userLogin"].university,
+    major: loggedInUser["data"]["userLogin"].major,
+    sleepTime: loggedInUser["data"]["userLogin"].sleepTime,
+    cleanliness: loggedInUser["data"]["userLogin"].hygiene,
+    smoking: loggedInUser["data"]["userLogin"].smoking,
+    guests: loggedInUser["data"]["userLogin"].guests,
+    pets: loggedInUser["data"]["userLogin"].pets,
     hobbies: loggedInUser["data"]["userLogin"].hobbies,
   });
+  
 
   const hobbiesOptions: HobbyOption[] = [
     { value: "reading", label: "Reading" },
