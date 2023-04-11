@@ -126,7 +126,21 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
     pets: loggedInUser["data"]["userLogin"].pets,
     hobbies: loggedInUser["data"]["userLogin"].hobbies,
   });
-  
+
+  // const [formData, setFormData] = useState<FormData>({
+  //   username: loggedInUser["data"]["userLogin"].username,
+  //   email: loggedInUser["data"]["userLogin"].email,
+  //   biography: "",
+  //   image: "",
+  //   university: "",
+  //   major: "",
+  //   sleepTime: "",
+  //   cleanliness: "",
+  //   smoking: "",
+  //   guests: "",
+  //   pets: "",
+  //   hobbies: loggedInUser["data"]["userLogin"].hobbies,
+  // });
 
   const hobbiesOptions: HobbyOption[] = [
     { value: "reading", label: "Reading" },
@@ -138,27 +152,6 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
   ];
 
   useEffect(() => {
-    // const fetchMajors = async () => {
-    //   try {
-    //     const response = await fetch("https://your-api-url.com/majors");
-    //     const data = await response.json();
-    //     setMajors(data);
-    //   } catch (error) {
-    //     console.error("Error fetching majors:", error);
-    //   }
-    // };
-
-    // const fetchUniversities = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       "http://universities.hipolabs.com/search?country=United States"
-    //     );
-    //     const universities = await response.json();
-    //     setUniversities(universities);
-    //   } catch (error) {
-    //     console.error("Error fetching universities:", error);
-    //   }
-    // };
     const fetchMajors = async () => {
       try {
         const response = await fetch(
@@ -360,7 +353,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
-              Profile Image:{" "}
+              Profile Image:
             </label>
 
             <input
