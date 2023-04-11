@@ -595,7 +595,8 @@ module.exports = {
             {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                Authorization: `Bearer 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`,
+                'Authorization': `Bearer ${apiKey}`,
+
               },
             }
           );
@@ -624,8 +625,8 @@ module.exports = {
               headers: {
                 "Content-Type": "application/json",
                 //Authorization: `Bearer ${apiKey}`,
-                Authorization:
-                  "Bearer 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",
+                'Authorization': `Bearer ${apiKey}`,
+
               },
             }
           );
