@@ -132,3 +132,25 @@
   right: 0;
   border-radius: 0% 50% 0% 50%/0% 100% 0% 0%;
 }
+
+@media (max-width: 768px) {
+  .image-form {
+    padding: 0.5rem;
+  }
+
+  .form-input {
+    font-size: 0.9rem;
+  }
+
+  .submit-button {
+    font-size: 0.7rem;
+  }
+
+  .form-input::placeholder {
+    font-size: 0.7rem;
+  }
+
+  .image-grid {
+    gap: 8px;
+  }
+}
