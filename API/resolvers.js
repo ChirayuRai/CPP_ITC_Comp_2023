@@ -2,22 +2,21 @@ const tf = require("@tensorflow/tfjs");
 const { v4: uuidv4 } = require("uuid");
 const Redis = require("ioredis");
 const axios = require("axios");
+
 require("dotenv").config({ path: ".env" });
 
 const apiKey = process.env.OPEN_API_KEY;
+// function getNewRedisClient() {
+//   const client = new Redis({
+//     // Add your configuration options here, if needed
+//     password: "DLtLfalG0P1q4DEC6NZIQB54Z23WCImL",
+//     host: "redis-15161.c246.us-east-1-4.ec2.cloud.redislabs.com",
+//     port: 15161,
+//   });
+//   console.log("New Redis client created");
 
-
-function getNewRedisClient() {
-  const client = new Redis({
-    // Add your configuration options here, if needed
-    password: "DLtLfalG0P1q4DEC6NZIQB54Z23WCImL",
-    host: "redis-15161.c246.us-east-1-4.ec2.cloud.redislabs.com",
-    port: 15161,
-  });
-  console.log("New Redis client created");
-
-  return client;
-}
+//   return client;
+// }
 
 function generateCacheKey(input) {
   return Object.entries(input)
@@ -35,6 +34,7 @@ const possibleHobbies = [
   "coding",
   "painting",
 ];
+
 function oneHotEncodeHobbies(hobbies) {
   //match based on hobbies later?
   const encodedHobbies = possibleHobbies.map((hobby) =>
@@ -110,7 +110,7 @@ async function findCompatibleUsers(models, targetUser) {
       frequency[user.hygiene] || 0,
       personality[user.personality] || 0,
       gender[user.gender] || 0,
-      ...encodedHobbies
+      ...encodedHobbies,
     ]);
   });
 
@@ -127,7 +127,7 @@ async function findCompatibleUsers(models, targetUser) {
     personality[targetUser.personality] || 0,
     gender[targetUser.gender] || 0,
 
-    ...targetUserEncodedHobbies
+    ...targetUserEncodedHobbies,
   ]);
 
   //calculate similarity score for each userTensor in the userTensors array
@@ -387,54 +387,39 @@ module.exports = {
 
       return recUsers;
     },
-    // addUser: async (_, { input }, { models }) => {
-    //   const newUser = new models.User({
-    //     //the field names here have to correspond with the field names in the mongoose
-    //     //schema defined in user.js
-
-    //     username: input.username,
-    //     password: input.password,
-    //     email: input.email,
-    //   });
-
-    //   try {
-    //     await newUser.save();
-    //     return newUser;
-    //   } catch (err) {
-    //     console.error("Error creating user:", err);
-    //     throw new Error("Failed to create user");
-    //   }
-    // },
 
     async userLogin(_, { input }, { models }) {
       //trying out redis
       console.log("Input:", input);
       try {
         // First, try to get the user from the Redis cache
-        const redisClient = getNewRedisClient();
-        console.log("Using Redis client");
+        // const redisClient = getNewRedisClient();
+        // console.log("Using Redis client");
 
-        const redisKey = `user:${input.username}`;
-        const cachedUser = await redisClient.get(redisKey).then(JSON.parse);
+        // const redisKey = `user:${input.username}`;
+        // const cachedUser = await redisClient.get(redisKey).then(JSON.parse);
 
         let user;
 
         // If the user is found in the cache, use it
-        if (cachedUser) {
-          console.log("User found in cache:", cachedUser);
-          user = cachedUser;
-        } else {
-          // If the user is not in the cache, query the database
-          user = await models.User.findOne({
-            username: input.username,
-          }).exec();
+        // if (cachedUser) {
+        //   console.log("User found in cache:", cachedUser);
+        //   user = cachedUser;
+        // } else {
+        //   // If the user is not in the cache, query the database
+        //   user = await models.User.findOne({
+        //     username: input.username,
+        //   }).exec();
 
-          // Store the user in the Redis cache
-          await redisClient.set(redisKey, JSON.stringify(user), "EX", 3600); // Cache for 1 hour
-          console.log("User fetched from database:", user);
-        }
+        //   // Store the user in the Redis cache
+        //   await redisClient.set(redisKey, JSON.stringify(user), "EX", 3600); // Cache for 1 hour
+        //   console.log("User fetched from database:", user);
+        // }
 
-        redisClient.quit();
+        //redisClient.quit();
+        user = await models.User.findOne({
+          username: input.username,
+        }).exec();
 
         console.log("User:", user);
         console.log("resolver password:", input.password);
@@ -537,9 +522,9 @@ module.exports = {
       const update = {
         //the input would have to be passed in from the root state (Home.tsx)
         //name: input.name,
+        imgUrl: input.image,
         bio: input.biography,
         university: input.university,
-        imgUrl: input.image,
         major: input.major,
         sleepTime: input.sleepTime,
         guests: input.guests,
@@ -610,7 +595,7 @@ module.exports = {
             {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                'Authorization': `Bearer ${apiKey}`,
+                Authorization: `Bearer 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`,
               },
             }
           );
@@ -626,7 +611,6 @@ module.exports = {
           imagePrompt = "cute kitten";
         }
         try {
-         
           const response = await axios.post(
             "https://api.openai.com/v1/images/generations",
             {
@@ -640,8 +624,8 @@ module.exports = {
               headers: {
                 "Content-Type": "application/json",
                 //Authorization: `Bearer ${apiKey}`,
-                'Authorization':
-                  `Bearer ${apiKey}`,
+                Authorization:
+                  "Bearer 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",
               },
             }
           );
