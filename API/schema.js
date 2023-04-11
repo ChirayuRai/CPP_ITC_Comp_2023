@@ -23,6 +23,8 @@ const typeDefs = gql`
     hygiene: Frequency
     hobbies: [String]
     smoke: String
+        savedImages: [String]
+
     pets: String
     createdAt: Int
     similarity: Float
@@ -114,6 +116,18 @@ const typeDefs = gql`
   input UserRecs {
     username: String!
   }
+  input GenerateDesigns {
+    prompt: String
+  }
+
+  input GetUserDesigns {
+    username: String!
+  }
+
+  input SaveDesign {
+    username: String!
+    imgSrc: String
+  }
 
   type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
@@ -127,6 +141,11 @@ const typeDefs = gql`
     userLogin(input: UserInputLogin!): User!
     searchUsers(input: UserSearch): [User]
     recommendUsers(input: UserRecs): [User]
+    
+     #dall-e generation
+    getUserDesigns(input: GetUserDesigns): [String]
+    createDesigns(input: GenerateDesigns): [String]
+    saveUserDesign(input: SaveDesign): String
   }
 `;
 
