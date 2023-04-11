@@ -485,7 +485,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
-              Sleep Time:{" "}
+              Sleep Time:
             </label>
 
             <div
@@ -522,7 +522,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
-              Hygiene:{" "}
+              Hygiene:
             </label>
 
             <div
@@ -556,7 +556,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
               }}
             >
-              Guests:{" "}
+              Guests:
             </label>
 
             <div
