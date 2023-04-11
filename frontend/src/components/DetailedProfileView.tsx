@@ -326,7 +326,7 @@ const DetailedProfileView: React.FC<RecommendationsResultsProps> = ({
       > */}
       <div
         className="flex flex-col h-full"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        style={{ maxHeight: "280px", overflowY: "auto" }}
       >
         <div
           className="overflow-y-auto max-h-screen pt-10"

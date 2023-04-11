@@ -54,7 +54,10 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div
+      className="flex flex-col h-full"
+      style={{ maxHeight: "345px", overflowY: "auto" }}
+    >
       <div className="justify-between items-center mb-4">
         <h3
           className="text-2xl font-semibold mb-4 text-center text-white"
@@ -73,7 +76,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       <hr className="border border-black mb-8" />
       <div
         className="flex flex-col h-full"
-        style={{ maxHeight: "169px", overflowY: "auto" }}
+        style={{ maxHeight: "209px", overflowY: "auto" }}
       >
         <div className="flex justify-center">
           <div className="filter-attributes space-y-4 flex-1 overflow-y-auto max-w-lg">

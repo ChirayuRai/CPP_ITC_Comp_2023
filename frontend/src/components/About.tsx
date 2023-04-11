@@ -9,8 +9,8 @@ const About = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className="bg-blue-400 p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-2xl mx-auto border-4 border-black">
-      <Link to="/" className="position: relative top-2 right-2 text-blue">
+      <div className="bg-blue-400 p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-2xl mx-auto border border-black">
+        <Link to="/" className="position: relative top-2 right-2 text-blue">
           <FiX size={34} />
         </Link>
         <h2
@@ -24,8 +24,9 @@ const About = () => {
         >
           About the Project
         </h2>
+
         <div style={{ maxHeight: "309px", overflowY: "auto" }}>
-          <p
+          {/* <p
             className="text-left text-white font-bold text-2xl"
             style={{
               fontFamily: "Roboto, sans-serif",
@@ -34,8 +35,8 @@ const About = () => {
                 "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
             }}
           >
-            Hæli:
-          </p>
+            An Ode to Hæli:
+          </p> */}
           <p
             className="text-left text-white font-medium text-m"
             style={{
@@ -86,6 +87,33 @@ const About = () => {
             >
               {" "}
               Chirayu Rai{" "}
+            </a>
+            ,{" "}
+            <a
+              href="https://www.linkedin.com/in/gerardosolisit/"
+              target="_blank"
+              className="hover:text-slate-300"
+            >
+              {" "}
+              Gerardo Solis{" "}
+            </a>
+            ,{" "}
+            <a
+              href="https://www.linkedin.com/in/andy-diep/"
+              target="_blank"
+              className="hover:text-slate-300"
+            >
+              {" "}
+              Andy Diep{" "}
+            </a>
+            ,{" "}
+            <a
+              href="https://www.linkedin.com/in/sararosec/"
+              target="_blank"
+              className="hover:text-slate-300"
+            >
+              {" "}
+              Sara Cozart{" "}
             </a>
           </p>
           <br />

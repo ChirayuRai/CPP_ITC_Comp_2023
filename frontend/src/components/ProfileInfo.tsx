@@ -64,6 +64,7 @@ const USER_DETAILS = gql`
 
 const CREATE_PROFILE = gql`
   mutation CreateUserProfile($input: UserProfile) {
+    #prevents the user from signing up if the profile's not fully finished
     addUserProfile(input: $input) {
       ...UserDetails
     }
@@ -127,6 +128,8 @@ const ProfileInfo: React.FC = () => {
     { value: "music", label: "Music" },
     { value: "traveling", label: "Traveling" },
     { value: "cooking", label: "Cooking" },
+    { value: "painting", label: "Painting" },
+    { value: "coding", label: "Coding" },
     // Add more hobbies options here
   ];
 
@@ -344,6 +347,7 @@ const ProfileInfo: React.FC = () => {
               type="text"
               name="name"
               value={formData.name}
+              required
               onChange={handleChange}
               className="mt-1 p-2 w-full border border-gray-300 rounded"
             />
@@ -607,6 +611,7 @@ const ProfileInfo: React.FC = () => {
               className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
               name="cleanliness"
               value={formData.cleanliness}
+              required
               onChange={handleChange}
             >
               <option value=""></option>
@@ -633,6 +638,7 @@ const ProfileInfo: React.FC = () => {
             <select
               className="mt-1 p-1 w-full border font-greek border-gray-300 rounded"
               name="guests"
+              required
               value={formData.guests}
               onChange={handleChange}
             >

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import "../styles/tailwind.css";
 //import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { Link } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
 import { useQuery, useMutation } from "@apollo/react-hooks";
+import { Link } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -136,8 +136,8 @@ const RegistrationForm = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className=" max-w-md border-4 border-black bg-blue-500 bg-opacity-20 w-full space-y-8 p-6 rounded-lg shadow-lg">
-      <Link
+      <div className=" max-w-md border border-black bg-blue-500 bg-opacity-30 w-full space-y-8 p-6 rounded-lg shadow-lg">
+        <Link
           to="/login"
           className="position: relative top-2 right-2 text-blue"
         >
@@ -170,9 +170,10 @@ const RegistrationForm = () => {
                 required
                 value={formData.username}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Username"
-                style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}              />
+                style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}
+              />
             </div>
             <div>
               <label htmlFor="email" className="sr-only">
@@ -185,7 +186,7 @@ const RegistrationForm = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Email"
                 style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}
               />
@@ -201,7 +202,7 @@ const RegistrationForm = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}
               />
@@ -217,9 +218,10 @@ const RegistrationForm = () => {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border-2 border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
-                style={{ backgroundColor: "rgba(0, 123 ,123, 0.3)" }}              />
+                style={{ backgroundColor: "rgba(0, 123 ,123, 0.3)" }}
+              />
             </div>
           </div>
 
@@ -230,7 +232,7 @@ const RegistrationForm = () => {
           )}
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 opacity-61 hover:opacity-75 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Next
           </button>

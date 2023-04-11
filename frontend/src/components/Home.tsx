@@ -5,12 +5,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ProfileView from "./ProfileView";
 import DetailedProfileView from "./DetailedProfileView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ReactLoading from "react-loading";
+import { useLazyQuery } from "@apollo/client";
+
 import {
   faEdit,
   faLightbulb,
   faSearch,
   faSun,
   faMoon,
+  faImages,
 } from "@fortawesome/free-solid-svg-icons";
 import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
@@ -27,6 +31,7 @@ import SearchResults from "./SearchResults";
 import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
+import DALLEImageView from "./GPT";
 
 // interface User {
 //   username: string;
@@ -84,7 +89,7 @@ const SEARCH_USERS = gql`
 const Home = () => {
   const [visible, setVisible] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     // Set the component to visible after a delay
@@ -99,6 +104,10 @@ const Home = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [backgroundSelection, setBackgroundSelection] = useState("outdoor");
 
+  // const handleBackgroundSelection = (e: any) => {
+  //   setBackgroundSelection(e.target.value);
+  // };
+
   // Define your background images for each category and mode
   const indoorBackgrounds = {
     light: lightBackgroundPicIndoor,
@@ -108,9 +117,6 @@ const Home = () => {
   const outdoorBackgrounds = {
     light: lightBackgroundPicOutdoor,
     dark: darkBackgroundPicOutdoor,
-  };
-  const handleBackgroundSelection = (e: any) => {
-    setBackgroundSelection(e.target.value);
   };
 
   const getSelectedBackground = () => {
@@ -125,6 +131,10 @@ const Home = () => {
   const [collapsedRecs, setCollapsedRecs] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const [searchUsers, searchedUsers] = useMutation(SEARCH_USERS);
+  // const [searchUsers, { data: searchedUsers, loading: searchLoading }] =
+  const [collapsedImage, setCollapsedImage] = useState(true);
+
+  //   useLazyQuery(SEARCH_USERS);
 
   const location = useLocation();
   const { signedUser } = location.state;
@@ -180,9 +190,10 @@ const Home = () => {
     let searchedUsers1 = await searchUsers({
       variables: { input }, //the input has to match the input schema type defined in backend
     });
+
     // signedUserData = signedUser["userLogin"]
     console.log("API response for search results:", searchedUsers1.data);
-        setSearchLoading(false);
+    setSearchLoading(false);
 
     let searchResults = searchedUsers1.data.searchUsers.map((user: any) => ({
       username: user.username, // Replace 'id' with the appropriate property from the user object
@@ -214,7 +225,7 @@ const Home = () => {
   return (
     // <div className="container mx-auto px-4 py-6 min-h-screen">
     <div className="transition-wrapper">
-      {!visible && <div className="transition-background"></div>}
+      {!visible && <div className="transition-background-entry"></div>}
       <div className={`transition-content ${visible ? "visible" : ""}`}>
         {/* <div
           className="mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto"
@@ -237,9 +248,9 @@ const Home = () => {
             overflowY: "auto",
           }}
         >
-          <div className="p-4 mt-8">
+          <div className="p-4 mt-1">
             <div
-              className={` relative w-full rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-25 flex flex-col items-center justify-around border-4 border-black ${
+              className={` relative w-full rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-25 flex flex-col items-center justify-around border border-black ${
                 isDarkMode ? "bruh" : ""
               }`}
               style={{ maxHeight: "400px" }}
@@ -256,7 +267,7 @@ const Home = () => {
                   <img
                     //src={profPic}
                     src={imgUrl}
-                    alt="Profile"
+                    alt=""
                     className="rounded-full h-full w-full object-cover pulse"
                   />
                   <div
@@ -264,10 +275,13 @@ const Home = () => {
                     style={{ transform: "translate(10%, 10%)" }}
                   >
                     <button
-                      className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className="bg-blue-600 opacity-75 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={() => {
                         if (!collapsedRecs) {
                           setCollapsedRecs(!collapsedRecs);
+                        }
+                        if (!collapsedImage) {
+                          setCollapsedImage(!collapsedImage);
                         }
                         if (!collapsedSearch) {
                           setCollapsedSearch(!collapsedSearch);
@@ -284,6 +298,7 @@ const Home = () => {
                 className="text-2xl font-semibold mb-4 text-center text-white"
                 style={{
                   fontFamily: "Roboto, sans-serif",
+                  fontSize: "25px",
                   letterSpacing: "0.05em",
                   textShadow:
                     "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
@@ -293,10 +308,13 @@ const Home = () => {
               </h2>
               <div className="flex justify-center space-x-2 mb-4">
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="bg-blue-600 opacity-75 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
                     if (!collapsedRecs) {
                       setCollapsedRecs(!collapsedRecs); //setting rec view hidden to true
+                    }
+                    if (!collapsedImage) {
+                      setCollapsedImage(!collapsedImage);
                     }
                     if (!collapsedEdit) {
                       setCollapsedEdit(!collapsedEdit);
@@ -310,18 +328,48 @@ const Home = () => {
                   <FontAwesomeIcon icon={faSearch} />
                 </button>
                 <button
-                  className="bg-blue-600 text-white rounded-full px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="bg-blue-600 opacity-75 text-white rounded-full px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
                     if (!collapsedSearch) {
                       setCollapsedSearch(!collapsedSearch);
+                    }
+                    if (!collapsedImage) {
+                      setCollapsedImage(!collapsedImage);
                     }
                     if (!collapsedEdit) {
                       setCollapsedEdit(!collapsedEdit);
                     }
                     setCollapsedRecs(!collapsedRecs);
                   }}
+                  title={
+                    collapsedRecs
+                      ? "Recommended Roommates"
+                      : "Collapse Recommendations"
+                  }
                 >
                   <FontAwesomeIcon icon={faLightbulb} />
+                </button>
+                <button
+                  className="bg-blue-600 text-white opacity-75 px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  onClick={() => {
+                    if (!collapsedRecs) {
+                      setCollapsedRecs(!collapsedRecs);
+                    }
+                    if (!collapsedSearch) {
+                      setCollapsedSearch(!collapsedSearch);
+                    }
+                    if (!collapsedEdit) {
+                      setCollapsedEdit(!collapsedEdit);
+                    }
+                    setCollapsedImage(!collapsedImage);
+                  }}
+                  title={
+                    collapsedImage
+                      ? "Show Design Generator"
+                      : "Collapse Generator"
+                  }
+                >
+                  <FontAwesomeIcon icon={faImages} />
                 </button>
                 <button
                   className={`dark-mode-button p-2 rounded-full text-white bg-gray-600 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors ${
@@ -366,13 +414,30 @@ const Home = () => {
 
             <div className="relative w-full max-w-md mx-auto">
               <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25  p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25  p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedSearch ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
+                {/* {showResults ? (
+                  <SearchResults
+                    results={searchresults}
+                    onToggleView={handleToggleView}
+                  />
+                ) : (
+                  <SearchFilter
+                    onSearchAttributesChange={handleSearchAttributesChange}
+                    onToggleView={handleToggleView}
+                    signedInUser={signedUser}
+                  />
+                )} */}
                 {searchLoading ? (
-                  <div className="flex justify-center items-center">
-                 
+                  <div
+                    className="flex justify-center items-center"
+                    style={{
+                      height: "135px",
+                      // overflowY: "auto",
+                    }}
+                  >
                     <div className="clame"></div>
                   </div>
                 ) : showResults ? (
@@ -389,7 +454,7 @@ const Home = () => {
                 )}
               </div>
               <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedRecs ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
@@ -399,7 +464,7 @@ const Home = () => {
                 />
               </div>
               <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedEdit ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
@@ -407,6 +472,44 @@ const Home = () => {
                   loggedInUser={signedUser}
                   //onToggleView={handleToggleView}
                 />
+              </div>
+              {/* <div className="image-container">
+                <div
+                  className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                    collapsedImage ? "hidden" : "block"
+                  } ${isDarkMode ? "bruh" : ""}`}
+                  style={{
+                    width: "600px",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                >
+                  <DALLEImageView fScreenState={setIsFullscreen} />
+                </div>
+              </div> */}
+              <div
+                className={`image-container ${
+                  isFullscreen ? "fullscreen" : ""
+                }`}
+              >
+                <div
+                  className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300 ${
+                    collapsedImage ? "hidden" : "block"
+                  } ${isDarkMode ? "bruh" : ""} ${
+                    isFullscreen ? "high-opacity" : ""
+                  }`}
+                  style={{
+                    width: isFullscreen ? "600px" : "450px",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                >
+                  <DALLEImageView
+                    loggedInUser={username}
+                    fScreenState={setIsFullscreen}
+                    fullScreenBool={isFullscreen}
+                  />
+                </div>
               </div>
               {/* <div
                 className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
