@@ -1,6 +1,9 @@
 const tf = require("@tensorflow/tfjs");
 const { v4: uuidv4 } = require("uuid");
 const Redis = require("ioredis");
+const axios = require("axios");
+ const apiKey = process.env.OPEN_API_KEY;
+
 
 function getNewRedisClient() {
   const client = new Redis({
@@ -21,8 +24,15 @@ function generateCacheKey(input) {
     .join("|");
 }
 
-const possibleHobbies = ["reading", "sports", "music", "gaming", "cooking"];
-
+const possibleHobbies = [
+  "reading",
+  "sports",
+  "music",
+  "gaming",
+  "cooking",
+  "coding",
+  "painting",
+];
 function oneHotEncodeHobbies(hobbies) {
   //match based on hobbies later?
   const encodedHobbies = possibleHobbies.map((hobby) =>
@@ -85,7 +95,7 @@ async function findCompatibleUsers(models, targetUser) {
 
   // Process user data into tensors and store in userTensors
   const userTensors = users.map((user) => {
-    //const encodedHobbies = oneHotEncodeHobbies(user.hobbies);
+    const encodedHobbies = oneHotEncodeHobbies(user.hobbies);
     // Convert user data into a tensor
     // (Modify this to use the features you want to consider for compatibility)
     return tf.tensor([
@@ -98,12 +108,12 @@ async function findCompatibleUsers(models, targetUser) {
       frequency[user.hygiene] || 0,
       personality[user.personality] || 0,
       gender[user.gender] || 0,
-      //...encodedHobbies
+      ...encodedHobbies
     ]);
   });
 
   // Compute the cosine similarity between the target user and all other users
-  //const targetUserEncodedHobbies = oneHotEncodeHobbies(targetUser.hobbies);
+  const targetUserEncodedHobbies = oneHotEncodeHobbies(targetUser.hobbies);
   const targetUserTensor = tf.tensor([
     //targetUser.hobbies,
     major[targetUser.major] || 0,
@@ -115,7 +125,7 @@ async function findCompatibleUsers(models, targetUser) {
     personality[targetUser.personality] || 0,
     gender[targetUser.gender] || 0,
 
-    //...targetUserEncodedHobbies
+    ...targetUserEncodedHobbies
   ]);
 
   //calculate similarity score for each userTensor in the userTensors array
@@ -460,6 +470,8 @@ module.exports = {
           university: input.university,
           major: input.major,
           sleepTime: input.sleepTime,
+                    savedImages: [],
+
           guests: input.guests,
           hygiene: input.cleanliness,
           hobbies: input.hobbies,
@@ -544,6 +556,106 @@ module.exports = {
       );
 
       console.log("updated user profile:", updatedProfile);
+    },
+    saveUserDesign: async (_, { input }, { models }) => {
+      const filter = { username: input.username };
+      const update = {
+        $addToSet: {
+          savedImages: input.imgSrc,
+        },
+      };
+
+      const options = { new: true, upsert: true };
+
+      const updatedProfile = await models.User.findOneAndUpdate(
+        filter,
+        update,
+        options
+      );
+
+      console.log("updated user profile:", updatedProfile);
+      return "saved image";
+    },
+    getUserDesigns: async (_, { input }, { models }) => {
+      const filter = { username: input.username };
+
+      try {
+        const user = await models.User.findOne(filter);
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const savedImages = user.savedImages;
+        console.log("User saved images:", savedImages);
+        return savedImages;
+      } catch (error) {
+        console.error("Error fetching user designs:", error);
+        throw error;
+      }
+    },
+    createDesigns: async (_, { input }, { models }) => {
+      async function generateDetailedPrompt(userPrompt) {
+        try {
+          const response = await axios.post(
+            "https://api.openai.com/v1/engines/text-davinci-002/completions",
+            JSON.stringify({
+              prompt: `Given the user's input: "${userPrompt}", create a  description for generating a high-quality, photorealistic image of a themed room design using DALL-E. The description should capture the essence of the theme, include essential elements, and describe the atmosphere, furniture, decorations, color scheme, and other aspects of the room in a true-to-life manner. Avoid any elements that would result in an animated, cartoon-like, or nonsensical appearance. Focus on producing images that look like they were taken with a camera in real life.`,
+              max_tokens: 100, // Increase max tokens if necessary
+              n: 1,
+              stop: null,
+              temperature: 0.4,
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: `Bearer ${apiKey}`,
+              },
+            }
+          );
+          return response.data.choices[0].text.trim();
+        } catch (error) {
+          console.error("Error generating detailed prompt:", error);
+          throw error;
+        }
+      }
+
+      async function fetchGeneratedImages(imagePrompt) {
+        if (imagePrompt === "") {
+          imagePrompt = "cute kitten";
+        }
+        try {
+         
+          const response = await axios.post(
+            "https://api.openai.com/v1/images/generations",
+            {
+              model: "image-alpha-001",
+              prompt: `${imagePrompt}`,
+              num_images: 1,
+              size: "512x512",
+              response_format: "url",
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                //Authorization: `Bearer ${apiKey}`,
+                Authorization:
+                  `Bearer ${apiKey}`,
+              },
+            }
+          );
+          return response.data.data.map((image) => image.url);
+        } catch (error) {
+          console.error("Error fetching generated images:", error);
+          throw error;
+        }
+      }
+
+      const detailedPrompt = await generateDetailedPrompt(input.prompt);
+      console.log("detailed davinci prompt: ", detailedPrompt);
+      const urls = await fetchGeneratedImages(detailedPrompt);
+
+      console.log("generated image urls: ", urls);
+      return urls;
     },
   },
 };
