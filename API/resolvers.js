@@ -2,7 +2,7 @@ const tf = require("@tensorflow/tfjs");
 const { v4: uuidv4 } = require("uuid");
 const Redis = require("ioredis");
 const axios = require("axios");
-require("dotenv").config({ path: "./.env" });
+require("dotenv").config({ path: ".env" });
 
 const apiKey = process.env.OPEN_API_KEY;
 
@@ -472,8 +472,7 @@ module.exports = {
           university: input.university,
           major: input.major,
           sleepTime: input.sleepTime,
-                    savedImages: [],
-
+          savedImages: [],
           guests: input.guests,
           hygiene: input.cleanliness,
           hobbies: input.hobbies,
@@ -540,6 +539,7 @@ module.exports = {
         //name: input.name,
         bio: input.biography,
         university: input.university,
+        imgUrl: input.image,
         major: input.major,
         sleepTime: input.sleepTime,
         guests: input.guests,
