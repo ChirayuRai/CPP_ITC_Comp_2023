@@ -29,6 +29,8 @@ const UserSchema = new mongoose.Schema({
   hygiene: String,
   guests: String,
   hobbies: [String],
+    savedImages: [String],
+
   smoke: String,
   pets: String,
   //createdAt: Number,
