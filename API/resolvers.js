@@ -2,7 +2,7 @@ const tf = require("@tensorflow/tfjs");
 const { v4: uuidv4 } = require("uuid");
 const Redis = require("ioredis");
 const axios = require("axios");
-require("dotenv").config({ path: ".env" });
+require("dotenv").config({ path: "./.env" });
 
 const apiKey = process.env.OPEN_API_KEY;
 
