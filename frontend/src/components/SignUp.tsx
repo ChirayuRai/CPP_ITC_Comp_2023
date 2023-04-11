@@ -159,7 +159,7 @@ const RegistrationForm = () => {
         <hr className="border-1 border-black mb-8" />
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
-            <div>
+            <div className="mb-2">
               <label htmlFor="username" className="sr-only">
                 Username
               </label>
@@ -186,7 +186,7 @@ const RegistrationForm = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input mb-2 appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Email"
                 style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}
               />
@@ -202,7 +202,7 @@ const RegistrationForm = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none mb-2 rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 style={{ backgroundColor: "rgba(0, 123 , 123, 0.3)" }}
               />
@@ -218,7 +218,7 @@ const RegistrationForm = () => {
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="my-input appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+                className="my-input appearance-none mb-2 rounded-none relative block w-full px-3 py-2 border border-black placeholder-black-500 text-white rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
                 style={{ backgroundColor: "rgba(0, 123 ,123, 0.3)" }}
               />
@@ -232,7 +232,7 @@ const RegistrationForm = () => {
           )}
           <button
             type="submit"
-            className="bg-blue-600 opacity-61 hover:opacity-75 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 opacity-61 mb-2 hover:opacity-75 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Next
           </button>
