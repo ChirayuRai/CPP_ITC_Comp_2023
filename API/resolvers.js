@@ -610,7 +610,7 @@ module.exports = {
             {
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                Authorization: `Bearer ${apiKey}`,
+                'Authorization': `Bearer ${apiKey}`,
               },
             }
           );
@@ -640,7 +640,7 @@ module.exports = {
               headers: {
                 "Content-Type": "application/json",
                 //Authorization: `Bearer ${apiKey}`,
-                Authorization:
+                'Authorization':
                   `Bearer ${apiKey}`,
               },
             }
