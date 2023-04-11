@@ -225,7 +225,7 @@ const Home = () => {
   return (
     // <div className="container mx-auto px-4 py-6 min-h-screen">
     <div className="transition-wrapper">
-      {!visible && <div className="transition-background-entry"></div>}
+      {!visible && <div className="transition-background"></div>}
       <div className={`transition-content ${visible ? "visible" : ""}`}>
         {/* <div
           className="mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto"
