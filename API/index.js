@@ -7,6 +7,7 @@ const initializeDatabase = require("./db");
 
 const { ApolloServer } = require("apollo-server-express");
 //const { typeDefs, resolvers } = require('./graphql');
+//const { typeDefs, resolvers } = require('./graphql');
 
 require("dotenv").config({ path: ".env" });
 
