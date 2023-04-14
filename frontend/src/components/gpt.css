@@ -132,7 +132,7 @@
   right: 0;
   border-radius: 0% 50% 0% 50%/0% 100% 0% 0%;
 }
-
+/* Add this media query to the end of your CSS file */
 @media (max-width: 768px) {
   .image-form {
     padding: 0.5rem;

@@ -8,7 +8,7 @@ const initializeDatabase = require("./db");
 const { ApolloServer } = require("apollo-server-express");
 //const { typeDefs, resolvers } = require('./graphql');
 
-require("dotenv").config({ path: "./.env" });
+require("dotenv").config({ path: ".env" });
 
 const PORT = process.env.PORT || 3000;
 
@@ -29,15 +29,11 @@ const startServer = async () => {
   //using the graphql server as a middleware for the express server accessible via /graphql endpoint
   server.applyMiddleware({ app });
 
-  app.use(express.json());
+  //app.use(express.json());
+  app.use(express.json({ limit: "50mb" }));
   app.use(
     cors({
       origin: "*",
-      credentials: true,
-      methods: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-      allowedHeaders: "X-CSRF-Token,X-Requested-With,Accept,Accept-Version,Content-Length,Content-MD5,Content-Type,Date,X-Api-Version",
-      preflightContinue: true,
-      maxAge: 999999999
     })
   );
 

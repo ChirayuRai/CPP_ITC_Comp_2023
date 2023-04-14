@@ -12,21 +12,35 @@ import {
   AiOutlineExpand,
   AiOutlineDribbbleSquare,
   AiOutlinePicture,
+  AiOutlineDelete,
 } from "react-icons/ai";
 import { useEffect } from "react";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faMagic,
+  faFilter,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 //import AiOutlinePicture from "@ant-design/icons";
 
 //get signedInUser prop
+const USER_DETAILS = gql`
+  fragment UserDetails on User {
+    username
+    name
+    bio
+    email
+    collectionPublic
+  }
+`;
 
-// const USER_DETAILS = gql`
-//   fragment UserDetails on User {
-//     username
-
-//   }
-// `;
+const IMAGE_DETAILS = gql`
+  fragment ImageDetails on SavedImage {
+    imgUrl
+    prompt
+  }
+`;
 
 //make sure the mutation exists in the backend
 const GENERATE_IMAGES = gql`
@@ -41,9 +55,33 @@ const SAVE_IMAGE = gql`
   }
 `;
 
+const DELETE_IMAGE = gql`
+  mutation DeleteImage($input: DeleteDesign) {
+    deleteDesign(input: $input)
+  }
+`;
+
 const GET_DESIGNS = gql`
   mutation GetDesign($input: GetUserDesigns) {
-    getUserDesigns(input: $input)
+    getUserDesigns(input: $input) {
+      ...ImageDetails
+    }
+  }
+  ${IMAGE_DETAILS}
+`;
+
+const UPDATE_PRIVACY = gql`
+  mutation ToggleUserPrivacy($input: CollectionPrivacy) {
+    togglePrivacy(input: $input) {
+      ...UserDetails
+    }
+  }
+  ${USER_DETAILS}
+`;
+
+const GET_PRIVACY = gql`
+  mutation GetUserPrivacy($privInput: CollectionPrivacy) {
+    getUserPrivacy(input: $privInput)
   }
 `;
 
@@ -63,14 +101,19 @@ const DALLEImageView: React.FC<DallEProps> = ({
   const [userPrompt, setUserPrompt] = useState("");
   const [imageURLs, setImageURLs] = useState([]);
   const [imageUrl, setImageUrl] = useState(null);
-  const [collectionURLs, setCollectionURLs] = useState<any>([]);
+  const [collectionURLs, setCollectionURLs] = useState<any>();
   const [savedCollection, setSavedCollection] = useState([]);
   const [apiKey, setApiKey] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [generateImages, generatedImages] = useMutation(GENERATE_IMAGES);
+  const [updateUserPrivacy, updatedUserPrivacy] = useMutation(UPDATE_PRIVACY);
+  const [getUserPrivacy, userPrivacy] = useMutation(GET_PRIVACY);
   const [getDesigns, userDesigns] = useMutation(GET_DESIGNS);
-  const [saveImage, savedImages] = useMutation(SAVE_IMAGE);
+  const [saveImage, savedImage] = useMutation(SAVE_IMAGE);
+  const [deleteImage, deletedImage] = useMutation(DELETE_IMAGE);
   const [isViewingCollection, setIsViewingCollection] = useState(false);
+
+  console.log("collectionURLS: ", collectionURLs);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -90,16 +133,46 @@ const DALLEImageView: React.FC<DallEProps> = ({
   };
 
   //refactor this to execute the mutation query to save the selected image in mongodb
-  const handleSaveImage = async (url: any) => {
+  const handleSaveImage = async (url: any, usersPrompt: any) => {
     setSearchLoading(true);
+    console.log("url of image being saved: ", url);
+    const input = {
+      username: loggedInUser,
+      imgSrc: url,
+      imgPrompt: usersPrompt,
+    };
+    const { data } = await saveImage({
+      variables: { input },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    }); //execute the mutation react hook
+    console.log("response saved image:", data);
+    setSearchLoading(false);
+    //setImageURLs(data.createDesigns);
+  };
+
+  const handleDeleteImage = async (url: any) => {
+    setSearchLoading(true);
+    console.log("url of image being deleted: ", url);
     const input = {
       username: loggedInUser,
       imgSrc: url,
     };
-    const { data } = await saveImage({
+
+    //this should be a mutation call to the backend to delete the image from user's collection
+    const { data } = await deleteImage({
       variables: { input },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     }); //execute the mutation react hook
-    console.log("response saved image:", data);
+    console.log("response deleted image:", data);
+    refetchCollection();
     setSearchLoading(false);
     //setImageURLs(data.createDesigns);
   };
@@ -120,12 +193,40 @@ const DALLEImageView: React.FC<DallEProps> = ({
       let collection = await getDesigns({
         variables: { input }, //the input has to match the input schema type defined in backend
       });
-      console.log("recommended list of users: ", collection);
+      console.log("design collections: ", collection);
       // setCollectionURLs(collection.data.getUserDesigns); //useState setter to set the returned recommendations
       const verifiedURLArr = await checkImage(collection.data.getUserDesigns);
       setCollectionURLs(verifiedURLArr);
       //setCollectionURLs(verifiedURLs);
       setSearchLoading(false);
+    } catch (error) {
+      console.error("Error fetching recommended users:", error);
+    }
+  };
+
+  //set the private profile toggle
+  const [isImagesPublic, setIsImagesPublic] = useState(false); //use the existing user's privacy state to set the toggle
+
+  const handleToggle = async () => {
+    setIsImagesPublic(!isImagesPublic);
+    try {
+      //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
+      setSearchLoading(true);
+      const input = {
+        //this variable has to match the defined parameter accepted by the resolver
+        username: loggedInUser,
+        collectionPublic: isImagesPublic,
+        privacyType: "images",
+      };
+      console.log("update profile mutation input:", input);
+      //execute the mutation query to return a list of recommended users for the logged in user
+      let updatedUserPrivacyRes = await updateUserPrivacy({
+        variables: { input }, //the input has to match the input schema type defined in backend
+      });
+      // console.log("refreshed recommended list of users: ", recommendedUsers);
+      console.log("updated user privacy response: ", updatedUserPrivacy.data);
+      setSearchLoading(false);
+      //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
     } catch (error) {
       console.error("Error fetching recommended users:", error);
     }
@@ -144,11 +245,28 @@ const DALLEImageView: React.FC<DallEProps> = ({
         let collection = await getDesigns({
           variables: { input }, //the input has to match the input schema type defined in backend
         });
-        console.log("recommended list of users: ", collection);
+        console.log(
+          "the value of collectionPublic for loggedInUser gpt ",
+          collection.data.getUserDesigns
+        );
+
+        const privInput = {
+          //this variable has to match the defined parameter accepted by the resolver
+          username: loggedInUser,
+          privacyType: "images",
+        };
+        let priv = await getUserPrivacy({
+          variables: { privInput }, //the input has to match the input schema type defined in backend
+        });
+        console.log(
+          "the value of collectionPublic for loggedInUser gpt ",
+          priv.data.getUserPrivacy
+        );
+
+        setIsImagesPublic(priv.data.getUserPrivacy); //setting the initial privacy state to the one stored in the db
 
         const verifiedURLArr = await checkImage(collection.data.getUserDesigns);
         setCollectionURLs(verifiedURLArr);
-        // setCollectionURLs(collection.data.getUserDesigns); //useState setter to set the returned recommendations
         setSearchLoading(false);
       } catch (error) {
         console.error("Error fetching recommended users:", error);
@@ -165,27 +283,15 @@ const DALLEImageView: React.FC<DallEProps> = ({
     link.click();
   };
 
-  // const checkImage = async () => {
-  //   const verifiedUrls = collectionURLs.map((url) => {
-  //     const img = new Image();
-  //     img.src = url;
-  //     img.onload = () => {
-  //       return url;
-  //     };
-  //     img.onerror = () => {
-  //       console.error("Invalid image URL:", url);
-  //     };
-  //   });
-  //   return verifiedUrls;
-  // };
   const checkImage = async (urls: any) => {
     const urlPromises = urls.map(
       (url: any) =>
         new Promise((resolve) => {
           const img = new Image();
-          img.src = url;
+          img.src = url.imgUrl;
           img.onload = () => {
             resolve(url);
+            //resolve(url.imgPrompt);
           };
           img.onerror = () => {
             console.error("Invalid image URL:", url);
@@ -209,27 +315,30 @@ const DALLEImageView: React.FC<DallEProps> = ({
   }
 
   return (
+    //comment the following code
     <div
-      className="dalle-image-view "
+      // className="dalle-image-view "
+      className="dalle-image-view overflow-y-auto"
       style={{
         maxHeight: fullScreenBool ? "515px" : "345px",
         overflowY: "auto",
+        //  overflowX: "auto",
       }}
     >
       <div
-        className="fullscreen-icon-container"
+        className="fullscreen-icon-container mr-6"
         style={{ position: "absolute", top: "10px", right: "10px" }}
       >
         {fullScreenBool ? (
           <AiOutlineFullscreenExit
-            size={34}
+            size={28}
             onClick={() => fScreenState(false)}
             style={{ cursor: "pointer" }}
             className="text-white"
           />
         ) : (
           <AiOutlineFullscreen
-            size={34}
+            size={28}
             onClick={() => fScreenState(true)}
             style={{ cursor: "pointer" }}
             className="text-white"
@@ -256,28 +365,56 @@ const DALLEImageView: React.FC<DallEProps> = ({
         </div>
       ) : isViewingCollection ? (
         <>
-          <p
-            className="text font-semibold mb-8 text-center text-white opacity-80"
-            style={{
-              fontFamily: "Roboto, sans-serif",
-              letterSpacing: "0.05em",
-              fontSize: "20px",
-              textShadow:
-                "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-            }}
-          >
-            Your Collection:
-          </p>
+          <div className="flex flex-col h-full items-center">
+            <p
+              className="text font-semibold mb-4 text-center text-white opacity-80"
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                letterSpacing: "0.05em",
+                fontSize: "20px",
+                textShadow:
+                  "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              Your Collection
+            </p>
+            <hr className="border-t border-white w-1/2 mb-2" />
+            <div className="flex items-center mt-1 mb-2">
+              <span className="text-white mr-2">Public</span>
+              <label
+                htmlFor="toggleCollection"
+                className="flex items-center cursor-pointer"
+              >
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="toggleCollection"
+                    className="sr-only"
+                    checked={isImagesPublic}
+                    onChange={handleToggle}
+                  />
+                  <div className="block bg-gray-600 w-12 h-6 rounded-full"></div>
+                  <div
+                    className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${
+                      isImagesPublic ? "transform translate-x-6" : ""
+                    }`}
+                  ></div>
+                </div>
+              </label>
+              <span className="text-white ml-2">Private</span>
+            </div>
+            <hr className="border-t border-white w-1/2 mt-1 mb-4" />
+          </div>
           <button
             onClick={() => {
               setIsViewingCollection(!isViewingCollection);
             }}
-            className="opacity-60 view-collection-button mt-1"
+            className="mt-1 opacity-60 view-collection-button"
             style={{
               backgroundColor: "blue",
               color: "white",
               border: "none",
-              padding: "8px 16px",
+              padding: "2px 16px",
               borderRadius: "4px",
               cursor: "pointer",
             }}
@@ -293,12 +430,15 @@ const DALLEImageView: React.FC<DallEProps> = ({
           </button>
           <div
             className="image-grid mt-20"
-            style={{ maxHeight: "420px", overflowY: "auto" }}
+            style={{
+              maxHeight: "720px",
+              overflowY: "auto",
+              overflowX: "auto",
+            }}
           >
             {/* Render your collection view here */}
             <div className="image-grid mt-20">
               {collectionURLs.map((url: any, index: any) => (
-                // checkImage(url);
                 <div
                   style={{
                     border: "3px solid #e0e0e0",
@@ -306,22 +446,50 @@ const DALLEImageView: React.FC<DallEProps> = ({
                     borderRadius: "10px",
                     padding: "5px",
                     boxSizing: "border-box",
+                    marginBottom: "16px",
+                    textAlign: "center", // Add this for center alignment
                   }}
                 >
                   <div key={index} className="images-container relative">
+                    <AiOutlineDelete
+                      className="save-icon absolute"
+                      size={34}
+                      onClick={() => handleDeleteImage(url.imgUrl)}
+                      style={{
+                        top: "10px",
+                        left: "57%",
+                        transform: "translateX(-90%)",
+                        cursor: "pointer",
+                      }}
+                      title={"Save to collection"}
+                    />
                     <AiOutlinePicture
                       className="squoosh-icon absolute "
                       size={34}
-                      onClick={() => openWithSquoosh(url, "squoosh-dalle.png")}
+                      onClick={() =>
+                        openWithSquoosh(url.imgUrl, "squoosh-dalle.png")
+                      }
                       style={{
                         top: "10px",
                         left: "50%",
-                        transform: "translateX(-50%)",
+                        transform: "translateX(-90%)",
                         cursor: "pointer",
                       }}
                       title={"Open with squoosh"}
                     />
-                    <img src={url} className="rounded-lg" />
+                    <img src={url.imgUrl} className="rounded-lg" />
+                  </div>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      marginTop: "8px",
+                      fontStyle: "italic",
+                      fontSize: "14px",
+                      color: "#E4E1D0", // Bone white color
+                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
+                    }}
+                  >
+                    &ldquo;{url.prompt}&rdquo;
                   </div>
                 </div>
               ))}
@@ -336,6 +504,7 @@ const DALLEImageView: React.FC<DallEProps> = ({
               style={{
                 fontFamily: "Roboto, sans-serif",
                 fontSize: "20px",
+                // width: "369px",
                 letterSpacing: "0.05em",
                 textShadow:
                   "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
@@ -373,19 +542,12 @@ const DALLEImageView: React.FC<DallEProps> = ({
                 )}
               </button>
             </div>
-            {/* <input
-              type="text"
-              id="prompt-input"
-              className="form-input mb-4 mt-6 opacity-70 "
-              placeholder="enter your API key"
-              value={userPrompt}
-              onChange={(e) => setUserPrompt(e.target.value)}
-              style={{ width: "70%", marginLeft: "auto", marginRight: "auto" }}
-            /> */}
+
             <input
               type="text"
               id="prompt-input"
-              className="form-input mb-4 mt-6 opacity-70 "
+              //className="form-input mb-4 mt-6 opacity-70 "
+              className="form-input mb-4 mt-6 opacity-70 w-4/5 mx-auto"
               placeholder="ex: rainforest themed living room"
               value={userPrompt}
               onChange={(e) => setUserPrompt(e.target.value)}
@@ -394,7 +556,9 @@ const DALLEImageView: React.FC<DallEProps> = ({
           </div>
           <button
             onClick={handleSubmit}
-            className="opacity-61 submit-button mt-1"
+            //className="opacity-61 submit-button mt-1 bg-blue-600"
+            className="opacity-61 submit-button mt-1 bg-blue-600 w-1/3 mx-auto"
+
             // style={{ width: "30%", marginLeft: "auto", marginRight: "auto" }}
           >
             Generate
@@ -408,7 +572,7 @@ const DALLEImageView: React.FC<DallEProps> = ({
                     <AiOutlineSave
                       className="save-icon absolute"
                       size={34}
-                      onClick={() => handleSaveImage(url)}
+                      onClick={() => handleSaveImage(url, userPrompt)}
                       style={{ top: "10px", left: "10px", cursor: "pointer" }}
                       title={"Save to collection"}
                     />
