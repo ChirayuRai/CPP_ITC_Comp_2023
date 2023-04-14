@@ -3,10 +3,20 @@ import SearchFilter from "./SearchFilter";
 import { useNavigate, useLocation } from "react-router-dom";
 //import ProfileList from "./ProfileList";
 import ProfileView from "./ProfileView";
-import DetailedProfileView from "./DetailedProfileView";
+//import DetailedProfileView from "./DetailedProfileView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faMagic,
+  faFilter,
+} from "@fortawesome/free-solid-svg-icons";
 import ReactLoading from "react-loading";
 import { useLazyQuery } from "@apollo/client";
+import { useDispatch } from "react-redux";
+import {
+  setSearchResults,
+  setActiveSearch,
+} from "../redux/actions/searchActions";
 
 import {
   faEdit,
@@ -23,7 +33,7 @@ import "./powerup.css";
 import "./home.css";
 //import "../styles/transitions.css";
 import lightBackgroundPicIndoor from "../assets/sunset.jpeg";
-import darkBackgroundPicIndoor from "../assets/hammershoi.jpg";
+//import darkBackgroundPicIndoor from "../assets/hammershoi.jpg";
 import lightBackgroundPicOutdoor from "../assets/oxbow.jpg";
 import darkBackgroundPicOutdoor from "../assets/mnight.jpg";
 //import darkBackgroundPic from "../assets/darkcauter.jpg";
@@ -32,6 +42,7 @@ import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import DALLEImageView from "./GPT";
+import { useSelector } from "react-redux";
 
 // interface User {
 //   username: string;
@@ -54,8 +65,17 @@ interface User {
   university: string;
   bio: string;
   imgUrl: string;
+  collection: [string];
+  collectionPublic: boolean;
+  profilePublic: boolean;
 }
 
+const IMAGE_DETAILS = gql`
+  fragment ImageDetails on SavedImage {
+    imgUrl
+    prompt
+  }
+`;
 //gql mutation query for the list of users based on the search query
 //update this to include other
 const USER_DETAILS = gql`
@@ -65,6 +85,10 @@ const USER_DETAILS = gql`
     bio
     email
     imgUrl
+    savedImages {
+      imgUrl
+      prompt
+    }
     hygiene
     sleepTime
     smoke
@@ -73,6 +97,8 @@ const USER_DETAILS = gql`
     gender
     major
     university
+    collectionPublic
+    profilePublic
   }
 `;
 
@@ -107,7 +133,12 @@ const Home = () => {
   // const handleBackgroundSelection = (e: any) => {
   //   setBackgroundSelection(e.target.value);
   // };
-
+  const darkBackgroundPicIndoor = new Image();
+  darkBackgroundPicIndoor.src = "./src/assets/mnight.jpg";
+  darkBackgroundPicIndoor.onload = () => {
+    //document.body.style.backgroundImage = `url(${darkBackgroundPicIndoor.src})`;
+    document.body.style.backgroundImage = `url(./src/assets/oxbow.jpg)`;
+  };
   // Define your background images for each category and mode
   const indoorBackgrounds = {
     light: lightBackgroundPicIndoor,
@@ -139,7 +170,7 @@ const Home = () => {
   const location = useLocation();
   const { signedUser } = location.state;
 
-  const imgUrl = signedUser["data"]["userLogin"].imgUrl;
+  const imgUrl = signedUser["data"]["userLogin"].imgUrl; //the profile pic of the logged in user
   const university = signedUser["data"]["userLogin"].university;
   const gender = signedUser["data"]["userLogin"].gender;
   const username = signedUser["data"]["userLogin"].username;
@@ -201,6 +232,7 @@ const Home = () => {
       email: user.email, // Replace 'email' with the appropriate property from the user object
       bio: user.bio, // Replace 'attributes' with the appropriate property from the user object
       imgUrl: user.imgUrl,
+      collection: user.savedImages,
       hygiene: user.hygiene,
       sleepTime: user.sleepTime,
       personality: user.personality,
@@ -215,17 +247,85 @@ const Home = () => {
 
     setResults(searchResults);
   };
+  const activeSearch = useSelector(
+    (state: any) => state.searchResults.activeSearch
+  );
 
-  const handleToggleView = () => {
-    console.log("handle toggle view called");
+  //two use effects
+
+  useEffect(() => {
+    console.log("handle toggle view called", activeSearch);
+
+    //setCollapsedSearch(!collapsedSearch); //and set the
+
+    if (activeSearch === "redux") {
+      if (!collapsedRecs) {
+        setCollapsedRecs(!collapsedRecs); //setting rec view hidden to true
+      }
+      if (!collapsedImage) {
+        setCollapsedImage(!collapsedImage);
+      }
+      if (!collapsedEdit) {
+        setCollapsedEdit(!collapsedEdit);
+      }
+      if (collapsedSearch) {
+        setCollapsedSearch(!collapsedSearch); //setting search view hidden to false
+      }
+      //setShowResults(!showResults);
+      if (showResults === false) {
+        setShowResults(!showResults);
+      }
+      console.log("show results value", showResults);
+    } else if (activeSearch === "local") {
+      //state will be set to local when the search button is clicked from the search filter component
+
+      if (showResults === false) {
+        setShowResults(!showResults);
+      }
+      console.log("show results value", showResults);
+    }
+  }, [activeSearch]);
+
+  const dispatch = useDispatch(); //redux dispatch
+
+  const handleToggleViewBack = () => {
+    //accessed by the searchFilter component
+    console.log("activeSearch from Home.tsx", activeSearch);
+
+    // if (activeSearch === "redux") {
+    //dispatch(setActiveSearch("local"));
+    dispatch(setActiveSearch("other"));
     setShowResults(!showResults);
-    console.log("show results value", showResults);
+    //   console.log("show results value", showResults);
+    // }
+    // else {
+    //   console.log("handle toggle view called");
+    //   setShowResults(!showResults);
+    //   console.log("show results value", showResults);
+    // }
+  };
+
+  const handleToggleViewSearch = () => {
+    //accessed by the searchFilter component
+    console.log("activeSearch from Home.tsx", activeSearch);
+
+    // if (activeSearch === "redux") {
+    //dispatch(setActiveSearch("local"));
+    //dispatch(setActiveSearch("other"));
+    setShowResults(!showResults);
+    //   console.log("show results value", showResults);
+    // }
+    // else {
+    //   console.log("handle toggle view called");
+    //   setShowResults(!showResults);
+    //   console.log("show results value", showResults);
+    // }
   };
 
   return (
     // <div className="container mx-auto px-4 py-6 min-h-screen">
     <div className="transition-wrapper">
-      {!visible && <div className="transition-background"></div>}
+      {!visible && <div className="transition-background-entry"></div>}
       <div className={`transition-content ${visible ? "visible" : ""}`}>
         {/* <div
           className="mx-auto px-4 py-6 min-h-screen bg-white overflow-y-auto"
@@ -248,9 +348,9 @@ const Home = () => {
             overflowY: "auto",
           }}
         >
-          <div className="p-4 mt-1">
+          <div className="p-4">
             <div
-              className={` relative w-full rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-25 flex flex-col items-center justify-around border border-black ${
+              className={` relative w-full backdrop-blur-md rounded-lg max-w-md mx-auto mt-16 mb-4 bg-blue-400 bg-opacity-25 flex flex-col items-center justify-around border border-black ${
                 isDarkMode ? "bruh" : ""
               }`}
               style={{ maxHeight: "400px" }}
@@ -277,6 +377,7 @@ const Home = () => {
                     <button
                       className="bg-blue-600 opacity-75 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={() => {
+                        dispatch(setActiveSearch("other"));
                         if (!collapsedRecs) {
                           setCollapsedRecs(!collapsedRecs);
                         }
@@ -308,8 +409,9 @@ const Home = () => {
               </h2>
               <div className="flex justify-center space-x-2 mb-4">
                 <button
-                  className="bg-blue-600 opacity-75 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="bg-blue-600 backdrop-blur-md opacity-75 text-white px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
+                    dispatch(setActiveSearch("other"));
                     if (!collapsedRecs) {
                       setCollapsedRecs(!collapsedRecs); //setting rec view hidden to true
                     }
@@ -325,11 +427,13 @@ const Home = () => {
                     collapsedSearch ? "Search Roommates" : "Collapse Search"
                   }
                 >
-                  <FontAwesomeIcon icon={faSearch} />
+                  <FontAwesomeIcon icon={faFilter} />
                 </button>
                 <button
                   className="bg-blue-600 opacity-75 text-white rounded-full px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
+                    dispatch(setActiveSearch("other"));
+
                     if (!collapsedSearch) {
                       setCollapsedSearch(!collapsedSearch);
                     }
@@ -352,6 +456,7 @@ const Home = () => {
                 <button
                   className="bg-blue-600 text-white opacity-75 px-4 py-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   onClick={() => {
+                    dispatch(setActiveSearch("other"));
                     if (!collapsedRecs) {
                       setCollapsedRecs(!collapsedRecs);
                     }
@@ -387,52 +492,17 @@ const Home = () => {
                   )}
                 </button>
               </div>
-              {/* <div>
-                <label
-                  htmlFor="hobbies"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Theme:{" "}
-                </label>
-                <select
-                  id="backgroundSelector"
-                  value={backgroundSelection}
-                  onChange={handleBackgroundSelection}
-                  className="transparent-dropdown rounded"
-                >
-                  <option value="indoor">Indoor</option>
-                  <option value="outdoor">Outdoor</option>
-                </select>
-              </div> */}
             </div>
 
-            <div className="relative w-full max-w-md mx-auto">
+            <div className="relative w-full max-w-md  mx-auto">
               <div
-                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25  p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedSearch ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
-                {/* {showResults ? (
-                  <SearchResults
-                    results={searchresults}
-                    onToggleView={handleToggleView}
-                  />
-                ) : (
-                  <SearchFilter
-                    onSearchAttributesChange={handleSearchAttributesChange}
-                    onToggleView={handleToggleView}
-                    signedInUser={signedUser}
-                  />
-                )} */}
                 {searchLoading ? (
                   <div
-                    className="flex justify-center items-center"
+                    className="flex justify-center  items-center"
                     style={{
                       height: "135px",
                       // overflowY: "auto",
@@ -442,29 +512,30 @@ const Home = () => {
                   </div>
                 ) : showResults ? (
                   <SearchResults
+                    loggedInUser={username}
                     results={searchresults}
-                    onToggleView={handleToggleView}
+                    onToggleView={handleToggleViewBack}
                   />
                 ) : (
                   <SearchFilter
                     onSearchAttributesChange={handleSearchAttributesChange}
-                    onToggleView={handleToggleView}
+                    onToggleView={handleToggleViewSearch}
                     signedInUser={signedUser}
                   />
                 )}
               </div>
               <div
-                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border border-black w-full bg-blue-500  bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedRecs ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
                 <Recommendations
                   loggedInUser={username}
-                  onToggleView={handleToggleView}
+                  onToggleView={handleToggleViewBack}
                 />
               </div>
               <div
-                className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
+                className={`absolute z-10 border backdrop-blur-sm border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
                   collapsedEdit ? "hidden" : "block"
                 } ${isDarkMode ? "bruh" : ""}`}
               >
@@ -473,33 +544,22 @@ const Home = () => {
                   //onToggleView={handleToggleView}
                 />
               </div>
-              {/* <div className="image-container">
-                <div
-                  className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
-                    collapsedImage ? "hidden" : "block"
-                  } ${isDarkMode ? "bruh" : ""}`}
-                  style={{
-                    width: "600px",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                >
-                  <DALLEImageView fScreenState={setIsFullscreen} />
-                </div>
-              </div> */}
+
               <div
                 className={`image-container ${
                   isFullscreen ? "fullscreen" : ""
                 }`}
               >
                 <div
-                  className={`absolute z-10 border border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300 ${
+                  className={`absolute z-10 border backdrop-blur-md border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300 ${
                     collapsedImage ? "hidden" : "block"
                   } ${isDarkMode ? "bruh" : ""} ${
                     isFullscreen ? "high-opacity" : ""
-                  }`}
+                  } max-w-md mx-auto`}
                   style={{
-                    width: isFullscreen ? "600px" : "450px",
+                    maxWidth: isFullscreen ? "95%" : "550px",
+                    width: "450px",
+                    //height: "500px",
                     marginLeft: "auto",
                     marginRight: "auto",
                   }}
@@ -511,16 +571,6 @@ const Home = () => {
                   />
                 </div>
               </div>
-              {/* <div
-                className={`absolute z-10 border-4 border-black w-full bg-blue-500 bg-opacity-25 p-6 rounded-lg shadow-lg transition-all duration-300  ${
-                  collapsedEdit ? "hidden" : "block"
-                } ${isDarkMode ? "bruh" : ""}`}
-              >
-                <DetailedProfileView
-                  loggedInUser={signedUser}
-                  //onToggleView={handleToggleView}
-                />
-              </div> */}
             </div>
           </div>
         </div>

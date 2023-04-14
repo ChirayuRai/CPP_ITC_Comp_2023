@@ -23,11 +23,18 @@ const typeDefs = gql`
     hygiene: Frequency
     hobbies: [String]
     smoke: String
-        savedImages: [String]
-
+    # savedImages: [String]
     pets: String
+    savedImages: [SavedImage]
+    collectionPublic: Boolean
+    profilePublic: Boolean
     createdAt: Int
     similarity: Float
+  }
+
+  type SavedImage {
+    imgUrl: String
+    prompt: String
   }
 
   type ProfileInfo {
@@ -113,9 +120,14 @@ const typeDefs = gql`
     pets: String
   }
 
+  input UserElasticSearch {
+    query: String
+  }
+
   input UserRecs {
     username: String!
   }
+
   input GenerateDesigns {
     prompt: String
   }
@@ -127,7 +139,25 @@ const typeDefs = gql`
   input SaveDesign {
     username: String!
     imgSrc: String
+    imgPrompt: String
   }
+
+  input DeleteDesign {
+    username: String!
+    imgSrc: String
+  }
+
+  input CollectionPrivacy {
+    username: String!
+    collectionPublic: Boolean
+    profilePublic: Boolean
+    privacyType: String
+  }
+
+  # input ProfilePrivacy {
+  #   username: String!
+  #   profilePublic: Boolean
+  # }
 
   type Query { #the query can be of any name but the input type and return types are usually defined in the schema
     usertestID(userID: String!): User! #a query which can be used to get user details based on user id
@@ -141,11 +171,21 @@ const typeDefs = gql`
     userLogin(input: UserInputLogin!): User!
     searchUsers(input: UserSearch): [User]
     recommendUsers(input: UserRecs): [User]
-    
-     #dall-e generation
-    getUserDesigns(input: GetUserDesigns): [String]
+
+    #change collection privacy
+    #togglePrivacy(input: CollectionPrivacy): String
+    togglePrivacy(input: CollectionPrivacy): User
+    getUserPrivacy(input: CollectionPrivacy): Boolean
+    #profilePrivacy(input: ProfilePrivacy): String
+
+    #dall-e generation
+    getUserDesigns(input: GetUserDesigns): [SavedImage]
     createDesigns(input: GenerateDesigns): [String]
+    deleteDesign(input: DeleteDesign): String
     saveUserDesign(input: SaveDesign): String
+
+    #elasticsearch
+    elasticSearch(input: UserElasticSearch): [User]
   }
 `;
 

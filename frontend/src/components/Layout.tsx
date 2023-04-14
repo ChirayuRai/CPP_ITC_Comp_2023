@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {/* <nav className="fixed top-0 left-0 w-full bg-white bg-opacity-50 shadow-md z-10"> */}
-      <nav className="fixed top-0 left-0 w-full bg-blue-500 bg-opacity-20 shadow-md z-10 border-t border-black hahaha">
+      <nav className="fixed top-0 left-0 w-full bg-blue-500 bg-opacity-20 backdrop-blur-lg shadow-md z-10 border-t border-black hahaha">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="">
             <Link

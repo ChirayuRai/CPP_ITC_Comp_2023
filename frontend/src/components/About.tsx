@@ -9,7 +9,7 @@ const About = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className="bg-blue-400 p-8 bg-opacity-30 rounded-lg shadow-md w-full max-w-2xl mx-auto border border-black">
+      <div className="bg-blue-400 p-8 bg-opacity-30 backdrop-blur-md rounded-lg shadow-md w-full max-w-2xl mx-auto border border-black">
         <Link to="/" className="position: relative top-2 right-2 text-blue">
           <FiX size={34} />
         </Link>

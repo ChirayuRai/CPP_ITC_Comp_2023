@@ -136,7 +136,7 @@ const RegistrationForm = () => {
         backgroundImage: `url(${backgroundPic})`,
       }}
     >
-      <div className=" max-w-md border border-black bg-blue-500 bg-opacity-30 w-full space-y-8 p-6 rounded-lg shadow-lg">
+      <div className=" max-w-md border border-black backdrop-blur-md bg-blue-500 bg-opacity-20 w-full space-y-8 p-6 rounded-lg shadow-lg">
         <Link
           to="/login"
           className="position: relative top-2 right-2 text-blue"
@@ -232,7 +232,11 @@ const RegistrationForm = () => {
           )}
           <button
             type="submit"
-            className="bg-blue-600 opacity-61 mb-2 hover:opacity-75 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="px-4 py-2 text-white font-semibold rounded hover:bg-opacity-80 transition-all mr-4"
+            style={{
+              backdropFilter: "blur(10px)",
+              backgroundColor: "rgba(37, 99, 235, 0.6)",
+            }}
           >
             Next
           </button>
