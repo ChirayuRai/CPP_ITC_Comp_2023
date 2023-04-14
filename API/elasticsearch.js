@@ -1,9 +1,12 @@
 const { Client } = require("@elastic/elasticsearch");
+require("dotenv").config({ path: ".env" });
+const nodeVal = process.env.ELASTIC_NODE;
+const apiVal = process.env.ELASTIC_API_KEY;
 
 const client = new Client({
-  node: "https://77543d26092b47a394e69c6694883ceb.us-central1.gcp.cloud.es.io:443",
+  node: nodeVal,
   auth: {
-    apiKey: "TWlQVmU0Y0JaRnBiaHNYejdQMjQ6THV0UWJQMFNUTTY1LWg3OEVsVDVHUQ==",
+    apiKey: apiVal,
   },
 });
 
