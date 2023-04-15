@@ -203,7 +203,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               </div>
 
               {selectedUser && (
-                <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center z-50 mt-5">
                   <div
                     className="bruh bg-blue-400  border-4 border-gray-300 border-black bg-opacity-25 backdrop-blur-3xl p-6 rounded-lg shadow-lg"
                     style={{
