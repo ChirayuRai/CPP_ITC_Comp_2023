@@ -203,174 +203,223 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               </div>
 
               {selectedUser && (
-                <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center z-50 mt-5">
-                  <div
-                    className="bruh bg-blue-400  border-4 border-gray-300 border-black bg-opacity-25 backdrop-blur-3xl p-6 rounded-lg shadow-lg"
-                    style={{
-                      maxHeight: "525px",
-                      width: "469px",
-                      overflowY: "auto",
-                    }}
-                    // ref={scrollContainerRef}
+               <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center z-50">
+                <div
+                  className="bruh bg-blue-400 mt-4 border-4 border-gray-300 bg-opacity-25 backdrop-blur-lg p-6 rounded-lg shadow-lg"
+                  style={{
+                    maxHeight: "590px",
+                    width: "489px",
+                    overflowY: "auto",
+                  }}
+                  // ref={scrollContainerRef}
+                >
+                  <button
+                    className="absolute top-4 left-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    onClick={closeDetailedView}
                   >
-                    
-                    <div className="text-center mb-4">
-                      <button
-                      className="absolute top-4 left-4 text-white focus:outline-none ml-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      onClick={closeDetailedView}
-                    >
-                     <FontAwesomeIcon icon={faTimes} size="lg" />
-
-                    </button>
-                      <div className="rounded-full mb-4 h-24 w-24 mx-auto">
-                        <img
-                          src={selectedUser.imgUrl}
-                          // alt="Profile"
-                          className="rounded-full h-full w-full object-cover"
-                        />
-                      </div>
-                      <h2
-                        className="text-xl font-semibold mb-4 text-center text-white"
-                        style={{
-                          fontFamily: "Roboto, sans-serif",
-                          fontSize: "25px",
-                          letterSpacing: "0.05em",
-                          textShadow:
-                            "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                        }}
-                      >
-                        User: {selectedUser.username}
-                      </h2>
-                       <button
-          className="text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-1"
-          onClick={closeDetailedView}
-        >
-          back
-        </button>
+                    <FontAwesomeIcon icon={faTimes} size="lg" />
+                  </button>
+                  <div className="text-center mb-4">
+                    <div className="rounded-full mb-4 h-24 w-24 mx-auto">
+                      <img
+                        src={selectedUser.imgUrl}
+                        // alt="Profile"
+                        className="rounded-full h-full w-full object-cover"
+                      />
                     </div>
-                    <hr className="flame border-t border-black mt-8" />
-
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <h3 style={h3Style}>Name: {selectedUser.name}</h3>
-                      <h3 style={h3Style}>Email: {selectedUser.email}</h3>
-                      <h3 style={h3Style}>Bio: {selectedUser.bio}</h3>
-                      <h3 style={h3Style}>
-                        University: {selectedUser.university}
-                      </h3>
-                      <h3 style={h3Style}>Gender: {selectedUser.gender}</h3>
-                      <h3 style={h3Style}>Major: {selectedUser.major}</h3>
-                      <h3 style={h3Style}>
-                        Personality: {selectedUser.personality}
-                      </h3>
-                      <h3 style={h3Style}>
-                        Sleep Time:{" "}
-                        {getSleepTimeDescription(selectedUser.sleepTime)}
-                      </h3>
-                      <h3 style={h3Style}>Hygiene: {selectedUser.hygiene}</h3>
-                      <h3 style={h3Style}>Smokes: {selectedUser.smoking}</h3>
-                      <h3 style={h3Style}>Has Pets: {selectedUser.pets}</h3>
-                    </div>
-                    <hr className="flame border-t border-black mt-8" />
                     <h2
-                      className="text-xl font-semibold mb-4 mt-4 text-center text-white"
+                      className="text-xl font-semibold mb-4 text-center text-white"
                       style={{
                         fontFamily: "Roboto, sans-serif",
-                        fontSize: "20px",
+                        fontSize: "25px",
                         letterSpacing: "0.05em",
                         textShadow:
                           "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
                       }}
                     >
-                      Design Collection:
+                      User: {selectedUser.username}
                     </h2>
-                    {selectedUser.collectionPublic ? (
-                      <div
-                        className="flex justify-center items-center"
-                        style={{
-                          height: "290px",
-                          // overflowY: "auto",
-                        }}
-                      >
-                        <div className="rlame"></div>
-                        <h2
-                          className="text-xl font-semibold mb-4 mt-4 text-center text-white"
+                  </div>
+                  <hr className="flame border-t border-black mt-8" />
+
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <h3 style={h3Style}>Name: {selectedUser.name}</h3>
+                    <h3 style={h3Style}>Email: {selectedUser.email}</h3>
+                    <h3 style={h3Style}>Bio: {selectedUser.bio}</h3>
+                    <h3 style={h3Style}>
+                      University: {selectedUser.university}
+                    </h3>
+                    <h3 style={h3Style}>Gender: {selectedUser.gender}</h3>
+                    <h3 style={h3Style}>Major: {selectedUser.major}</h3>
+                    <h3 style={h3Style}>
+                      Personality: {selectedUser.personality}
+                    </h3>
+                    <h3 style={h3Style}>
+                      Sleep Time:{" "}
+                      {getSleepTimeDescription(selectedUser.sleepTime)}
+                    </h3>
+                    <h3 style={h3Style}>Hygiene: {selectedUser.hygiene}</h3>
+                    <h3 style={h3Style}>Smokes: {selectedUser.smoke}</h3>
+                    <h3 style={h3Style}>Has Pets: {selectedUser.pets}</h3>
+                  </div>
+                  <hr className="flame border-t border-black mt-8" />
+                  <h2
+                    className="text-2xl font-semibold mb-4 mt-4 text-center text-white"
+                    style={{
+                      fontFamily: "Roboto, sans-serif",
+                      fontSize: "20px",
+                      letterSpacing: "0.05em",
+                      textShadow:
+                        "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                    }}
+                  >
+                    Design Collection:
+                  </h2>
+                  {selectedUser.collectionPublic === true ? (
+                    <div
+                      className="image-grid mt-8"
+                      style={{ maxHeight: "725px", overflowY: "auto" }}
+                    >
+                      {selectedUser.savedImages.map((url: any, index: any) => (
+                        <div
+                          key={index}
+                          className="images-container relative"
                           style={{
-                            fontFamily: "Roboto, sans-serif",
-                            fontSize: "15px",
-                            letterSpacing: "0.05em",
-                            textShadow:
-                              "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                            border: "3px solid #e0e0e0",
+                            display: "inline-block",
+                            borderRadius: "10px",
+                            padding: "5px",
+                            boxSizing: "border-box",
+                            marginBottom: "16px",
+                            textAlign: "center", // Add this for center alignment
                           }}
                         >
-                          User's Collection is Private:
-                        </h2>
-                      </div>
-                    ) : (
-                      <div
-                        className="image-grid mt-8"
-                        style={{ maxHeight: "725px", overflowY: "auto" }}
-                      >
-                        {(activeSearch === "redux"
-                          ? selectedUser.savedImages
-                          : selectedUser.collection
-                        ).map((url: any, index: any) => (
+                          <div>
+                            <AiOutlineSave
+                              className="save-icon absolute"
+                              size={34}
+                              onClick={() =>
+                                handleSaveImage(url.imgUrl, url.prompt)
+                              }
+                              style={{
+                                top: "10px",
+                                left: "10px",
+                                cursor: "pointer",
+                              }}
+                              title={"Save to collection"}
+                            />
+                          </div>
                           <div
-                            key={index}
-                            className="images-container relative"
                             style={{
-                              border: "3px solid #e0e0e0",
+                              // border: "3px solid #e0e0e0",
                               display: "inline-block",
                               borderRadius: "10px",
                               padding: "5px",
                               boxSizing: "border-box",
-                              marginBottom: "16px",
-                              textAlign: "center", // Add this for center alignment
                             }}
                           >
-                            <div>
-                              <AiOutlineSave
-                                className="save-icon absolute"
-                                size={34}
-                                onClick={() =>
-                                  handleSaveImage(url.imgUrl, url.prompt)
-                                }
-                                style={{
-                                  top: "10px",
-                                  left: "10px",
-                                  cursor: "pointer",
-                                }}
-                                title={"Save to collection"}
-                              />
-                            </div>
-                            <div
-                              style={{
-                                // border: "3px solid #e0e0e0",
-                                display: "inline-block",
-                                borderRadius: "10px",
-                                padding: "5px",
-                                boxSizing: "border-box",
-                              }}
-                            >
-                              <img src={url.imgUrl} className="rounded-lg" />
-                            </div>
-                            <div
-                              style={{
-                                textAlign: "center",
-                                marginTop: "8px",
-                                fontStyle: "italic",
-                                fontSize: "14px",
-                                color: "#E4E1D0", // Bone white color
-                                textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
-                              }}
-                            >
-                              &ldquo;{url.prompt}&rdquo;
-                            </div>
+                            <img src={url.imgUrl} className="rounded-lg" />
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                          <div
+                            style={{
+                              textAlign: "center",
+                              marginTop: "8px",
+                              fontStyle: "italic",
+                              fontSize: "14px",
+                              color: "#E4E1D0", // Bone white color
+                              textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
+                            }}
+                          >
+                            &ldquo;{url.prompt}&rdquo;
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : selectedUser.collectionPublic === false ? (
+                    <div
+                      className="flex justify-center items-center"
+                      style={{
+                        height: "290px",
+                        // overflowY: "auto",
+                      }}
+                    >
+                      {/* <div className="rlame"></div> */}
+                      <h2
+                        className="text-xl font-semibold mb-4 mt-4 text-center text-white"
+                        style={{
+                          fontFamily: "Roboto, sans-serif",
+                          fontSize: "15px",
+                          letterSpacing: "0.05em",
+                          textShadow:
+                            "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                        }}
+                      >
+                        User's Collection is Private
+                      </h2>
+                    </div>
+                  ) : (
+                    <div
+                      className="image-grid mt-8"
+                      style={{ maxHeight: "725px", overflowY: "auto" }}
+                    >
+                      {selectedUser.savedImages.map((url: any, index: any) => (
+                        <div
+                          key={index}
+                          className="images-container relative"
+                          style={{
+                            border: "3px solid #e0e0e0",
+                            display: "inline-block",
+                            borderRadius: "10px",
+                            padding: "5px",
+                            boxSizing: "border-box",
+                            marginBottom: "16px",
+                            textAlign: "center", // Add this for center alignment
+                          }}
+                        >
+                          <div>
+                            <AiOutlineSave
+                              className="save-icon absolute"
+                              size={34}
+                              onClick={() =>
+                                handleSaveImage(url.imgUrl, url.prompt)
+                              }
+                              style={{
+                                top: "10px",
+                                left: "10px",
+                                cursor: "pointer",
+                              }}
+                              title={"Save to collection"}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              // border: "3px solid #e0e0e0",
+                              display: "inline-block",
+                              borderRadius: "10px",
+                              padding: "5px",
+                              boxSizing: "border-box",
+                            }}
+                          >
+                            <img src={url.imgUrl} className="rounded-lg" />
+                          </div>
+                          <div
+                            style={{
+                              textAlign: "center",
+                              marginTop: "8px",
+                              fontStyle: "italic",
+                              fontSize: "14px",
+                              color: "#E4E1D0", // Bone white color
+                              textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
+                            }}
+                          >
+                            &ldquo;{url.prompt}&rdquo;
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              </div>
               )}
             </div>
           </div>
