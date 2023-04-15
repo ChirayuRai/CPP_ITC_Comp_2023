@@ -179,34 +179,63 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             >
               <div className="flex flex-wrap justify-between border border-white backdrop-blur-md items-start mb-8">
                 {/* {results.map((user) => ( */}
-                {displayResults.map((user: any) => (
-                  <div
-                    key={user.username}
-                    className="border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
-                    onClick={() => openDetailedView(user)}
-                  >
-                    <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
-                      <LazyLoadImage
-                        //src={profPic}
-                        src={user.imgUrl}
-                        //src={optimizeImage(user.imgUrl)}
-                        // alt="Profile"
-                        className="rounded-full h-full w-full object-cover"
-                      />
-                    </div>
-                    <h3
-                      className="font-semibold mb-2 text-white"
-                      style={{
-                        fontFamily: "Roboto, sans-serif",
-                        letterSpacing: "0.05em",
-                        textShadow:
-                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                      }}
+                {displayResults.map((user: any) =>
+                  user.profilePublic ? (
+                    <div
+                      key={user.username}
+                      className="border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                      onClick={() => openDetailedView(user)}
                     >
-                      {user.name}
-                    </h3>
-                  </div>
-                ))}
+                      <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                        <LazyLoadImage
+                          //src={profPic}
+                          src={user.imgUrl}
+                          //src={optimizeImage(user.imgUrl)}
+                          // alt="Profile"
+                          className="rounded-full h-full w-full object-cover"
+                        />
+                      </div>
+                      <h3
+                        className="font-semibold mb-2 text-white"
+                        style={{
+                          fontFamily: "Roboto, sans-serif",
+                          letterSpacing: "0.05em",
+                          textShadow:
+                            "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                        }}
+                      >
+                        {user.name}
+                      </h3>
+                    </div>
+                  ) : user.profilePublic === false ? null : (
+                    <div
+                      key={user.username}
+                      className="border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                      onClick={() => openDetailedView(user)}
+                    >
+                      <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                        <LazyLoadImage
+                          //src={profPic}
+                          src={user.imgUrl}
+                          //src={optimizeImage(user.imgUrl)}
+                          // alt="Profile"
+                          className="rounded-full h-full w-full object-cover"
+                        />
+                      </div>
+                      <h3
+                        className="font-semibold mb-2 text-white"
+                        style={{
+                          fontFamily: "Roboto, sans-serif",
+                          letterSpacing: "0.05em",
+                          textShadow:
+                            "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                        }}
+                      >
+                        {user.name}
+                      </h3>
+                    </div>
+                  )
+                )}
               </div>
 
               {selectedUser && (
