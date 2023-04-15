@@ -6,11 +6,7 @@ import { faTimes, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { LazyLoad } from "react-lazyload";
 
-import {
-  AiOutlineExpand,
-  AiOutlinePicture,
-  AiOutlineSave,
-} from "react-icons/ai";
+import { AiOutlineSave } from "react-icons/ai";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
@@ -243,39 +239,61 @@ const Recommendations: React.FC<RecommendationsResultsProps> = ({
             style={{ maxHeight: "290px", overflowY: "auto" }}
           >
             <div className="flex flex-wrap justify-between border border-white backdrop-blur-md items-start mb-8">
-              {recommendations.map((user: any) => (
-                <div
-                  key={user.username}
-                  className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
-                  onClick={() => openDetailedView(user)}
-                >
-                  <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
-                    <img
-                      //src={profPic}
-                      src={user.imgUrl}
-                      // onError={(e) => {
-                      //   //e.currentTarget.onerror = null;
-                      //   e.currentTarget.src = "../assets/homer.jpg";
-                      // }}
-                      alt=""
-                      className="rounded-full h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3
-                    className="font-semibold mb-2 text-white"
-                    style={{
-                      fontFamily: "Roboto, sans-serif",
-                      letterSpacing: "0.05em",
-                      textShadow:
-                        "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                    }}
+              {recommendations.map((user: any) =>
+                user.profilePublic === true ? (
+                  <div
+                    key={user.username}
+                    className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                    onClick={() => openDetailedView(user)}
                   >
-                    {(parseFloat(user.similarity) * 100).toFixed(2)}% match
-                  </h3>
-
-                  {/* Render other user attributes here */}
-                </div>
-              ))}
+                    <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                      <img
+                        src={user.imgUrl}
+                        alt=""
+                        className="rounded-full h-full w-full object-cover"
+                      />
+                    </div>
+                    <h3
+                      className="font-semibold mb-2 text-white"
+                      style={{
+                        fontFamily: "Roboto, sans-serif",
+                        letterSpacing: "0.05em",
+                        textShadow:
+                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                      }}
+                    >
+                      {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+                    </h3>
+                    {/* Render other user attributes here */}
+                  </div>
+                ) : user.profilePublic === false ? null : (
+                  <div
+                    key={user.username}
+                    className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                    onClick={() => openDetailedView(user)}
+                  >
+                    <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                      <img
+                        src={user.imgUrl}
+                        alt=""
+                        className="rounded-full h-full w-full object-cover"
+                      />
+                    </div>
+                    <h3
+                      className="font-semibold mb-2 text-white"
+                      style={{
+                        fontFamily: "Roboto, sans-serif",
+                        letterSpacing: "0.05em",
+                        textShadow:
+                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                      }}
+                    >
+                      {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+                    </h3>
+                    {/* Render other user attributes here */}
+                  </div>
+                )
+              )}
             </div>
 
             {selectedUser && (
