@@ -219,7 +219,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                       className="absolute top-4 left-4 text-white focus:outline-none ml-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={closeDetailedView}
                     >
-                      back
+                     <FontAwesomeIcon icon={faTimes} size="lg" />
+
                     </button>
                       <div className="rounded-full mb-4 h-24 w-24 mx-auto">
                         <img
