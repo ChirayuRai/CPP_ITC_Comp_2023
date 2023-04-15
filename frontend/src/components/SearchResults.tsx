@@ -214,7 +214,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     // ref={scrollContainerRef}
                   >
                     <button
-                      className="absolute top-4 left-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className="absolute top-4 left-4 text-white focus:outline-none ml-4 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={closeDetailedView}
                     >
                       <FontAwesomeIcon icon={faTimes} size="lg" />
