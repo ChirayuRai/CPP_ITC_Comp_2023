@@ -240,6 +240,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                       >
                         User: {selectedUser.username}
                       </h2>
+                       <button
+          className="text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-1"
+          onClick={closeDetailedView}
+        >
+          back
+        </button>
                     </div>
                     <hr className="flame border-t border-black mt-8" />
 
