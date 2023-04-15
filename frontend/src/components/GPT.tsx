@@ -10,7 +10,6 @@ import {
   AiOutlineFullscreen,
   AiOutlineFullscreenExit,
   AiOutlineExpand,
-  AiOutlineDribbbleSquare,
   AiOutlinePicture,
   AiOutlineDelete,
 } from "react-icons/ai";
@@ -113,6 +112,8 @@ const DALLEImageView: React.FC<DallEProps> = ({
   const [deleteImage, deletedImage] = useMutation(DELETE_IMAGE);
   const [isViewingCollection, setIsViewingCollection] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   console.log("collectionURLS: ", collectionURLs);
 
   const handleSubmit = async (e: any) => {
@@ -205,26 +206,31 @@ const DALLEImageView: React.FC<DallEProps> = ({
   };
 
   //set the private profile toggle
-  const [isImagesPublic, setIsImagesPublic] = useState(false); //use the existing user's privacy state to set the toggle
+  const [isImagesPublic, setIsImagesPublic] = useState<boolean | null>(null); //use the existing user's privacy state to set the toggle
 
   const handleToggle = async () => {
     setIsImagesPublic(!isImagesPublic);
     try {
+      //this gets executed before the above state setter
+      let inputFlagPriv = isImagesPublic;
       //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
       setSearchLoading(true);
       const input = {
         //this variable has to match the defined parameter accepted by the resolver
         username: loggedInUser,
-        collectionPublic: isImagesPublic,
+        collectionPublic: !isImagesPublic,
         privacyType: "images",
       };
       console.log("update profile mutation input:", input);
       //execute the mutation query to return a list of recommended users for the logged in user
-      let updatedUserPrivacyRes = await updateUserPrivacy({
+      const updatedUserPrivacyRes = await updateUserPrivacy({
         variables: { input }, //the input has to match the input schema type defined in backend
       });
       // console.log("refreshed recommended list of users: ", recommendedUsers);
-      console.log("updated user privacy response: ", updatedUserPrivacy.data);
+      console.log(
+        "updated user privacy response for collection: ",
+        updatedUserPrivacyRes.data
+      );
       setSearchLoading(false);
       //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
     } catch (error) {
@@ -250,20 +256,7 @@ const DALLEImageView: React.FC<DallEProps> = ({
           collection.data.getUserDesigns
         );
 
-        const privInput = {
-          //this variable has to match the defined parameter accepted by the resolver
-          username: loggedInUser,
-          privacyType: "images",
-        };
-        let priv = await getUserPrivacy({
-          variables: { privInput }, //the input has to match the input schema type defined in backend
-        });
-        console.log(
-          "the value of collectionPublic for loggedInUser gpt ",
-          priv.data.getUserPrivacy
-        );
-
-        setIsImagesPublic(priv.data.getUserPrivacy); //setting the initial privacy state to the one stored in the db
+        //setting the initial privacy state to the one stored in the db
 
         const verifiedURLArr = await checkImage(collection.data.getUserDesigns);
         setCollectionURLs(verifiedURLArr);
@@ -272,8 +265,41 @@ const DALLEImageView: React.FC<DallEProps> = ({
         console.error("Error fetching recommended users:", error);
       }
     };
+
+    const fetchUserPrivacy = async () => {
+      setIsLoading(true);
+
+      const privInput = {
+        //this variable has to match the defined parameter accepted by the resolver
+        username: loggedInUser,
+        privacyType: "images",
+      };
+      let priv = await getUserPrivacy({
+        variables: { privInput }, //the input has to match the input schema type defined in backend
+      });
+      // console.log(
+      //   "the value of collectionPublic privacy value for loggedInUser gpt ",
+      //   priv.data.getUserPrivacy
+      // );
+      console.log(
+        "the type and value of collectionPublic privacy value for loggedInUser gpt:",
+        typeof priv.data.getUserPrivacy,
+        priv.data.getUserPrivacy
+      );
+
+      setIsImagesPublic(priv.data.getUserPrivacy);
+      setIsLoading(false);
+      //console.log("is images public value:", isImagesPublic);
+
+      // console.log("is images public value:", isImagesPublic);
+    };
     fetchCollection();
+    fetchUserPrivacy();
   }, []);
+
+  useEffect(() => {
+    console.log("is images public value:", isImagesPublic);
+  }, [isImagesPublic]);
 
   const downloadImage = (url: any) => {
     const link = document.createElement("a");
@@ -379,37 +405,47 @@ const DALLEImageView: React.FC<DallEProps> = ({
               Your Collection
             </p>
             <hr className="border-t border-white w-1/2 mb-2" />
-            <div className="flex items-center mt-1 mb-2">
-              <span className="text-white mr-2">Public</span>
-              <label
-                htmlFor="toggleCollection"
-                className="flex items-center cursor-pointer"
-              >
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    id="toggleCollection"
-                    className="sr-only"
-                    checked={isImagesPublic}
-                    onChange={handleToggle}
-                  />
-                  <div className="block bg-gray-600 w-12 h-6 rounded-full"></div>
-                  <div
-                    className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${
-                      isImagesPublic ? "transform translate-x-6" : ""
-                    }`}
-                  ></div>
-                </div>
-              </label>
-              <span className="text-white ml-2">Private</span>
-            </div>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : (
+              <div className="flex items-center mt-1 mb-2">
+                <label
+                  htmlFor="toggleCollection"
+                  className="flex items-center cursor-pointer"
+                >
+                  <div className="relative">
+                    <div>
+                      <span className="text-white mr-2">Make Private?</span>
+
+                      <input
+                        type="checkbox"
+                        id="toggleCollection"
+                        className="cursor-pointer"
+                        checked={!isImagesPublic || false}
+                        onChange={handleToggle}
+                      />
+                      <div>
+                        <label
+                          htmlFor="toggleCollection"
+                          className="cursor-pointer text-white"
+                          style={{ fontSize: "13px" }}
+                        >
+                          current status:{" "}
+                          {isImagesPublic ? "Public" : "Private"}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            )}
             <hr className="border-t border-white w-1/2 mt-1 mb-4" />
           </div>
           <button
             onClick={() => {
               setIsViewingCollection(!isViewingCollection);
             }}
-            className="mt-1 opacity-60 view-collection-button"
+            className=" opacity-60 view-collection-button"
             style={{
               backgroundColor: "blue",
               color: "white",
@@ -429,7 +465,7 @@ const DALLEImageView: React.FC<DallEProps> = ({
             )}
           </button>
           <div
-            className="image-grid mt-20"
+            className="image-grid mt-10"
             style={{
               maxHeight: "720px",
               overflowY: "auto",
@@ -437,16 +473,16 @@ const DALLEImageView: React.FC<DallEProps> = ({
             }}
           >
             {/* Render your collection view here */}
-            <div className="image-grid mt-20">
+            <div className="image-grid mt-2">
               {collectionURLs.map((url: any, index: any) => (
                 <div
                   style={{
-                    border: "3px solid #e0e0e0",
+                    border: "2px solid #e0e0e0",
                     display: "inline-block",
-                    borderRadius: "10px",
+                    borderRadius: "15px",
                     padding: "5px",
                     boxSizing: "border-box",
-                    marginBottom: "16px",
+                    marginBottom: "10px",
                     textAlign: "center", // Add this for center alignment
                   }}
                 >
