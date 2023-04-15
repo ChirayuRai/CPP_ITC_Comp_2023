@@ -88,7 +88,7 @@ const About = () => {
               {" "}
               Chirayu Rai{" "}
             </a>
-            ,{" "}
+  
            
           </p>
           <br />
