@@ -118,7 +118,7 @@ const HomePageNav: React.FC<LayoutProps> = ({ children }) => {
                   //backgroundColor: "rgba(255, 255, 255, 0.2)",
                   width: "340px",
                 }}
-                placeholder="Search for roommates..."
+                placeholder="search by (ex: username, major, university etc)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
