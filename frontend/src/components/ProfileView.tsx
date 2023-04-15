@@ -1,752 +1,525 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import gql from "graphql-tag";
-import { readAndCompressImage } from "browser-image-resizer";
 import { useMutation } from "@apollo/react-hooks";
-import Select from "react-select";
-import "../styles/pulse.css";
-import "./searchfilter.css";
+import "./recs.css";
+import { faTimes, faSync } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+//import { LazyLoad } from "react-lazyload";
 
-//define types:
-type HobbyOption = {
-  value: string;
-  label: string;
-};
-
-type MajorOption = {
-  id: number;
-  name: string;
-};
+import { AiOutlineSave } from "react-icons/ai";
 
 // Assuming that each user has an id, name, and other attributes
 interface User {
   username: string;
   name: string;
   email: string;
+  hygiene: string;
+  sleepTime: string;
+  smoke: string;
+  pets: string;
+  personality: string;
+  gender: string;
+  major: string;
+  university: string;
   bio: string;
+  imgUrl: string;
+  hobbies: [string];
+  savedImages: any;
+  collectionPublic: boolean;
+  profilePublic: boolean;
 }
 
 interface RecommendationsResultsProps {
-  //results: User[];
-  loggedInUser: any;
+  loggedInUser: String;
+  onToggleView: () => void;
 }
 
-//define mutation query to update the profile
+//define mutation query to fetch the results
 const USER_DETAILS = gql`
   fragment UserDetails on User {
     username
     name
     bio
     email
+    hygiene
+    personality
+    university
+    gender
+    major
+    sleepTime
+    smoke
+    pets
+    similarity
+    imgUrl
+    hobbies
+    savedImages {
+      imgUrl
+      prompt
+    }
+    collectionPublic
+    profilePublic
   }
 `;
+
+//define a fragment
+// const REC_USER_DETAILS = gql`
+//   fragment SimilarityScore on Similarity {
+//     similarity
+//   }
+// `;
 
 //make sure the mutation exists in the backend
-const UPDATE_USER = gql`
-  mutation EditUserProfile($input: UserEditProfile) {
-    editUserProfile(input: $input) {
+const RECOMMEND_USERS = gql`
+  mutation UserRecommendations($input: UserRecs) {
+    recommendUsers(input: $input) {
       ...UserDetails
     }
   }
   ${USER_DETAILS}
 `;
 
-//mutation to update privacy settings
-const UPDATE_PRIVACY = gql`
-  mutation ToggleUserPrivacy($input: CollectionPrivacy) {
-    togglePrivacy(input: $input) {
-      ...UserDetails
-    }
-  }
-  ${USER_DETAILS}
-`;
-
-const GET_PRIVACY = gql`
-  mutation GetUserPrivacy($privInput: CollectionPrivacy) {
-    getUserPrivacy(input: $privInput)
-  }
-`;
-
-interface FormData {
-  username: string;
-  email: string;
-  biography: string;
-  image: string;
-  university: string;
-  major: string;
-  sleepTime: string;
-  cleanliness: string;
-  smoking: string;
-  guests: string;
-  pets: string;
-  hobbies: string[];
-}
-
-interface University {
-  name: string;
-}
-
-//displays the logged in users profile info and handles edit feature functionality ()
-//when the user edits their profile, the edit profile resolver is called which takes the newly
-//updated user, executes the recommender (with the updated user obj and its attrs) to update the
-//the recommendations document in mongodb with the newly recommended list of users under the same username (find and update)
-const ProfileView: React.FC<RecommendationsResultsProps> = ({
+const Recommendations: React.FC<RecommendationsResultsProps> = ({
   loggedInUser,
+  onToggleView,
 }) => {
-  const [updateUser, updatedUser] = useMutation(UPDATE_USER);
-  const [updateUserPrivacy, updatedUserPrivacy] = useMutation(UPDATE_PRIVACY);
-  const [getUserPrivacy, userPrivacy] = useMutation(GET_PRIVACY);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [recommendUsers, recommendedUsers] = useMutation(RECOMMEND_USERS);
 
-  const customStyles = {
-    control: (provided: any) => ({
-      ...provided,
-      width: 300, // Set the fixed width for the control
-      color: "black",
-    }),
-    menu: (provided: any) => ({
-      ...provided,
-      width: 300, // Set the fixed width for the menu
-    }),
-    option: (provided: any) => ({
-      ...provided,
-      color: "black",
-    }),
+  const openDetailedView = (user: User) => {
+    console.log("user attributes from detailed view", user.name);
+    setSelectedUser(user);
   };
 
-  //const [recommendations, setRecommendations] = useState<User[] | any>([]);
-  const [majors, setMajors] = useState<MajorOption[]>([]);
-  const [universities, setUniversities] = useState<University[]>([]);
-  const loggedInUsername = loggedInUser["data"]["userLogin"].username;
-  const [isLoading, setIsLoading] = useState(true);
-
-  //set the private profile toggle
-  let [isPublic, setIsPublic] = useState(false);
-
-  //handles toggle for private profile
-  //sets the mode to public since the default is private (and vice versa)
-  const handleToggle = async () => {
-    setIsPublic(!isPublic); //default is false
-
-    try {
-      //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
-      setSearchLoading(true);
-      const input = {
-        //this variable has to match the defined parameter accepted by the resolver
-        username: loggedInUsername,
-        profilePublic: !isPublic,
-        privacyType: "profile",
-      };
-      console.log("username rec view", input);
-      //execute the mutation query to return a list of recommended users for the logged in user
-      let updatedUserPrivacyRes = await updateUserPrivacy({
-        variables: { input }, //the input has to match the input schema type defined in backend
-      });
-      // console.log("refreshed recommended list of users: ", recommendedUsers);
-      console.log(
-        "updated user privacy response: ",
-        updatedUserPrivacyRes.data
-      );
-      setSearchLoading(false);
-      //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
-    } catch (error) {
-      console.error("Error fetching recommended users:", error);
-    }
+  const h3Style = {
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "15px",
+    letterSpacing: "0.05em",
+    textShadow:
+      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+    color: "white",
   };
 
+  //can implement a useEffect instead of passing it from the home component
+
+  const closeDetailedView = () => {
+    setSelectedUser(null);
+  };
+
+  const refreshRecs = () => {
+    //implment the refresh
+    //requests the latest list of recommendations from the backend
+  };
+
+  const [recommendations, setRecommendations] = useState<User[] | any>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const [formData, setFormData] = useState<FormData>({
-    username: loggedInUser["data"]["userLogin"].username,
-    email: loggedInUser["data"]["userLogin"].email,
-    biography: loggedInUser["data"]["userLogin"].bio,
-    image: loggedInUser["data"]["userLogin"].imgUrl,
-    university: loggedInUser["data"]["userLogin"].university,
-    major: loggedInUser["data"]["userLogin"].major,
-    sleepTime: loggedInUser["data"]["userLogin"].sleepTime,
-    cleanliness: loggedInUser["data"]["userLogin"].hygiene,
-    smoking: loggedInUser["data"]["userLogin"].smoke,
-    guests: loggedInUser["data"]["userLogin"].guests,
-    pets: loggedInUser["data"]["userLogin"].pets,
-    hobbies: loggedInUser["data"]["userLogin"].hobbies,
-  });
-
-  const hobbiesOptions: HobbyOption[] = [
-    { value: "reading", label: "Reading" },
-    { value: "sports", label: "Sports" },
-    { value: "music", label: "Music" },
-    { value: "traveling", label: "Traveling" },
-    { value: "cooking", label: "Cooking" },
-    // Add more hobbies options here
-  ];
-  const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(null); //use the existing user's privacy state to set the toggle
-
-  useEffect(() => {
-    const fetchMajors = async () => {
-      try {
-        const response = await fetch(
-          "https://fivethirtyeight.datasettes.com/fivethirtyeight.json?sql=select++Major+as+name%2C+rowid+as+id+from+%5Bcollege-majors%2Fmajors-list%5D+order+by+Major+limit+200"
-        );
-        const data = await response.json();
-        setMajors(data.rows);
-      } catch (error) {
-        console.error("Error fetching majors:", error);
-      }
-    };
-
-    const fetchUniversities = async () => {
-      try {
-        const response = await fetch(
-          "https://parseapi.back4app.com/classes/University?limit=3002&order=name",
-          {
-            headers: {
-              "X-Parse-Application-Id":
-                "Ipq7xXxHYGxtAtrDgCvG0hrzriHKdOsnnapEgcbe", // This is the fake app's application id
-              "X-Parse-Master-Key": "HNodr26mkits5ibQx2rIi0GR9pVCwOSEAkqJjgVp", // This is the fake app's readonly master key
-            },
-          }
-        );
-        const universities = await response.json();
-        console.log(universities);
-        setUniversities(universities.results);
-      } catch (error) {
-        console.error("Error fetching universities:", error);
-      }
-    };
-    const fetchUserPrivacy = async () => {
-      setIsLoading(true);
-
-      const privInput = {
-        //this variable has to match the defined parameter accepted by the resolver
-        username: loggedInUsername,
-        privacyType: "profile",
-      };
-      let priv = await getUserPrivacy({
-        variables: { privInput }, //the input has to match the input schema type defined in backend
-      });
-      // console.log(
-      //   "the value of collectionPublic privacy value for loggedInUser gpt ",
-      //   priv.data.getUserPrivacy
-      // );
-      console.log(
-        "the type and value of collectionPublic privacy value for loggedInUser gpt:",
-        typeof priv.data.getUserPrivacy,
-        priv.data.getUserPrivacy
-      );
-
-      setIsPublic(priv.data.getUserPrivacy);
-      setIsLoading(false);
-
-      // console.log("is images public value:", isImagesPublic);
-    };
-
-    fetchMajors();
-    fetchUniversities();
-    fetchUserPrivacy();
-  }, []);
-
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-
-      const config = {
-        quality: 0.7,
-        maxWidth: 800,
-        maxHeight: 800,
-        autoRotate: true,
-        debug: true,
-      };
-
-      try {
-        const optimizedImage = await readAndCompressImage(file, config);
-        const reader = new FileReader();
-        reader.readAsDataURL(optimizedImage);
-        reader.onload = () => {
-          if (typeof reader.result === "string") {
-            setFormData({ ...formData, image: reader.result });
-          } else {
-            throw new Error("Error uploading image");
-          }
-        };
-      } catch (error) {
-        console.error("Error resizing image:", error);
-      }
-    }
-  };
-
-  //edit the logged in user :
-  const editProfile = async () => {
-    console.log("profile being edited", loggedInUser);
+  //refresh the recommended user list:
+  const refreshRecommendations = async () => {
     try {
-      //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
-      setSearchLoading(true);
       const input = {
         //this variable has to match the defined parameter accepted by the resolver
-        username: formData.username,
-        email: formData.email,
-        biography: formData.biography,
-        image: formData.image,
-        university: formData.university,
-        major: formData.major,
-        sleepTime: formData.sleepTime,
-        cleanliness: formData.cleanliness,
-        smoking: formData.smoking,
-        guests: formData.guests,
-        pets: formData.pets,
-        hobbies: formData.hobbies,
+        username: loggedInUser,
       };
       console.log("username rec view", input);
       //execute the mutation query to return a list of recommended users for the logged in user
-      let updatedUser = await updateUser({
+      setSearchLoading(true);
+
+      let recdUsers = await recommendUsers({
         variables: { input }, //the input has to match the input schema type defined in backend
       });
-      // console.log("refreshed recommended list of users: ", recommendedUsers);
-      console.log("updated user profile: ", updatedUser.data.recommendUsers);
+      console.log("refreshed recommended list of users: ", recommendedUsers);
+      console.log(
+        "recommended list of users: ",
+        recdUsers,
+        recdUsers.data.recommendUsers
+      );
+      setRecommendations(recdUsers.data.recommendUsers); //useState setter to set the returned recommendations
       setSearchLoading(false);
-      //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
     } catch (error) {
       console.error("Error fetching recommended users:", error);
     }
   };
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-
-    console.log("name:", name, " ", "and value", value);
-    console.log("form data", formData);
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleHobbiesChange = (selectedOptions: any) => {
-    if (selectedOptions.length > 3) {
-      // If more than 3 options are selected, show a message or handle the situation as needed
-      alert("You can only select up to 3 hobbies.");
-      console.log("hobbies", formData.hobbies);
-      return;
-    } else {
-      const selectedHobbies = selectedOptions.map(
-        (option: any) => option.value
-      );
-      setFormData({ ...formData, hobbies: selectedHobbies });
-      console.log("hobbies", formData.hobbies);
+  function getSleepTimeDescription(sleepTime: any) {
+    switch (sleepTime) {
+      case "1":
+        return "Before 9pm";
+      case "2":
+        return "9pm-11pm";
+      case "3":
+        return "11pm-1am";
+      case "4":
+        return "1am-3am";
     }
+  }
+
+  const SAVE_IMAGE = gql`
+    mutation SaveDesign($input: SaveDesign) {
+      saveUserDesign(input: $input)
+    }
+  `;
+  const [saveImage, savedImage] = useMutation(SAVE_IMAGE);
+  const handleSaveImage = async (url: any, imgPrompt: any) => {
+    setSearchLoading(true);
+    console.log("url of image being saved: ", url);
+    const input = {
+      username: loggedInUser,
+      imgSrc: url,
+      imgPrompt: imgPrompt,
+    };
+    const { data } = await saveImage({
+      variables: { input },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    }); //execute the mutation react hook
+    console.log("response saved image:", data);
+    setSearchLoading(false);
+    //setImageURLs(data.createDesigns);
   };
+
+  //fetch recommended users upon initial page load
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const input = {
+          //this variable has to match the defined parameter accepted by the resolver
+          username: loggedInUser,
+        };
+        console.log("username rec view", input);
+        //execute the mutation query to return a list of recommended users for the logged in user
+        setSearchLoading(true);
+        let recdUsers = await recommendUsers({
+          variables: { input }, //the input has to match the input schema type defined in backend
+        });
+        console.log("recommended list of users: ", recommendedUsers);
+        console.log(
+          "recommended list of users: ",
+          recdUsers,
+          recdUsers.data.recommendUsers
+        );
+        setRecommendations(recdUsers.data.recommendUsers); //useState setter to set the returned recommendations
+        console.log("recommendations from fetchRecs: ", recdUsers.data);
+        setSearchLoading(false);
+      } catch (error) {
+        console.error("Error fetching recommended users:", error);
+      }
+    };
+    fetchRecommendations();
+  }, []);
 
   return (
-    //replace this with the profile info page view with a button that updates the user info
-
-    <div className="flex flex-col h-full items-center">
-      <div className="justify-between items-center ">
-        <h3
-          className="text-xl font-semibold text-center text-white"
+    <>
+      {searchLoading ? (
+        <div
+          className="flex justify-center items-center"
           style={{
-            fontFamily: "Roboto, sans-serif",
-            letterSpacing: "0.05em",
-            textShadow:
-              "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+            height: "290px",
+            // overflowY: "auto",
           }}
         >
-          Your Profile
-        </h3>
-        <hr className="border-t border-white w-full mt-4  mb-2" />
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="flex items-center mt-1 mb-2">
-            <label
-              htmlFor="toggleCollection"
-              className="flex items-center cursor-pointer"
+          <div className="rlame"></div>
+        </div>
+      ) : (
+        <>
+          <div>
+            <button
+              onClick={refreshRecommendations}
+              className="mt-1 mb-4 bg-blue-600 opacity-80 text-white px-4 py-1 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              <div className="relative">
-                <div>
-                  <span className="text-white mr-2">Make Private?</span>
-
-                  <input
-                    type="checkbox"
-                    id="toggleCollection"
-                    className="cursor-pointer"
-                    checked={!isPublic || false}
-                    onChange={handleToggle}
-                  />
-                  <div>
-                    <label
-                      htmlFor="toggleCollection"
-                      className="cursor-pointer text-white"
-                      style={{ fontSize: "13px" }}
+              {/* {showResults ? "Go back to search filter" : "Show results"} */}
+              <FontAwesomeIcon icon={faSync} />
+            </button>
+          </div>
+          <hr className="border border" />
+          <div
+            className="flex  flex-col h-full"
+            style={{ maxHeight: "290px", overflowY: "auto" }}
+          >
+            <div className="flex flex-wrap justify-between border border-white backdrop-blur-md items-start mb-8">
+              {recommendations.map((user: any) =>
+                user.profilePublic === true ? (
+                  <div
+                    key={user.username}
+                    className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                    onClick={() => openDetailedView(user)}
+                  >
+                    <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                      <img
+                        src={user.imgUrl}
+                        alt=""
+                        className="rounded-full h-full w-full object-cover"
+                      />
+                    </div>
+                    <h3
+                      className="font-semibold mb-2 text-white"
+                      style={{
+                        fontFamily: "Roboto, sans-serif",
+                        letterSpacing: "0.05em",
+                        textShadow:
+                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                      }}
                     >
-                      current status: {isPublic ? "Public" : "Private"}
-                    </label>
+                      {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+                    </h3>
+                    {/* Render other user attributes here */}
                   </div>
-                </div>
-              </div>
-            </label>
-          </div>
-        )}
-        <hr className="border-t border-white w-full mt-4 " />{" "}
-      </div>
-
-      <div>
-        {searchLoading ? (
-          <div
-            className="flex justify-center  items-center"
-            style={{
-              height: "135px",
-              // overflowY: "auto",
-            }}
-          >
-            <div className="clame"></div>
-          </div>
-        ) : (
-          <div
-            className="flex flex-col h-full"
-            style={{ maxHeight: "280px", overflowY: "auto" }}
-          >
-            <div
-              className="overflow-y-auto max-h-screen pt-10"
-              style={{
-                // marginTop: "2rem", // Adjust this value according to the height of the navbar
-                maxHeight: "calc(100vh - 10rem)",
-                // scrollbarWidth: "thin",
-                // scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
-              }}
-            >
-              <div className="mb-4">
-                <label
-                  htmlFor="bio"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Bio:
-                </label>
-
-                <div>
-                  <textarea
-                    name="biography"
-                    value={formData.biography}
-                    onChange={handleChange}
-                    className="mt-1 p-2 w-full border border-gray-300 rounded h-32"
-                    style={{ backgroundColor: "rgba(240, 240, 240, 0.8)" }}
-                  />
-                </div>
-              </div>
-
-              <br />
-              <div className="mb-4">
-                <label
-                  htmlFor="ppic"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Profile Image:
-                </label>
-
-                <input
-                  type="file"
-                  onChange={handleImageUpload}
-                  className="mt-1 p-1 w-full border border-gray-300 rounded"
-                />
-              </div>
-              <br />
-              <div className="mb-4">
-                <label
-                  htmlFor="hobbies"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Hobbies:
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Select<HobbyOption, true>
-                    options={hobbiesOptions}
-                    isMulti
-                    onChange={handleHobbiesChange}
-                    placeholder="select upto 3 hobbies"
-                    maxMenuHeight={formData.hobbies.length < 3 ? 300 : 0} // Set maxMenuHeight to 0 to disable scrolling when 3 hobbies are selected
-                    value={hobbiesOptions.filter((option) =>
-                      formData.hobbies.includes(option.value)
-                    )}
-                    styles={customStyles}
-                  />
-                </div>
-              </div>
-              <br />
-              <div className="select-container mb-4">
-                <label
-                  htmlFor="university"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  University:
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="university"
-                    value={formData.university}
-                    onChange={handleChange}
+                ) : user.profilePublic === false ? null : (
+                  <div
+                    key={user.username}
+                    className=" p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
+                    onClick={() => openDetailedView(user)}
                   >
-                    <option value="">Select a university</option>
-                    {universities.map((university, index) => (
-                      <option key={index} value={university.name}>
-                        {university.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <br />
-              <div className=" mb-4">
-                <label
-                  htmlFor="major"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Major:
-                </label>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="major"
-                    value={formData.major}
-                    onChange={handleChange}
-                  >
-                    <option value=""></option>
-                    {majors.map((major) => (
-                      <option key={major.id} value={major.name}>
-                        {major.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <br />
-              <div className=" mb-4">
-                <label
-                  htmlFor="sleep"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Sleep Time:
-                </label>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="sleepTime"
-                    value={formData.sleepTime}
-                    onChange={handleChange}
-                  >
-                    <option value=""></option>
-                    <option value="1">Before 9pm</option>
-                    <option value="2">9pm - 11pm</option>
-                    <option value="3">11pm - 1am</option>
-                    <option value="4">1am - 3am</option>
-                  </select>
-                </div>
-              </div>
-
-              <br />
-              <div className=" mb-4">
-                <label
-                  htmlFor="hygiene"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Hygiene:
-                </label>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="cleanliness"
-                    value={formData.cleanliness}
-                    onChange={handleChange}
-                  >
-                    <option value="OFTEN">often</option>
-                    <option value="SOMETIMES">sometimes</option>
-                    <option value="NEVER">never</option>
-                  </select>
-                </div>
-              </div>
-              <br />
-              <div className=" mb-4">
-                <label
-                  htmlFor="smoke"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Guests:
-                </label>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="guests"
-                    value={formData.guests}
-                    onChange={handleChange}
-                  >
-                    <option value="OFTEN">often</option>
-                    <option value="SOMETIMES">sometimes</option>
-                    <option value="NEVER">never</option>
-                  </select>
-                </div>
-              </div>
-              <br />
-
-              <div className="mb-4">
-                <label
-                  htmlFor="smoke"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Smoking
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="smoking"
-                    value={formData.smoking}
-                    onChange={handleChange}
-                  >
-                    <option value=""></option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                  </select>
-                </div>
-              </div>
-              <br />
-
-              <div className="mb-4">
-                <label
-                  htmlFor="pets"
-                  className="font-semibold mb-2 text-white"
-                  style={{
-                    fontFamily: "Roboto, sans-serif",
-                    letterSpacing: "0.05em",
-                    textShadow:
-                      "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  Pets
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <select
-                    className="filter-select mb-2 transparent-dropdown"
-                    name="pets"
-                    value={formData.pets}
-                    onChange={handleChange}
-                  >
-                    <option value=""></option>
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                  </select>
-                </div>
-              </div>
-
-              <button
-                onClick={editProfile}
-                className="bg-blue-800 text-gray-100 px-4 py-2 rounded hover:bg-gray-700 font-semibold"
-              >
-                Update
-              </button>
+                    <div className="rounded-full mb-16 h-24 w-24 mx-auto mb-4 ">
+                      <img
+                        src={user.imgUrl}
+                        alt=""
+                        className="rounded-full h-full w-full object-cover"
+                      />
+                    </div>
+                    <h3
+                      className="font-semibold mb-2 text-white"
+                      style={{
+                        fontFamily: "Roboto, sans-serif",
+                        letterSpacing: "0.05em",
+                        textShadow:
+                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                      }}
+                    >
+                      {(parseFloat(user.similarity) * 100).toFixed(2)}% match
+                    </h3>
+                    {/* Render other user attributes here */}
+                  </div>
+                )
+              )}
             </div>
+
+            {selectedUser && (
+              <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center z-50">
+                <div
+                  className="bruh bg-blue-400 mt-4 border-4 border-gray-300 bg-opacity-25 backdrop-blur-lg p-6 rounded-lg shadow-lg"
+                  style={{
+                    maxHeight: "590px",
+                    width: "489px",
+                    overflowY: "auto",
+                  }}
+                  // ref={scrollContainerRef}
+                >
+                  <button
+                    className="absolute top-4 left-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    onClick={closeDetailedView}
+                  >
+                    <FontAwesomeIcon icon={faTimes} size="lg" />
+                  </button>
+                  <div className="text-center mb-4">
+                    <div className="rounded-full mb-4 h-24 w-24 mx-auto">
+                      <img
+                        src={selectedUser.imgUrl}
+                        // alt="Profile"
+                        className="rounded-full h-full w-full object-cover"
+                      />
+                    </div>
+                    <h2
+                      className="text-xl font-semibold mb-4 text-center text-white"
+                      style={{
+                        fontFamily: "Roboto, sans-serif",
+                        fontSize: "25px",
+                        letterSpacing: "0.05em",
+                        textShadow:
+                          "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                      }}
+                    >
+                      User: {selectedUser.username}
+                    </h2>
+                  </div>
+                  <hr className="flame border-t border-black mt-8" />
+
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <h3 style={h3Style}>Name: {selectedUser.name}</h3>
+                    <h3 style={h3Style}>Email: {selectedUser.email}</h3>
+                    <h3 style={h3Style}>Bio: {selectedUser.bio}</h3>
+                    <h3 style={h3Style}>
+                      University: {selectedUser.university}
+                    </h3>
+                    <h3 style={h3Style}>Gender: {selectedUser.gender}</h3>
+                    <h3 style={h3Style}>Major: {selectedUser.major}</h3>
+                    <h3 style={h3Style}>
+                      Personality: {selectedUser.personality}
+                    </h3>
+                    <h3 style={h3Style}>
+                      Sleep Time:{" "}
+                      {getSleepTimeDescription(selectedUser.sleepTime)}
+                    </h3>
+                    <h3 style={h3Style}>Hygiene: {selectedUser.hygiene}</h3>
+                    <h3 style={h3Style}>Smokes: {selectedUser.smoke}</h3>
+                    <h3 style={h3Style}>Has Pets: {selectedUser.pets}</h3>
+                  </div>
+                  <hr className="flame border-t border-black mt-8" />
+                  <h2
+                    className="text-2xl font-semibold mb-4 mt-4 text-center text-white"
+                    style={{
+                      fontFamily: "Roboto, sans-serif",
+                      fontSize: "20px",
+                      letterSpacing: "0.05em",
+                      textShadow:
+                        "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                    }}
+                  >
+                    Design Collection:
+                  </h2>
+                  {selectedUser.collectionPublic === true ? (
+                    <div
+                      className="image-grid mt-8"
+                      style={{ maxHeight: "725px", overflowY: "auto" }}
+                    >
+                      {selectedUser.savedImages.map((url: any, index: any) => (
+                        <div
+                          key={index}
+                          className="images-container relative"
+                          style={{
+                            border: "3px solid #e0e0e0",
+                            display: "inline-block",
+                            borderRadius: "10px",
+                            padding: "5px",
+                            boxSizing: "border-box",
+                            marginBottom: "16px",
+                            textAlign: "center", // Add this for center alignment
+                          }}
+                        >
+                          <div>
+                            <AiOutlineSave
+                              className="save-icon absolute"
+                              size={34}
+                              onClick={() =>
+                                handleSaveImage(url.imgUrl, url.prompt)
+                              }
+                              style={{
+                                top: "10px",
+                                left: "10px",
+                                cursor: "pointer",
+                              }}
+                              title={"Save to collection"}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              // border: "3px solid #e0e0e0",
+                              display: "inline-block",
+                              borderRadius: "10px",
+                              padding: "5px",
+                              boxSizing: "border-box",
+                            }}
+                          >
+                            <img src={url.imgUrl} className="rounded-lg" />
+                          </div>
+                          <div
+                            style={{
+                              textAlign: "center",
+                              marginTop: "8px",
+                              fontStyle: "italic",
+                              fontSize: "14px",
+                              color: "#E4E1D0", // Bone white color
+                              textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
+                            }}
+                          >
+                            &ldquo;{url.prompt}&rdquo;
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : selectedUser.collectionPublic === false ? (
+                    <div
+                      className="flex justify-center items-center"
+                      style={{
+                        height: "290px",
+                        // overflowY: "auto",
+                      }}
+                    >
+                      {/* <div className="rlame"></div> */}
+                      <h2
+                        className="text-xl font-semibold mb-4 mt-4 text-center text-white"
+                        style={{
+                          fontFamily: "Roboto, sans-serif",
+                          fontSize: "15px",
+                          letterSpacing: "0.05em",
+                          textShadow:
+                            "0px 2px 4px rgba(0, 0, 0, 0.5), 0px 4px 6px rgba(0, 0, 0, 0.25)",
+                        }}
+                      >
+                        User's Collection is Private
+                      </h2>
+                    </div>
+                  ) : (
+                    <div
+                      className="image-grid mt-8"
+                      style={{ maxHeight: "725px", overflowY: "auto" }}
+                    >
+                      {selectedUser.savedImages.map((url: any, index: any) => (
+                        <div
+                          key={index}
+                          className="images-container relative"
+                          style={{
+                            border: "3px solid #e0e0e0",
+                            display: "inline-block",
+                            borderRadius: "10px",
+                            padding: "5px",
+                            boxSizing: "border-box",
+                            marginBottom: "16px",
+                            textAlign: "center", // Add this for center alignment
+                          }}
+                        >
+                          <div>
+                            <AiOutlineSave
+                              className="save-icon absolute"
+                              size={34}
+                              onClick={() =>
+                                handleSaveImage(url.imgUrl, url.prompt)
+                              }
+                              style={{
+                                top: "10px",
+                                left: "10px",
+                                cursor: "pointer",
+                              }}
+                              title={"Save to collection"}
+                            />
+                          </div>
+                          <div
+                            style={{
+                              // border: "3px solid #e0e0e0",
+                              display: "inline-block",
+                              borderRadius: "10px",
+                              padding: "5px",
+                              boxSizing: "border-box",
+                            }}
+                          >
+                            <img src={url.imgUrl} className="rounded-lg" />
+                          </div>
+                          <div
+                            style={{
+                              textAlign: "center",
+                              marginTop: "8px",
+                              fontStyle: "italic",
+                              fontSize: "14px",
+                              color: "#E4E1D0", // Bone white color
+                              textShadow: "1px 1px 2px rgba(0, 0, 0, 0.5)", // Text shadow
+                            }}
+                          >
+                            &ldquo;{url.prompt}&rdquo;
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+        </>
+      )}
+    </>
   );
 };
 
-export default ProfileView;
+export default Recommendations;
