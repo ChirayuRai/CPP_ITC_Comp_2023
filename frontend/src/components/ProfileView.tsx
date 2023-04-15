@@ -60,6 +60,12 @@ const UPDATE_PRIVACY = gql`
   ${USER_DETAILS}
 `;
 
+const GET_PRIVACY = gql`
+  mutation GetUserPrivacy($privInput: CollectionPrivacy) {
+    getUserPrivacy(input: $privInput)
+  }
+`;
+
 interface FormData {
   username: string;
   email: string;
@@ -88,6 +94,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
 }) => {
   const [updateUser, updatedUser] = useMutation(UPDATE_USER);
   const [updateUserPrivacy, updatedUserPrivacy] = useMutation(UPDATE_PRIVACY);
+  const [getUserPrivacy, userPrivacy] = useMutation(GET_PRIVACY);
 
   const customStyles = {
     control: (provided: any) => ({
@@ -109,6 +116,43 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
   const [majors, setMajors] = useState<MajorOption[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
   const loggedInUsername = loggedInUser["data"]["userLogin"].username;
+  const [isLoading, setIsLoading] = useState(true);
+
+  //set the private profile toggle
+  let [isPublic, setIsPublic] = useState(false);
+
+  //handles toggle for private profile
+  //sets the mode to public since the default is private (and vice versa)
+  const handleToggle = async () => {
+    setIsPublic(!isPublic); //default is false
+
+    try {
+      //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
+      setSearchLoading(true);
+      const input = {
+        //this variable has to match the defined parameter accepted by the resolver
+        username: loggedInUsername,
+        profilePublic: !isPublic,
+        privacyType: "profile",
+      };
+      console.log("username rec view", input);
+      //execute the mutation query to return a list of recommended users for the logged in user
+      let updatedUserPrivacyRes = await updateUserPrivacy({
+        variables: { input }, //the input has to match the input schema type defined in backend
+      });
+      // console.log("refreshed recommended list of users: ", recommendedUsers);
+      console.log(
+        "updated user privacy response: ",
+        updatedUserPrivacyRes.data
+      );
+      setSearchLoading(false);
+      //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
+    } catch (error) {
+      console.error("Error fetching recommended users:", error);
+    }
+  };
+
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     username: loggedInUser["data"]["userLogin"].username,
@@ -133,6 +177,7 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
     { value: "cooking", label: "Cooking" },
     // Add more hobbies options here
   ];
+  const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(null); //use the existing user's privacy state to set the toggle
 
   useEffect(() => {
     const fetchMajors = async () => {
@@ -166,10 +211,37 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
         console.error("Error fetching universities:", error);
       }
     };
+    const fetchUserPrivacy = async () => {
+      setIsLoading(true);
+
+      const privInput = {
+        //this variable has to match the defined parameter accepted by the resolver
+        username: loggedInUsername,
+        privacyType: "profile",
+      };
+      let priv = await getUserPrivacy({
+        variables: { privInput }, //the input has to match the input schema type defined in backend
+      });
+      // console.log(
+      //   "the value of collectionPublic privacy value for loggedInUser gpt ",
+      //   priv.data.getUserPrivacy
+      // );
+      console.log(
+        "the type and value of collectionPublic privacy value for loggedInUser gpt:",
+        typeof priv.data.getUserPrivacy,
+        priv.data.getUserPrivacy
+      );
+
+      setIsPublic(priv.data.getUserPrivacy);
+      setIsLoading(false);
+
+      // console.log("is images public value:", isImagesPublic);
+    };
 
     fetchMajors();
     fetchUniversities();
-  }, [0]);
+    fetchUserPrivacy();
+  }, []);
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -258,39 +330,6 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
     }
   };
 
-  //set the private profile toggle
-  let [isPublic, setIsPublic] = useState(false);
-
-  //handles toggle for private profile
-  //sets the mode to public since the default is private (and vice versa)
-  const handleToggle = async () => {
-    setIsPublic(!isPublic); //default is false
-
-    try {
-      //the mutation resolver will find the user obj by the passed in username and then update the attributes along with it
-      setSearchLoading(true);
-      const input = {
-        //this variable has to match the defined parameter accepted by the resolver
-        username: loggedInUsername,
-        profilePublic: isPublic,
-        privacyType: "profile",
-      };
-      console.log("username rec view", input);
-      //execute the mutation query to return a list of recommended users for the logged in user
-      let updatedUserPrivacyRes = await updateUserPrivacy({
-        variables: { input }, //the input has to match the input schema type defined in backend
-      });
-      // console.log("refreshed recommended list of users: ", recommendedUsers);
-      console.log("updated user privacy response: ", updatedUserPrivacy.data);
-      setSearchLoading(false);
-      //setRecommendations(updatedUser.data.recommendUsers); //useState setter to set the returned recommendations
-    } catch (error) {
-      console.error("Error fetching recommended users:", error);
-    }
-  };
-
-  const [searchLoading, setSearchLoading] = useState(false);
-
   return (
     //replace this with the profile info page view with a button that updates the user info
 
@@ -308,27 +347,39 @@ const ProfileView: React.FC<RecommendationsResultsProps> = ({
           Your Profile
         </h3>
         <hr className="border-t border-white w-full mt-4  mb-2" />
-        <div className="flex items-center mt-4">
-          <span className="text-white mr-2">Public</span>
-          <label htmlFor="toggle" className="flex items-center cursor-pointer">
-            <div className="relative">
-              <input
-                type="checkbox"
-                id="toggle"
-                className="sr-only"
-                checked={isPublic}
-                onChange={handleToggle}
-              />
-              <div className="block bg-gray-600 w-12 h-6 rounded-full"></div>
-              <div
-                className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition ${
-                  isPublic ? "transform translate-x-6" : ""
-                }`}
-              ></div>
-            </div>
-          </label>
-          <span className="text-white ml-2">Private</span>
-        </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="flex items-center mt-1 mb-2">
+            <label
+              htmlFor="toggleCollection"
+              className="flex items-center cursor-pointer"
+            >
+              <div className="relative">
+                <div>
+                  <span className="text-white mr-2">Make Private?</span>
+
+                  <input
+                    type="checkbox"
+                    id="toggleCollection"
+                    className="cursor-pointer"
+                    checked={!isPublic || false}
+                    onChange={handleToggle}
+                  />
+                  <div>
+                    <label
+                      htmlFor="toggleCollection"
+                      className="cursor-pointer text-white"
+                      style={{ fontSize: "13px" }}
+                    >
+                      current status: {isPublic ? "Public" : "Private"}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </label>
+          </div>
+        )}
         <hr className="border-t border-white w-full mt-4 " />{" "}
       </div>
 
