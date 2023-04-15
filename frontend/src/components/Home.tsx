@@ -1,42 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import SearchFilter from "./SearchFilter";
-import { useNavigate, useLocation } from "react-router-dom";
-//import ProfileList from "./ProfileList";
+import { useLocation } from "react-router-dom";
 import ProfileView from "./ProfileView";
-//import DetailedProfileView from "./DetailedProfileView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faMagic,
-  faFilter,
-} from "@fortawesome/free-solid-svg-icons";
-import ReactLoading from "react-loading";
-import { useLazyQuery } from "@apollo/client";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import {
-  setSearchResults,
-  setActiveSearch,
-} from "../redux/actions/searchActions";
+import { setActiveSearch } from "../redux/actions/searchActions";
 
 import {
   faEdit,
   faLightbulb,
-  faSearch,
   faSun,
   faMoon,
   faImages,
 } from "@fortawesome/free-solid-svg-icons";
-import profPic from "../assets/profpic.jpg";
 import "../styles/pulse.css";
 import "./background.css";
 import "./powerup.css";
 import "./home.css";
-//import "../styles/transitions.css";
 import lightBackgroundPicIndoor from "../assets/sunset.jpeg";
-//import darkBackgroundPicIndoor from "../assets/hammershoi.jpg";
 import lightBackgroundPicOutdoor from "../assets/oxbow.jpg";
 import darkBackgroundPicOutdoor from "../assets/mnight.jpg";
-//import darkBackgroundPic from "../assets/darkcauter.jpg";
 import SearchResults from "./SearchResults";
 import Recommendations from "./Recommendations";
 import gql from "graphql-tag";
@@ -241,6 +225,8 @@ const Home = () => {
       university: user.university,
       smoking: user.smoke,
       pets: user.pets,
+      collectionPublic: user.collectionPublic,
+      profilePublic: user.profilePublic,
     }));
     console.log("searchResults structure", searchResults);
     //call the api to get the list of searched users
@@ -251,7 +237,7 @@ const Home = () => {
     (state: any) => state.searchResults.activeSearch
   );
 
-  //two use effects
+  //the following useEffect is used to listen to changes on the navbar search state and render the search result tab
 
   useEffect(() => {
     console.log("handle toggle view called", activeSearch);
