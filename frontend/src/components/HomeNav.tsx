@@ -122,6 +122,30 @@ const HomePageNav: React.FC<LayoutProps> = ({ children }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+                <style>
+                {`
+    input::-webkit-input-placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+    input::-moz-placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+    input:-ms-input-placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+    input::-ms-input-placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+    input::placeholder {
+      color: #555;
+      font-size: 14px;
+    }
+  `}
+              </style>
               <button
                 type="submit"
                 className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-r-lg border-2 border-blue-500"
