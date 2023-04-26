@@ -8,9 +8,16 @@ const {
   searchRoommateProfiles,
   updateElasticsearchUser,
 } = require("./elasticsearch");
+const { CourierClient } = require("@trycourier/courier");
+
 
 require("dotenv").config({ path: ".env" });
 
+const courierKEY = process.env.courier_token
+
+const courier = CourierClient({
+  authorizationToken: courierKEY,
+});
 const apiKey = process.env.OPEN_API_KEY;
 
 function getNewRedisClient() {
@@ -795,7 +802,39 @@ module.exports = {
         throw error;
       }
     },
+    contactUser: async (_, { input, skip = 0, limit = 100 }, { models }) => {
+      console.log("courier sender email contact input:", input.senderEmail);
+      console.log("courier receiver email contact input:", input.receiverEmail);
 
+      //implement the api here:
+      let receiverEmail = input.receiverEmail;
+      let senderEmail = input.senderEmail;
+
+      const { requestId } = await courier.send({
+        message: {
+          to: {
+            email: receiverEmail,
+          },
+          //template: "4WMFBTF2Z945PMQ334V7CH5Y3PVZ",
+          data: {
+            sendersEmail: senderEmail,
+          },
+          content: {
+            title: "Hello from hæli!",
+            body: "{{sendersEmail}}, likes your profile and requested to connect! Send them an email to get in touch.",
+          },
+        },
+      });
+
+      // const searchResultsElastic = await searchRoommateProfiles(input.query);
+      // console.log(
+      //   "search results users from elastic search:",
+      //   searchResultsElastic
+      // );
+
+      //return either a 200 response or a response which notifies the user of a successful connection
+      return "email resolver accessed for courier api";
+    },
     createDesigns: async (_, { input }, { models }) => {
       async function generateDetailedPrompt(userPrompt) {
         try {
