@@ -153,6 +153,11 @@ const typeDefs = gql`
     profilePublic: Boolean
     privacyType: String
   }
+  
+  input ContactUser {
+    senderEmail: String!
+    receiverEmail: String!
+  }
 
   # input ProfilePrivacy {
   #   username: String!
@@ -186,6 +191,9 @@ const typeDefs = gql`
 
     #elasticsearch
     elasticSearch(input: UserElasticSearch): [User]
+    
+    #courier api
+    contactUser(input: ContactUser): String
   }
 `;
 
