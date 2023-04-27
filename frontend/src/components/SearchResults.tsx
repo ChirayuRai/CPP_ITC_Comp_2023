@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/search.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { useRef } from "react";
 import "../styles/pulse.css";
 import { useMutation } from "@apollo/react-hooks";
@@ -43,17 +43,27 @@ const SAVE_IMAGE = gql`
   }
 `;
 
+//mutation to send email
+const SEND_EMAIL = gql`
+  mutation SendEmail($input: ContactUser) {
+    contactUser(input: $input)
+  }
+`;
+
 interface SearchResultsProps {
-  loggedInUser: string;
+  loggedInUserName: string;
+  loggedInUserEmail: string;
   results: User[]; //results prop of type User being passed in from Home.tsx
   onToggleView: () => void;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
-  loggedInUser,
+  loggedInUserName,
+  loggedInUserEmail,
   results,
   onToggleView,
 }) => {
+  console.log("results from SearchResults.tsx: ", results);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const [saveImage, savedImage] = useMutation(SAVE_IMAGE);
@@ -61,7 +71,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setSearchLoading(true);
     console.log("url of image being saved: ", url);
     const input = {
-      username: loggedInUser,
+      username: loggedInUserName,
       imgSrc: url,
       imgPrompt: imgPrompt,
     };
@@ -77,6 +87,38 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     setSearchLoading(false);
     //setImageURLs(data.createDesigns);
   };
+
+  //mutation to send email
+  const [sendEmail, sentEmail] = useMutation(SEND_EMAIL);
+  //handler function for send email:
+  const handleSendEmail = async (sendersEmail: any, receiversEmail: any) => {
+    setSearchLoading(true);
+    console.log(
+      "the emails of the sender and receiver: ",
+      sendersEmail,
+      receiversEmail
+    );
+    //must match the schema for the contactuser schema
+    const input = {
+      senderEmail: sendersEmail,
+      receiverEmail: receiversEmail,
+    };
+
+    //make the mutation call to the backend to send the email
+    const { data } = await sendEmail({
+      variables: { input },
+      context: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    }); //execute the mutation react hook
+
+    //print the response received from the backend
+    console.log("response from courier api", data);
+    setSearchLoading(false);
+  };
+
   const h3Style = {
     fontFamily: "Roboto, sans-serif",
     fontSize: "15px",
@@ -180,7 +222,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               <div className="flex flex-wrap justify-between border border-white backdrop-blur-md items-start mb-8">
                 {/* {results.map((user) => ( */}
                 {displayResults.map((user: any) =>
-                  user.profilePublic ? (
+                  user.profilePublic === true ? (
                     <div
                       key={user.username}
                       className="border-black p-4 m-2 rounded-lg cursor-pointer hover:shadow-lg"
@@ -276,12 +318,22 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                       >
                         User: {selectedUser.username}
                       </h2>
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 mt-4"
+                        onClick={() =>
+                          handleSendEmail(loggedInUserEmail, selectedUser.email)
+                        }
+                      >
+                        <FontAwesomeIcon icon={faPaperPlane} className="mr-2" />
+                        Request to Connect
+                      </button>
                     </div>
                     <hr className="flame border-t border-black mt-8" />
 
                     <div className="grid grid-cols-2 gap-4 mt-4">
                       <h3 style={h3Style}>Name: {selectedUser.name}</h3>
                       <h3 style={h3Style}>Email: {selectedUser.email}</h3>
+
                       <h3 style={h3Style}>Bio: {selectedUser.bio}</h3>
                       <h3 style={h3Style}>
                         University: {selectedUser.university}
