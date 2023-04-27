@@ -158,6 +158,7 @@ const Home = () => {
   const university = signedUser["data"]["userLogin"].university;
   const gender = signedUser["data"]["userLogin"].gender;
   const username = signedUser["data"]["userLogin"].username;
+  const email = signedUser["data"]["userLogin"].email;
   //console.log("signedIn user imgUrl", signedUser["data"]["userLogin"].imgUrl);
   // console.log("searchAttributes", searchAttributes);
 
@@ -167,6 +168,7 @@ const Home = () => {
     //console.log("searchAttributes from searchFilter", searchAttributes);
     let searchUniversity = "";
     let searchGender = "";
+    //destructure the attributes object
     const {
       Guests,
       Hygiene,
@@ -498,7 +500,8 @@ const Home = () => {
                   </div>
                 ) : showResults ? (
                   <SearchResults
-                    loggedInUser={username}
+                    loggedInUserName={username}
+                    loggedInUserEmail={email}
                     results={searchresults}
                     onToggleView={handleToggleViewBack}
                   />
