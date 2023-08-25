@@ -4,7 +4,7 @@ The Roommate Finder App is a web application built using the MERN stack, designe
 
 ## Test it out for yourself!
 
-To access this project, just click this [link](https://boisterous-khapse-d92f01.netlify.app)
+To access this project, just click this [link](https://haeli.netlify.app)
 
 ## Architecture
 
